@@ -8,7 +8,7 @@ using Microsoft.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
-    //esto es una entidad @yanmir lo tiene que poner corectamente en su capa de persistencia
+    //esto es una entidad @yanmir lo tiene que poner corectamente en su capa de entidades
     public class Empleado
     {
         public int TrabajadorId { get; set; }
