@@ -41,13 +41,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuditoriaContrato.cs" />
+    <Compile Include="Area.cs" />
     <Compile Include="CambioContrato.cs" />
-    <Compile Include="DominioBase.cs" />
-    <Compile Include="ContratoLaboral.cs" />
-    <Compile Include="Empleado.cs" />
+    <Compile Include="Cargo.cs" />
+    <Compile Include="Contacto.cs" />
+    <Compile Include="Contrato.cs" />
+    <Compile Include="ContratoDetalle.cs" />
+    <Compile Include="Persona.cs" />
+    <Compile Include="EstadoContrato.cs" />
+    <Compile Include="HorarioTrabajador.cs" />
+    <Compile Include="Trabajador.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ValidadorContrato.cs" />
+    <Compile Include="Sede.cs" />
+    <Compile Include="TipoPension.cs" />
+    <Compile Include="TipoSalario.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
