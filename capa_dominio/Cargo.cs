@@ -8,11 +8,38 @@ namespace capa_dominio
 {
     public class Cargo
     {
-        public int CargoId { get; set; }
-        public string Nombre { get; set; }
-        public char Estado { get; set; } = 'A';
-        public DateTime FechaCreacion { get; set; }
+        
+        private int cargoId;
+        private string cargoNombre;
+        private char cargoEstado;
+        private DateTime cargoFechaCreacion;
 
-        public bool EstaActivo() => Estado == 'A';
+        
+        public int CargoId { get => cargoId; set => cargoId = value; }
+        public string CargoNombre { get => cargoNombre; set => cargoNombre = value; }
+        public char CargoEstado { get => cargoEstado; set => cargoEstado = value; }
+        public DateTime CargoFechaCreacion { get => cargoFechaCreacion; set => cargoFechaCreacion = value; }
+
+        
+        public bool EstaActivo()
+        {
+            return cargoEstado == 'A';
+        }
+
+        public void Activar()
+        {
+            cargoEstado = 'A';
+        }
+
+        public void Desactivar()
+        {
+            cargoEstado = 'I';
+        }
+
+        public string Resumen()
+        {
+            return $"{cargoNombre} - Estado: {(EstaActivo() ? "Activo" : "Inactivo")}";
+        }
     }
 }
+

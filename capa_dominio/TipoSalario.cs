@@ -8,13 +8,30 @@ namespace capa_dominio
 {
     public class TipoSalario
     {
-        public int TipoSalarioId { get; set; }
-        public string Nombre { get; set; }
-        public char Estado { get; set; } = 'A';
-        public DateTime FechaCreacion { get; set; }
+        
+        private int tipoSalarioId;
+        private string tipoSalarioNombre;
+        private char tipoSalarioEstado;
+        private DateTime tipoSalarioFechaCreacion;
 
-        public bool EstaActivo() => Estado == 'A';
+        
+        public int TipoSalarioId { get => tipoSalarioId; set => tipoSalarioId = value; }
+        public string TipoSalarioNombre { get => tipoSalarioNombre; set => tipoSalarioNombre = value; }
+        public char TipoSalarioEstado { get => tipoSalarioEstado; set => tipoSalarioEstado = value; }
+        public DateTime TipoSalarioFechaCreacion { get => tipoSalarioFechaCreacion; set => tipoSalarioFechaCreacion = value; }
+
+        
+        public bool EsActivo()
+        {
+            return tipoSalarioEstado == 'A';
+        }
+
+        public bool EsValido()
+        {
+            return !string.IsNullOrEmpty(tipoSalarioNombre);
+        }
     }
 }
+
 
 

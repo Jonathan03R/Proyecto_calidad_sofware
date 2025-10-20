@@ -8,12 +8,41 @@ namespace capa_dominio
 {
     public class TipoPension
     {
-        public int TipoPensionId { get; set; }
-        public string Nombre { get; set; }
-        public string Entidad { get; set; }
-        public char Estado { get; set; } = 'A';
-        public DateTime FechaCreacion { get; set; }
+       
+        private int tipoPensionId;
+        private string tipoPensionNombre;
+        private string tipoPensionEntidad;
+        private char tipoPensionEstado;
+        private DateTime tipoPensionFechaCreacion;
 
-        public bool EstaActivo() => Estado == 'A';
+        
+        public int TipoPensionId { get => tipoPensionId; set => tipoPensionId = value; }
+        public string TipoPensionNombre { get => tipoPensionNombre; set => tipoPensionNombre = value; }
+        public string TipoPensionEntidad { get => tipoPensionEntidad; set => tipoPensionEntidad = value; }
+        public char TipoPensionEstado { get => tipoPensionEstado; set => tipoPensionEstado = value; }
+        public DateTime TipoPensionFechaCreacion { get => tipoPensionFechaCreacion; set => tipoPensionFechaCreacion = value; }
+
+        
+        public bool EstaActiva()
+        {
+            return tipoPensionEstado == 'A' || tipoPensionEstado == 'a';
+        }
+
+        public void Activar()
+        {
+            tipoPensionEstado = 'A';
+        }
+
+        public void Desactivar()
+        {
+            tipoPensionEstado = 'I';
+        }
+
+        public string Resumen()
+        {
+            string estado = EstaActiva() ? "Activa" : "Inactiva";
+            return $"{tipoPensionNombre} - {tipoPensionEntidad} ({estado})";
+        }
+
     }
 }

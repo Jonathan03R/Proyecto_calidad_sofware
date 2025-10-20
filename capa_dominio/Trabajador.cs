@@ -8,14 +8,26 @@ namespace capa_dominio
 {
     public class Trabajador
     {
-        public int TrabajadorId { get; set; }
-        public int PersonaId { get; set; }
-        public string Codigo { get; set; }
-        public char Estado { get; set; } = 'A';
-        public char EstadoReporte { get; set; } = 'A';
-        public DateTime FechaCreacion { get; set; }
+        
+        private int trabajadorId;
+        private Persona persona; 
+        private string trabajadorCodigo;
+        private char trabajadorEstado;
+        private DateTime trabajadorFechaCreacion;
 
-        public bool EstaActivo() => Estado == 'A';
-        public bool EstaInactivo() => Estado == 'I';
+        
+        public int TrabajadorId { get => trabajadorId; set => trabajadorId = value; }
+        public Persona Persona { get => persona; set => persona = value; }
+        public string TrabajadorCodigo { get => trabajadorCodigo; set => trabajadorCodigo = value; }
+        public char TrabajadorEstado { get => trabajadorEstado; set => trabajadorEstado = value; }
+        public DateTime TrabajadorFechaCreacion { get => trabajadorFechaCreacion; set => trabajadorFechaCreacion = value; }
+
+
+        public bool EsInactivo()
+        {
+            return trabajadorEstado == 'I';
+        }
+
     }
 }
+

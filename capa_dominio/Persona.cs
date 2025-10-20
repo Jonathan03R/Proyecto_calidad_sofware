@@ -8,19 +8,38 @@ namespace capa_dominio
 {
     public class Persona
     {
-        public int PersonaId { get; set; }
-        public string Nombre { get; set; }
-        public string Apellido { get; set; }
-        public int TipoIdentificacionId { get; set; }
-        public string NumeroDocumento { get; set; }
-        public DateTime FechaNacimiento { get; set; }
-        public string EstadoCivil { get; set; }
-        public string Domicilio { get; set; }
-        public char Estado { get; set; } = 'A';
-        public DateTime FechaCreacion { get; set; }
 
-        public string NombreCompleto => $"{Nombre} {Apellido}";
-        public bool EstaActivo() => Estado == 'A';
+        private int personaId;
+        private string personaNombre;
+        private string personaApellido;
+        private TipoIdentificacion tipoIdentificacion; 
+        private string personaIdentificacion;
+        private char personaEstado;
+        private DateTime personaFechaCreacion;
+
+        
+        public int PersonaId { get => personaId; set => personaId = value; }
+        public string PersonaNombre { get => personaNombre; set => personaNombre = value; }
+        public string PersonaApellido { get => personaApellido; set => personaApellido = value; }
+        public TipoIdentificacion TipoIdentificacion { get => tipoIdentificacion; set => tipoIdentificacion = value; }
+        public string PersonaIdentificacion { get => personaIdentificacion; set => personaIdentificacion = value; }
+        public char PersonaEstado { get => personaEstado; set => personaEstado = value; }
+        public DateTime PersonaFechaCreacion { get => personaFechaCreacion; set => personaFechaCreacion = value; }
+
+       
+        public bool EsActivo()
+        {
+            return personaEstado == 'A';
+        }
+
+        public bool IdentificacionValida()
+        {
+            return !string.IsNullOrEmpty(personaIdentificacion) && personaIdentificacion.Length >= 8;
+        }
+
+        public string NombreCompleto()
+        {
+            return $"{personaNombre} {personaApellido}";
+        }
     }
 }
-

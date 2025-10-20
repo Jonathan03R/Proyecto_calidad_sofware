@@ -8,14 +8,50 @@ namespace capa_dominio
 {
     public class Sede
     {
-        public int SedeId { get; set; }
-        public string Nombre { get; set; }
-        public string Direccion { get; set; }
-        public string Departamento { get; set; }
-        public string Provincia { get; set; }
-        public char Estado { get; set; } = 'A';
-        public DateTime FechaCreacion { get; set; }
+        
+        private int sedeId;
+        private string sedeNombre;
+        private string sedeDireccion;
+        private string sedeDepartamento;
+        private string sedeProvincia;
+        private char sedeEstado;
+        private DateTime sedeCreacion;
 
-        public bool EstaActivo() => Estado == 'A';
+        
+        public int SedeId { get => sedeId; set => sedeId = value; }
+        public string SedeNombre { get => sedeNombre; set => sedeNombre = value; }
+        public string SedeDireccion { get => sedeDireccion; set => sedeDireccion = value; }
+        public string SedeDepartamento { get => sedeDepartamento; set => sedeDepartamento = value; }
+        public string SedeProvincia { get => sedeProvincia; set => sedeProvincia = value; }
+        public char SedeEstado { get => sedeEstado; set => sedeEstado = value; }
+        public DateTime SedeCreacion { get => sedeCreacion; set => sedeCreacion = value; }
+
+       
+        public bool EstaActiva()
+        {
+            return sedeEstado == 'A' || sedeEstado == 'a';
+        }
+
+        public void Activar()
+        {
+            sedeEstado = 'A';
+        }
+
+        public void Desactivar()
+        {
+            sedeEstado = 'I';
+        }
+
+        public string UbicacionCompleta()
+        {
+            return $"{sedeDireccion}, {sedeProvincia}, {sedeDepartamento}";
+        }
+
+        public string Resumen()
+        {
+            string estado = EstaActiva() ? "Activa" : "Inactiva";
+            return $"{sedeNombre} ({estado}) - {UbicacionCompleta()}";
+        }
     }
 }
+

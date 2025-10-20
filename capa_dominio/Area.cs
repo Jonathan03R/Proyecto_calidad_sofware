@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +8,42 @@ namespace capa_dominio
 {
     public class Area
     {
-        public int AreaId { get; set; }
-        public string Nombre { get; set; }
-        public string Descripcion { get; set; }
-        public int SedeId { get; set; }
-        public char Estado { get; set; } = 'A';
-        public DateTime FechaCreacion { get; set; }
+        // ======== Atributos privados ==========
+        private int areaId;
+        private string areaNombre;
+        private string areaDescripcion;
+        private Sede sede;
+        private char areaEstado;
+        private DateTime areaCreacion;
 
-        public bool EstaActivo() => Estado == 'A';
+        // ======== Propiedades públicas ==========
+        public int AreaId { get => areaId; set => areaId = value; }
+        public string AreaNombre { get => areaNombre; set => areaNombre = value; }
+        public string AreaDescripcion { get => areaDescripcion; set => areaDescripcion = value; }
+        public Sede Sede { get => sede; set => sede = value; }
+        public char AreaEstado { get => areaEstado; set => areaEstado = value; }
+        public DateTime AreaCreacion { get => areaCreacion; set => areaCreacion = value; }
+
+        // ======== Métodos de negocio ==========
+        public bool EstaActiva()
+        {
+            return areaEstado == 'A' || areaEstado == 'a';
+        }
+
+        public void Activar()
+        {
+            areaEstado = 'A';
+        }
+
+        public void Desactivar()
+        {
+            areaEstado = 'I';
+        }
+
+        public string Resumen()
+        {
+            string estado = EstaActiva() ? "Activa" : "Inactiva";
+            return $"{areaNombre} ({estado}) - {(sede != null ? sede.SedeNombre : "Sin sede asignada")}";
+        }
     }
 }
