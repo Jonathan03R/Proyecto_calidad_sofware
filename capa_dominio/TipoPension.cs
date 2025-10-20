@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace capa_dominio
 {
-    public class Cargo
+    public class TipoPension
     {
-        public int CargoId { get; set; }
+        public int TipoPensionId { get; set; }
         public string Nombre { get; set; }
+        public string Entidad { get; set; }
         public char Estado { get; set; } = 'A';
         public DateTime FechaCreacion { get; set; }
 

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace capa_dominio
 {
-    public class Cargo
+    public class EstadoContrato
     {
-        public int CargoId { get; set; }
+        public int EstadoContratoId { get; set; }
         public string Nombre { get; set; }
         public char Estado { get; set; } = 'A';
         public DateTime FechaCreacion { get; set; }

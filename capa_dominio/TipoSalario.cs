@@ -8,17 +8,13 @@ namespace capa_dominio
 {
     public class TipoSalario
     {
-        public int TipoSalarioId { get; private set; }
-        public string Nombre { get; private set; }
+        public int TipoSalarioId { get; set; }
+        public string Nombre { get; set; }
+        public char Estado { get; set; } = 'A';
+        public DateTime FechaCreacion { get; set; }
 
-        public TipoSalario(int id, string nombre)
-        {
-            TipoSalarioId = id;
-            Nombre = nombre;
-
-            if (string.IsNullOrWhiteSpace(nombre))
-                throw new ArgumentException("El nombre del tipo de salario es obligatorio.");
-        }
+        public bool EstaActivo() => Estado == 'A';
     }
 }
+
 
