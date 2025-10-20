@@ -41,7 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Entidades\PeriodoModel.cs" />
     <Compile Include="Entidades\ReporteModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
