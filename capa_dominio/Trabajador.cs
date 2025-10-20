@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 
 namespace capa_dominio
 {
-    public class CambioContrato
+    public class Trabajador
     {
-        public int CambioContratoId { get; set; }
-        public string Motivo { get; set; }
-        public string Usuario { get; set; }
-        public DateTime FechaActualizacion { get; set; }
+        public int TrabajadorId { get; set; }
+        public int PersonaId { get; set; }
+        public string Codigo { get; set; }
         public char Estado { get; set; } = 'A';
+        public char EstadoReporte { get; set; } = 'A';
         public DateTime FechaCreacion { get; set; }
 
         public bool EstaActivo() => Estado == 'A';
+        public bool EstaInactivo() => Estado == 'I';
     }
 }

@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace capa_dominio
 {
-    public class CambioContrato
+    public class Sede
     {
-        public int CambioContratoId { get; set; }
-        public string Motivo { get; set; }
-        public string Usuario { get; set; }
-        public DateTime FechaActualizacion { get; set; }
+        public int SedeId { get; set; }
+        public string Nombre { get; set; }
+        public string Direccion { get; set; }
+        public string Departamento { get; set; }
+        public string Provincia { get; set; }
         public char Estado { get; set; } = 'A';
         public DateTime FechaCreacion { get; set; }
 
