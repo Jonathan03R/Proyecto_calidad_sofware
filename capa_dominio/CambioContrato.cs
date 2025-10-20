@@ -13,7 +13,6 @@ namespace capa_dominio
         public string Usuario { get; set; }
         public DateTime FechaActualizacion { get; set; }
         public char Estado { get; set; } = 'A';
-        public DateTime FechaCreacion { get; set; }
 
         public bool EstaActivo() => Estado == 'A';
     }

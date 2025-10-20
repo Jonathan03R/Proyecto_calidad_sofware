@@ -14,8 +14,6 @@ namespace capa_dominio
         public string Motivo { get; set; }
         public string ValorAnterior { get; set; }
         public string ValorActual { get; set; }
-        public DateTime FechaEvento { get; set; }
-
-        public bool TieneCambios() => ValorAnterior != ValorActual;
+        public DateTime FechaEvento { get; set; } = DateTime.Now;
     }
 }

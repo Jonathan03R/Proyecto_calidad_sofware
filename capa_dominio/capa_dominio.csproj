@@ -47,7 +47,6 @@
     <Compile Include="Contacto.cs" />
     <Compile Include="Contrato.cs" />
     <Compile Include="ContratoDetalle.cs" />
-    <Compile Include="Persona.cs" />
     <Compile Include="EstadoContrato.cs" />
     <Compile Include="HorarioTrabajador.cs" />
     <Compile Include="Trabajador.cs" />

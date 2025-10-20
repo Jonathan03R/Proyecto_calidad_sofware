@@ -13,8 +13,9 @@ namespace capa_dominio
         public string Descripcion { get; set; }
         public int SedeId { get; set; }
         public char Estado { get; set; } = 'A';
-        public DateTime FechaCreacion { get; set; }
 
-        public bool EstaActivo() => Estado == 'A';
+        public Sede Sede { get; set; }
+
+        public bool EstaActiva() => Estado == 'A';
     }
 }
