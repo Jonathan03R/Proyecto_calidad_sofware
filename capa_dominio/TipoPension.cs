@@ -43,5 +43,6 @@ namespace capa_dominio
             string estado = EstaActiva() ? "Activa" : "Inactiva";
             return $"{tipoPensionNombre} - {tipoPensionEntidad} ({estado})";
         }
+
     }
 }

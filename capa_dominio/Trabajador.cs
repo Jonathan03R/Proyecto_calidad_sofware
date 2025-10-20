@@ -22,20 +22,12 @@ namespace capa_dominio
         public char TrabajadorEstado { get => trabajadorEstado; set => trabajadorEstado = value; }
         public DateTime TrabajadorFechaCreacion { get => trabajadorFechaCreacion; set => trabajadorFechaCreacion = value; }
 
-        
-        public bool EsActivo()
-        {
-            return trabajadorEstado == 'A';
-        }
 
         public bool EsInactivo()
         {
             return trabajadorEstado == 'I';
         }
 
-        public bool CodigoValido()
-        {
-            return !string.IsNullOrEmpty(trabajadorCodigo) && trabajadorCodigo.Length == 8;
-        }
     }
 }
+

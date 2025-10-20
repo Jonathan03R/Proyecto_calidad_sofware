@@ -8,7 +8,6 @@ namespace capa_dominio
 {
     public class EstadoContrato
     {
-        
         private int estadoContratoId;
         private string estadoContratoNombre;
         private char estadoContratoEstado;
