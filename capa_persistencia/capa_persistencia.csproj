@@ -169,13 +169,19 @@
     <Compile Include="modulo_principal\Cargos.cs" />
     <Compile Include="modulo_principal\Contratos.cs" />
     <Compile Include="modulo_principal\Sedes.cs" />
+    <Compile Include="modulo_principal\ReporteNomina.cs" />
     <Compile Include="modulo_principal\SistemasPensiones.cs" />
     <Compile Include="modulo_principal\TiposJornadas.cs" />
     <Compile Include="modulo_principal\TiposSalarios.cs" />
     <Compile Include="modulo_principal\trabajadores.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\capa_dominio\capa_dominio.csproj">
+      <Project>{55fe5196-96ec-493b-8b32-cdb085434c71}</Project>
+      <Name>capa_dominio</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
