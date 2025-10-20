@@ -6,108 +6,106 @@ using System.Threading.Tasks;
 
 namespace capa_dominio
 {
-    public class ContratoLaboral : DominioBase
+    public class ContratoLaboral
     {
-        public int ContratoId { get; set; }
-        public int TrabajadorId { get; set; }
-        public int CargoId { get; set; }
-        public int TipoPensionId { get; set; }
-        public int TipoSalarioId { get; set; }
-        public int TipoJornadaId { get; set; }
-        public int EstadoContratoId { get; set; }
+        
+        public int ContratoId { get; private set; }
+        public int TrabajadorId { get; private set; }
+        public int CargoId { get; private set; }
+        public int AreaId { get; private set; }
+        public int TipoPensionId { get; private set; }
+        public int TipoSalarioId { get; private set; }
+        public int TipoJornadaId { get; private set; }
+        public DateTime FechaInicio { get; private set; }
+        public DateTime? FechaFin { get; private set; }
+        public decimal? Salario { get; private set; }
+        public decimal? TarifaHora { get; private set; }
+        public string ModoPago { get; private set; }
+        public string DocumentoUrl { get; private set; }
+        public string DescripcionFunciones { get; private set; }
+        public string Observaciones { get; private set; }
+        public string Estado { get; private set; }
 
-        public decimal Salario { get; set; }
-        public decimal? TarifaHora { get; set; }
-        public DateTime FechaInicio { get; set; }
-        public DateTime? FechaFin { get; set; }
-        public DateTime? FechaFirma { get; set; }
-
-        public string Modalidad { get; set; }
-        public string ModoPago { get; set; }
-        public string DocumentoUrl { get; set; }
-        public string Observaciones { get; set; }
-
-        private readonly AccesoSQLServer _db = new AccesoSQLServer();
-
-        // RN-01: Validar un solo contrato activo
-        public void ValidarContratoUnicoActivo(bool existeContratoActivo)
+        
+        public ContratoLaboral(int trabajadorId, int cargoId, int areaId, int tipoPensionId, int tipoSalarioId,
+            int tipoJornadaId, DateTime fechaInicio, DateTime? fechaFin = null, decimal? salario = null, decimal? tarifaHora = null,
+            string modoPago = "Transferencia", string documentoUrl = null, string descripcion = null, string observaciones = null)
         {
-            if (existeContratoActivo)
-                throw new Exception("El trabajador ya posee un contrato activo.");
+            TrabajadorId = trabajadorId;
+            CargoId = cargoId;
+            AreaId = areaId;
+            TipoPensionId = tipoPensionId;
+            TipoSalarioId = tipoSalarioId;
+            TipoJornadaId = tipoJornadaId;
+            FechaInicio = fechaInicio;
+            FechaFin = fechaFin;
+            Salario = salario;
+            TarifaHora = tarifaHora;
+            ModoPago = modoPago;
+            DocumentoUrl = documentoUrl;
+            DescripcionFunciones = descripcion;
+            Observaciones = observaciones;
+            Estado = "Activo";
+
+            ValidarContrato();
         }
 
-        // RN-02: Validar datos obligatorios
-        public void ValidarCamposObligatorios()
-        {
-            ValidarMontoPositivo("Salario", Salario);
-            if (FechaInicio == DateTime.MinValue)
-                throw new Exception("Debe ingresar una fecha de inicio válida.");
-        }
-
-        // RN-03: Finalizar contrato
+        // Reglas de negocio 
         public void FinalizarContrato(string motivo)
         {
-            if (EstadoContratoId != 1)
-                throw new Exception("Solo los contratos activos pueden ser finalizados.");
+            if (Estado == "Finalizado")
+                throw new InvalidOperationException("El contrato ya está finalizado.");
 
+            if (string.IsNullOrWhiteSpace(motivo))
+                throw new ArgumentException("Debe indicar un motivo de finalización.");
+
+            Estado = "Finalizado";
             FechaFin = DateTime.Now;
             Observaciones = motivo;
-            EstadoContratoId = 4; // 4 = Finalizado
         }
 
-        // RN-04: Eliminación lógica
-        public void MarcarComoInactivo()
+        public void SuspenderContrato(string motivo)
         {
-            EstadoContratoId = 2; // 2 = Inactivo
+            if (Estado == "Suspendido")
+                throw new InvalidOperationException("El contrato ya está suspendido.");
+
+            Estado = "Suspendido";
+            Observaciones = motivo;
         }
 
-        // RN-05: Consultar contratos finalizados (solo lectura)
-        public bool EsSoloLectura()
+        public void ReactivarContrato()
         {
-            return EstadoContratoId == 4; 
+            if (Estado != "Suspendido" && Estado != "Inactivo")
+                throw new InvalidOperationException("Solo se pueden reactivar contratos suspendidos o inactivos.");
+
+            Estado = "Activo";
+            Observaciones = "Contrato reactivado el " + DateTime.Now.ToShortDateString();
         }
 
-        // RN-06: Validar salario mayor a la RMV
-        public void ValidarSalario(decimal rmv)
+        public void ValidarContrato()
         {
-            if (Salario < rmv)
-                throw new Exception($"El salario ({Salario:C}) no puede ser menor que la RMV ({rmv:C}).");
+            if (TrabajadorId <= 0) throw new ArgumentException("Debe asignar un trabajador válido.");
+            if (CargoId <= 0) throw new ArgumentException("Debe asignar un cargo válido.");
+            if (AreaId <= 0) throw new ArgumentException("Debe asignar un área válida.");
+            if (TipoPensionId <= 0) throw new ArgumentException("Debe asignar un sistema de pensión válido.");
+            if (TipoSalarioId <= 0) throw new ArgumentException("Debe asignar un tipo de salario válido.");
+            if (TipoJornadaId <= 0) throw new ArgumentException("Debe asignar un tipo de jornada válido.");
+            if (FechaInicio == DateTime.MinValue) throw new ArgumentException("La fecha de inicio no es válida.");
+
+            if (FechaFin.HasValue && FechaFin <= FechaInicio)
+                throw new ArgumentException("La fecha de fin no puede ser anterior a la fecha de inicio.");
+
+            if (Salario.HasValue && Salario < 0)
+                throw new ArgumentException("El salario no puede ser negativo.");
+
+            if (TarifaHora.HasValue && TarifaHora < 0)
+                throw new ArgumentException("La tarifa por hora no puede ser negativa.");
         }
 
-        // RN-07: Validar que el contrato esté firmado antes del inicio
-        public void ValidarFirma()
+        public override string ToString()
         {
-            if (FechaFirma == null)
-                throw new Exception("El contrato debe estar firmado antes del inicio de labores.");
-            if (FechaFirma > FechaInicio)
-                throw new Exception("La fecha de firma no puede ser posterior al inicio de labores.");
-        }
-
-        // RN-08: Validar conservación del documento firmado
-        public void ValidarDocumentoAdjunto()
-        {
-            if (string.IsNullOrWhiteSpace(DocumentoUrl))
-                throw new Exception("Debe adjuntar el documento firmado del contrato.");
-        }
-
-        // RN-09: Registrar cambios (trazabilidad)
-        public CambioContrato RegistrarCambio(string campo, string valorAnterior, string valorNuevo, string usuario)
-        {
-            return new CambioContrato
-            {
-                ContratoId = ContratoId,
-                CampoModificado = campo,
-                ValorAnterior = valorAnterior,
-                ValorNuevo = valorNuevo,
-                UsuarioResponsable = usuario,
-                FechaCambio = DateTime.Now
-            };
-        }
-
-        // RN-10: Buscar trabajadores (método auxiliar)
-        public string BuscarPorCriterio(string criterio)
-        {
-            return $"SELECT * FROM personal.trabajadores WHERE trabajador_codigo LIKE '%{criterio}%' OR persona_id IN (SELECT persona_id FROM personal.personas WHERE persona_nombre LIKE '%{criterio}%');";
+            return $"Contrato {ContratoId}: Trabajador {TrabajadorId}, Estado: {Estado}, Inicio: {FechaInicio:d}";
         }
     }
 }
+
