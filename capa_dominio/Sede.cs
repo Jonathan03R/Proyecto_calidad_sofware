@@ -13,11 +13,10 @@ namespace capa_dominio
         public string Direccion { get; set; }
         public string Departamento { get; set; }
         public string Provincia { get; set; }
-        public char Estado { get; set; } = 'A';
+        public string Provincia { get; set; }
 
         public List<Area> Areas { get; set; } = new List<Area>();
 
-        public bool EstaActiva() => Estado == 'A';
     }
 }
 

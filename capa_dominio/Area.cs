@@ -12,10 +12,9 @@ namespace capa_dominio
         public string Nombre { get; set; }
         public string Descripcion { get; set; }
         public int SedeId { get; set; }
-        public char Estado { get; set; } = 'A';
 
         public Sede Sede { get; set; }
 
-        public bool EstaActiva() => Estado == 'A';
     }
 }
+    
