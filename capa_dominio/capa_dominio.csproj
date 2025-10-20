@@ -45,7 +45,6 @@
     <Compile Include="CambioContrato.cs" />
     <Compile Include="DominioBase.cs" />
     <Compile Include="ContratoLaboral.cs" />
-    <Compile Include="Empleado.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ValidadorContrato.cs" />
   </ItemGroup>
