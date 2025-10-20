@@ -167,6 +167,7 @@
     <Compile Include="modulo_principal\Areas.cs" />
     <Compile Include="modulo_principal\Cargos.cs" />
     <Compile Include="modulo_principal\Contratos.cs" />
+    <Compile Include="modulo_principal\Sedes.cs" />
     <Compile Include="modulo_principal\SistemasPensiones.cs" />
     <Compile Include="modulo_principal\TiposJornadas.cs" />
     <Compile Include="modulo_principal\TiposSalarios.cs" />

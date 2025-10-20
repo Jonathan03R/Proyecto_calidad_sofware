@@ -55,10 +55,5 @@ namespace capa_dominio
             ctsEstado = "Depositada";
             ctsFechaDeposito = DateTime.Now;
         }
-
-        public string Resumen()
-        {
-            return $"{ctsSemestre} {ctsAnio} - {trabajador.Persona.NombreCompleto()} - S/. {ctsMonto}";
-        }
     }
 }
