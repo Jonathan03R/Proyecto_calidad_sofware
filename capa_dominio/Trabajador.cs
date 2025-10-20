@@ -8,26 +8,35 @@ namespace capa_dominio
 {
     public class Trabajador
     {
-        
         private int trabajadorId;
-        private Persona persona; 
-        private string trabajadorCodigo;
-        private char trabajadorEstado;
-        private DateTime trabajadorFechaCreacion;
-
-        
+        private string codigo;
+        private string nombres;
+        private string apellidos;
+        private string tipoIdentificacion;
+        private string identificacion;
+        private char estado;
+        private List<Contacto> contactos = new List<Contacto>();
+        private List<Contrato> contratos = new List<Contrato>();
+            
         public int TrabajadorId { get => trabajadorId; set => trabajadorId = value; }
-        public Persona Persona { get => persona; set => persona = value; }
-        public string TrabajadorCodigo { get => trabajadorCodigo; set => trabajadorCodigo = value; }
-        public char TrabajadorEstado { get => trabajadorEstado; set => trabajadorEstado = value; }
-        public DateTime TrabajadorFechaCreacion { get => trabajadorFechaCreacion; set => trabajadorFechaCreacion = value; }
 
+        public string Codigo { get => codigo; set => codigo = value; }
 
-        public bool EsInactivo()
-        {
-            return trabajadorEstado == 'I';
-        }
+        public string Nombres { get => nombres; set => nombres = value; }
 
+        public string Apellidos { get => apellidos; set => apellidos = value; }
+
+        public string TipoIdentificacion { get => tipoIdentificacion; set => tipoIdentificacion = value; }
+
+        public string Identificacion { get => identificacion; set => identificacion = value; }
+
+        public char Estado { get => estado; set => estado = value; }
+
+        public List<Contacto> Contactos { get => contactos; set => contactos = value; }
+
+        public List<Contrato> Contratos { get => contratos; set => contratos = value; }
+
+        // Métodos de negocio
+        public bool EstaActivo() => Estado == 'A';
     }
 }
-

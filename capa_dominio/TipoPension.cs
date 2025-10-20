@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace capa_dominio
 {
+/// <summary>
+/// ver si hay proc de tipo pensiones
+/// </summary>
     public class TipoPension
     {
        

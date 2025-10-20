@@ -61,9 +61,5 @@ namespace capa_dominio
                 multiplicadorAplicado = tipoHoraExtra.TiposHorasExtrasMultiplicador;
         }
 
-        public string Resumen()
-        {
-            return $"{horasExtrasFecha.ToShortDateString()} - {horasExtrasCantidad} h ({tipoHoraExtra?.TiposHorasExtrasNombre}) = S/. {Total}";
-        }
     }
 }

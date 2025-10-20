@@ -48,15 +48,5 @@ namespace capa_dominio
         {
             return horasExtra > 0;
         }
-
-        public bool EsRegistroCompleto()
-        {
-            return horaTrabajadaHoraEntrada.HasValue && horaTrabajadaHoraSalida.HasValue;
-        }
-
-        public string Resumen()
-        {
-            return $"{horaTrabajadaFecha.ToShortDateString()} - {horasTrabajadas} h (+{horasExtra} extra, -{horaTrabajadaDescanso} descanso)";
-        }
     }
 }

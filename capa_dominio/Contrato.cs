@@ -73,12 +73,6 @@ namespace capa_dominio
             }
             return contratoTarifaHora ?? 0;
         }
-
-        public string Resumen()
-        {
-            string fin = contratoFechaFin.HasValue ? contratoFechaFin.Value.ToShortDateString() : "Indefinido";
-            return $"Contrato #{contratoId} - {trabajador?.Persona?.NombreCompleto()} ({cargo?.CargoNombre}) del {contratoFechaInicio.ToShortDateString()} al {fin}";
-        }
     }
 }
 

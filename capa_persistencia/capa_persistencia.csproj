@@ -164,9 +164,11 @@
   <ItemGroup>
     <Compile Include="modulo_base\Conexion.cs" />
     <Compile Include="modulo_base\ExcepcionTrabajadoresValido.cs" />
+    <Compile Include="modulo_principal\Adelanto_sueldo.cs" />
     <Compile Include="modulo_principal\Areas.cs" />
     <Compile Include="modulo_principal\Cargos.cs" />
     <Compile Include="modulo_principal\Contratos.cs" />
+    <Compile Include="modulo_principal\Sedes.cs" />
     <Compile Include="modulo_principal\ReporteNomina.cs" />
     <Compile Include="modulo_principal\SistemasPensiones.cs" />
     <Compile Include="modulo_principal\TiposJornadas.cs" />
