@@ -39,5 +39,18 @@ namespace capa_dominio
         {
             return (int)(periodoFechaFin - periodoFechaInicio).TotalDays;
         }
+
+        public bool EsPeriodoIDValido()
+        {
+            return this.periodoId > 0;
+        }
+
+        public bool EsPeriodoActual()
+        {
+            DateTime today = DateTime.Today;
+
+            return today >= this.periodoFechaInicio.Date && today <= this.periodoFechaFin.Date;
+        }
+
     }
 }
