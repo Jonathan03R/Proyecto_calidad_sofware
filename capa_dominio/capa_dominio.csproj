@@ -47,6 +47,14 @@
     <Compile Include="Contacto.cs" />
     <Compile Include="Contrato.cs" />
     <Compile Include="ContratoDetalle.cs" />
+    <Compile Include="CTS.cs" />
+    <Compile Include="DetalleNomina.cs" />
+    <Compile Include="Gratificacion.cs" />
+    <Compile Include="ImpuestoRentaAcumuladoDTO.cs" />
+    <Compile Include="ImpuestoRentaTramo.cs" />
+    <Compile Include="Nomina.cs" />
+    <Compile Include="Parametro.cs" />
+    <Compile Include="Periodo.cs" />
     <Compile Include="Persona.cs" />
     <Compile Include="EstadoContrato.cs" />
     <Compile Include="HorarioTrabajador.cs" />

@@ -11,7 +11,7 @@ namespace capa_dominio
         public int ContratoId { get; set; }
         public int TrabajadorId { get; set; }
         public int CargoId { get; set; }
-        public int TipoPensionId { get; set; }
+        public TipoPension tipoPension { get; set; }
         public int TipoSalarioId { get; set; }
         public int HorarioTrabajoId { get; set; }
         public int EstadoContratoId { get; set; }
