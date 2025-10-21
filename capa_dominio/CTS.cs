@@ -37,6 +37,24 @@ namespace capa_dominio
             return ctsEstado == "Depositada";
         }
 
+        public void CalcularCTS(decimal sueldoBasico, decimal asignacionFamiliar, decimal promedioBonos)
+        {
+            
+            if (CtsDiasTrabajados > 180)
+                CtsDiasTrabajados = 180;
+            if (CtsDiasTrabajados < 0)
+                CtsDiasTrabajados = 0;
+
+            CtsMonto = (sueldoBasico + asignacionFamiliar + promedioBonos) * (CtsDiasTrabajados / 180.0m);
+
+            
+            CtsMonto = Math.Round(CtsMonto, 2);
+
+            
+            CtsEstado = "Calculado";
+            CtsObservaciones = $"CTS {CtsSemestre} {CtsAnio} - {CtsDiasTrabajados} días trabajados";
+        }
     }
 }
+
 

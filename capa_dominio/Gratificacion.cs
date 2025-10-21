@@ -35,7 +35,18 @@ namespace capa_dominio
         {
             return gratificacionEstado == "Pagada";
         }
-        
+
+        public void CalcularGratificacion(decimal sueldoBasico, decimal asignacionFamiliar)
+        {
+            
+            GratificacionMonto = (sueldoBasico + asignacionFamiliar) * (GratificacionMesesTrabajados / 6.0m);
+
+           
+            GratificacionMonto = Math.Round(GratificacionMonto, 2);
+
+            GratificacionEstado = "Calculado";
+            GratificacionObservaciones = $"Gratificación {GratificacionSemestre} {GratificacionAnio} - {GratificacionMesesTrabajados} meses";
+        }
     }
 }
 
