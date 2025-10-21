@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
 using capa_persistencia.modulo_base;
+using capa_dominio;
 using Microsoft.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class Cargo
-    {
-        public int CargoId { get; set; }
-        public string CargoNombre { get; set; }
-    }
 
     public class Cargos
     {
@@ -22,7 +18,7 @@ namespace capa_persistencia.modulo_principal
 
         public List<Cargo> ObtenerCargos()
         {
-            var cargos = new List<Cargo>();
+            var listaCargos = new List<Cargo>();
 
             try
             {
@@ -38,7 +34,7 @@ namespace capa_persistencia.modulo_principal
                             CargoId = reader.GetInt32(reader.GetOrdinal("cargo_id")),
                             CargoNombre = reader.GetString(reader.GetOrdinal("cargo_nombre"))
                         };
-                        cargos.Add(cargo);
+                        listaCargos.Add(cargo);
                     }
                 }
             }
@@ -51,7 +47,7 @@ namespace capa_persistencia.modulo_principal
                 _accesoSQL.CerrarConexion();
             }
 
-            return cargos;
+            return listaCargos;
         }
     }
 }

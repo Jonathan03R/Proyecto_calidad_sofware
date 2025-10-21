@@ -8,7 +8,7 @@ namespace capa_dominio
 {
     public class Sede
     {
-        
+        public char SedeEstado;
         private int sedeId;
         private string sedeNombre;
         private string sedeDireccion;

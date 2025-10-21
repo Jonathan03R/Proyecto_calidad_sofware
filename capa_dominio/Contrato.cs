@@ -8,7 +8,7 @@ namespace capa_dominio
 {
     public class Contrato
     {
-        
+        // 🔹 Campos privados (encapsulados)
         private int contratoId;
         private Trabajador trabajador;
         private Cargo cargo;
@@ -28,7 +28,7 @@ namespace capa_dominio
         private string contratoObservaciones;
         private DateTime contratoFechaCreacion;
 
-        
+        // 🔹 Propiedades públicas (con acceso controlado)
         public int ContratoId { get => contratoId; set => contratoId = value; }
         public Trabajador Trabajador { get => trabajador; set => trabajador = value; }
         public Cargo Cargo { get => cargo; set => cargo = value; }
@@ -41,14 +41,23 @@ namespace capa_dominio
         public DateTime? ContratoFechaFin { get => contratoFechaFin; set => contratoFechaFin = value; }
         public int? ContratoHorasSemanales { get => contratoHorasSemanales; set => contratoHorasSemanales = value; }
         public decimal? ContratoTarifaHora { get => contratoTarifaHora; set => contratoTarifaHora = value; }
-        public decimal? ContratoSalario { get => contratoSalario; set => contratoSalario = value; }
+        public decimal? ContratoSalario
+        {
+            get => contratoSalario;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentException("El salario no puede ser negativo");
+                contratoSalario = value;
+            }
+        }
         public string ContratoModoPago { get => contratoModoPago; set => contratoModoPago = value; }
         public string ContratoDocumentoUrl { get => contratoDocumentoUrl; set => contratoDocumentoUrl = value; }
         public string ContratoDescripcionFunciones { get => contratoDescripcionFunciones; set => contratoDescripcionFunciones = value; }
         public string ContratoObservaciones { get => contratoObservaciones; set => contratoObservaciones = value; }
         public DateTime ContratoFechaCreacion { get => contratoFechaCreacion; set => contratoFechaCreacion = value; }
 
-        
+        // 🔹 Métodos de lógica de dominio
         public bool EstaVigente()
         {
             return !contratoFechaFin.HasValue || contratoFechaFin.Value >= DateTime.Now;
@@ -73,6 +82,10 @@ namespace capa_dominio
             }
             return contratoTarifaHora ?? 0;
         }
+
+        public override string ToString()
+        {
+            return $"Contrato #{contratoId} - {cargo?.CargoNombre ?? "Sin cargo"} ({trabajador?.TrabajadorNombreCompleto ?? "Sin trabajador"})";
+        }
     }
 }
-

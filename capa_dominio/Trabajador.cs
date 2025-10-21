@@ -35,6 +35,7 @@ namespace capa_dominio
         public List<Contacto> Contactos { get => contactos; set => contactos = value; }
 
         public List<Contrato> Contratos { get => contratos; set => contratos = value; }
+        public string TrabajadorNombreCompleto { get; internal set; }
 
         // Métodos de negocio
         public bool EstaActivo() => Estado == 'A';
