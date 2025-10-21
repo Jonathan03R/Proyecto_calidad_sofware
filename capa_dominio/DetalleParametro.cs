@@ -39,10 +39,5 @@ namespace capa_dominio
             return detalleParametroValor > 0;
         }
 
-        public string DescripcionCompleta()
-        {
-            string trabajadorNombre = trabajador != null ? trabajador.Persona.NombreCompleto() : "General";
-            return $"{parametro.ParametroNombre} ({parametro.ParametroCodigo}) - {trabajadorNombre}: {detalleParametroValor}";
-        }
     }
 }

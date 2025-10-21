@@ -38,25 +38,4 @@ namespace capa_dominio
         
     }
 }
-/*
-
-        public void CalcularMonto(decimal sueldoBasico, decimal asignacionFamiliar)
-        {
-            // RN: Gratificación proporcional a los meses trabajados (hasta 6 por semestre)
-            gratificacionMonto = (sueldoBasico + asignacionFamiliar) * (gratificacionMesesTrabajados / 6m);
-            gratificacionFechaCalculo = DateTime.Now;
-        }
-
-        public void RegistrarPago()
-        {
-            gratificacionEstado = "Pagada";
-            gratificacionFechaPago = DateTime.Now;
-        }
-
-        public string Resumen()
-        {
-            return $"{gratificacionSemestre} {gratificacionAnio} - {trabajador.Persona.NombreCompleto()} - S/. {gratificacionMonto}";
-        }
-    }
-}
 

@@ -54,9 +54,9 @@ namespace capa_dominio
                 return;
 
             nominaTotalEmpleados = detalles.Count;
-            nominaTotalBruto = detalles.Sum(d => d.ObtenerTotalIngresos());
-            nominaTotalDescuentos = detalles.Sum(d => d.ObtenerTotalDescuentos());
-            nominaTotalNeto = detalles.Sum(d => d.ObtenerNetoPagar());
+            nominaTotalBruto = detalles.Sum(d => d.TotalIngresos);
+            nominaTotalDescuentos = detalles.Sum(d => d.TotalDescuentos);
+            nominaTotalNeto = detalles.Sum(d => d.RemuneracionBruta);
         }
 
         public void MarcarComoCancelada(string observacion)

@@ -171,7 +171,7 @@ namespace capa_dominio
                 descuentoAFP = 0;
                 return false;
             }
-            if (Trabajador == null || contrato.tipoPension == null)
+            if (Trabajador == null || contrato.TipoPension == null)
             {
                 tieneErrores = true;
                 mensajeError = "Trabajador o TipoPension no asignado.";
@@ -180,7 +180,7 @@ namespace capa_dominio
                 return false;
             }
 
-            var tp = Contrato.tipoPension;
+            var tp = Contrato.TipoPension;
             if (string.Equals(tp.Entidad, "ONP", StringComparison.OrdinalIgnoreCase))
             {
                 // ONP: 13%

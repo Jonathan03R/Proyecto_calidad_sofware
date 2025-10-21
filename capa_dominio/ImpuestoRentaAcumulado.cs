@@ -53,9 +53,5 @@ namespace capa_dominio
             impuestoRentaFechaUltimaActualizacion = DateTime.Now;
         }
 
-        public string Resumen()
-        {
-            return $"{impuestoRentaAcumuladoAnio} - {trabajador.Persona.NombreCompleto()} | Base: S/. {impuestoRentaBaseImponibleAcumulada} | Retenido: S/. {impuestoRentaRetenidoAcumulado}";
-        }
     }
 }
