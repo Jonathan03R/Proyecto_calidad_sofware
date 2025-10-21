@@ -8,7 +8,6 @@ namespace capa_dominio
 {
     public class Periodo
     {
-        
         private int periodoId;
         private string periodoNombre;
         private TipoSalario tipoSalario; 
@@ -54,3 +53,4 @@ namespace capa_dominio
 
     }
 }
+

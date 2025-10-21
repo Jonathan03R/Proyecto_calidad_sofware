@@ -51,6 +51,9 @@
     <Compile Include="DetalleNomina.cs" />
     <Compile Include="DetalleParametro.cs" />
     <Compile Include="Contrato.cs" />
+    <Compile Include="ContratoDetalle.cs" />
+    <Compile Include="ImpuestoRentaAcumuladoDTO.cs" />
+    <Compile Include="Persona.cs" />
     <Compile Include="EstadoContrato.cs" />
     <Compile Include="Falta.cs" />
     <Compile Include="Gratificacion.cs" />

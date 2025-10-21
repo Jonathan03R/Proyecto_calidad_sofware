@@ -8,50 +8,25 @@ namespace capa_dominio
 {
     public class ImpuestoRentaTramo
     {
-       
         private int impuestoRentaTramoId;
-        private int impuestoRentaTramoAnioVigencia;
-        private int impuestoRentaTramoNumero;
-        private decimal impuestoRentaTramoLimiteInferiorUIT;
-        private decimal impuestoRentaTramoLimiteSuperiorUIT;
-        private decimal impuestoRentaTramoLimiteInferiorSoles;
-        private decimal impuestoRentaTramoLimiteSuperiorSoles;
-        private decimal impuestoRentaTramoTasaPorcentaje;
-        private decimal impuestoRentaTramoAcumuladoAnteriorSoles;
+        private int anioVigencia;
+        private int numeroTramo;
+        private decimal limiteInferiorUIT;
+        private decimal limiteSuperiorUIT;
+        private decimal tasaPorcentaje;
 
-        
         public int ImpuestoRentaTramoId { get => impuestoRentaTramoId; set => impuestoRentaTramoId = value; }
-        public int ImpuestoRentaTramoAnioVigencia { get => impuestoRentaTramoAnioVigencia; set => impuestoRentaTramoAnioVigencia = value; }
-        public int ImpuestoRentaTramoNumero { get => impuestoRentaTramoNumero; set => impuestoRentaTramoNumero = value; }
-        public decimal ImpuestoRentaTramoLimiteInferiorUIT { get => impuestoRentaTramoLimiteInferiorUIT; set => impuestoRentaTramoLimiteInferiorUIT = value; }
-        public decimal ImpuestoRentaTramoLimiteSuperiorUIT { get => impuestoRentaTramoLimiteSuperiorUIT; set => impuestoRentaTramoLimiteSuperiorUIT = value; }
-        public decimal ImpuestoRentaTramoLimiteInferiorSoles { get => impuestoRentaTramoLimiteInferiorSoles; set => impuestoRentaTramoLimiteInferiorSoles = value; }
-        public decimal ImpuestoRentaTramoLimiteSuperiorSoles { get => impuestoRentaTramoLimiteSuperiorSoles; set => impuestoRentaTramoLimiteSuperiorSoles = value; }
-        public decimal ImpuestoRentaTramoTasaPorcentaje { get => impuestoRentaTramoTasaPorcentaje; set => impuestoRentaTramoTasaPorcentaje = value; }
-        public decimal ImpuestoRentaTramoAcumuladoAnteriorSoles { get => impuestoRentaTramoAcumuladoAnteriorSoles; set => impuestoRentaTramoAcumuladoAnteriorSoles = value; }
+        public int AnioVigencia { get => anioVigencia; set => anioVigencia = value; }
+        public int NumeroTramo { get => numeroTramo; set => numeroTramo = value; }
+        public decimal LimiteInferiorUIT { get => limiteInferiorUIT; set => limiteInferiorUIT = value; }
+        public decimal LimiteSuperiorUIT { get => limiteSuperiorUIT; set => limiteSuperiorUIT = value; }
+        public decimal TasaPorcentaje { get => tasaPorcentaje; set => tasaPorcentaje = value; }
 
-       
-        public bool CorrespondeAlMonto(decimal baseImponible)
+        public bool CorrespondeAlMonto(decimal baseImponibleUIT)
         {
-            return baseImponible >= impuestoRentaTramoLimiteInferiorSoles &&
-                   baseImponible <= impuestoRentaTramoLimiteSuperiorSoles;
+            return baseImponibleUIT >= limiteInferiorUIT && baseImponibleUIT <= limiteSuperiorUIT;
         }
 
-        public decimal CalcularImpuesto(decimal baseImponible)
-        {
-            if (baseImponible < impuestoRentaTramoLimiteInferiorSoles)
-                return 0;
 
-            decimal exceso = Math.Min(baseImponible, impuestoRentaTramoLimiteSuperiorSoles) - impuestoRentaTramoLimiteInferiorSoles;
-            decimal impuesto = (exceso * (impuestoRentaTramoTasaPorcentaje / 100)) + impuestoRentaTramoAcumuladoAnteriorSoles;
-
-            return Math.Round(impuesto, 2);
-        }
-
-        public string Resumen()
-        {
-            return $"Tramo {impuestoRentaTramoNumero}: {impuestoRentaTramoLimiteInferiorSoles} - {impuestoRentaTramoLimiteSuperiorSoles} " +
-                   $"({impuestoRentaTramoTasaPorcentaje}%)";
-        }
     }
 }

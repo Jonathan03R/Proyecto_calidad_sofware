@@ -6,46 +6,21 @@ using System.Threading.Tasks;
 
 namespace capa_dominio
 {
-/// <summary>
-/// ver si hay proc de tipo pensiones
-/// </summary>
     public class TipoPension
     {
-       
-        private int tipoPensionId;
-        private string tipoPensionNombre;
-        private string tipoPensionEntidad;
-        private char tipoPensionEstado;
-        private DateTime tipoPensionFechaCreacion;
+        public int TipoPensionId { get; set; }
+        public string Nombre { get; set; }
+        public string Entidad { get; set; } // "ONP" o "AFP"
+        public char Estado { get; set; } = 'A';
+        public DateTime FechaCreacion { get; set; }
 
-        
-        public int TipoPensionId { get => tipoPensionId; set => tipoPensionId = value; }
-        public string TipoPensionNombre { get => tipoPensionNombre; set => tipoPensionNombre = value; }
-        public string TipoPensionEntidad { get => tipoPensionEntidad; set => tipoPensionEntidad = value; }
-        public char TipoPensionEstado { get => tipoPensionEstado; set => tipoPensionEstado = value; }
-        public DateTime TipoPensionFechaCreacion { get => tipoPensionFechaCreacion; set => tipoPensionFechaCreacion = value; }
+        // Parámetros para AFP (si aplica)
+        public decimal PorcentajeComisionFlujo { get; set; } = 0m;  // e.g. 0.0175m
+        public decimal PorcentajeComisionSaldo { get; set; } = 0m;  // e.g. 0.00m si no aplica
+        public decimal PorcentajeSeguro { get; set; } = 0m;         // e.g. 0.0055m
 
-        
-        public bool EstaActiva()
-        {
-            return tipoPensionEstado == 'A' || tipoPensionEstado == 'a';
-        }
+        public bool EstaActivo() => Estado == 'A';
 
-        public void Activar()
-        {
-            tipoPensionEstado = 'A';
-        }
-
-        public void Desactivar()
-        {
-            tipoPensionEstado = 'I';
-        }
-
-        public string Resumen()
-        {
-            string estado = EstaActiva() ? "Activa" : "Inactiva";
-            return $"{tipoPensionNombre} - {tipoPensionEntidad} ({estado})";
-        }
 
     }
 }

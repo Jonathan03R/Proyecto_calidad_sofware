@@ -8,7 +8,7 @@ namespace capa_dominio
 {
     public class Contrato
     {
-        // 🔹 Campos privados (encapsulados)
+
         private int contratoId;
         private Trabajador trabajador;
         private Cargo cargo;
