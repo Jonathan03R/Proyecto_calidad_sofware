@@ -8,6 +8,7 @@ namespace capa_dominio
 {
     public class DetalleNomina
     {
+
         private int detalleNominaId;
         private Nomina nomina;
         private Trabajador trabajador;
@@ -26,6 +27,7 @@ namespace capa_dominio
         private decimal descuentoTardanzas;
         private decimal descuentoFaltas;
         private decimal descuentoAdelantos;
+
         private decimal totalIngresos;
         private decimal totalDescuentos;
         private decimal netoPagar;
@@ -36,6 +38,7 @@ namespace capa_dominio
         public int DetalleNominaId { get => detalleNominaId; set => detalleNominaId = value; }
         public Nomina Nomina { get => nomina; set => nomina = value; }
         public Trabajador Trabajador { get => trabajador; set => trabajador = value; }
+
 
         public Contrato Contrato { get => contrato; set => contrato = value; }
         public decimal SueldoBasico { get => sueldoBasico; set => sueldoBasico = value; }
@@ -463,7 +466,6 @@ namespace capa_dominio
             mensajeError = string.Empty;
             return true;
         }
-
 
     }
 }

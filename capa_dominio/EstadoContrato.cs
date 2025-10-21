@@ -8,11 +8,47 @@ namespace capa_dominio
 {
     public class EstadoContrato
     {
-        public int EstadoContratoId { get; set; }
-        public string Nombre { get; set; }
-        public char Estado { get; set; } = 'A';
-        public DateTime FechaCreacion { get; set; }
+        private int estadoContratoId;
+        private string estadoContratoNombre;
+        private char estadoContratoEstado;
+        private DateTime estadoContratoFechaCreacion;
 
-        public bool EstaActivo() => Estado == 'A';
+        
+        public int EstadoContratoId { get => estadoContratoId; set => estadoContratoId = value; }
+        public string EstadoContratoNombre { get => estadoContratoNombre; set => estadoContratoNombre = value; }
+        public char EstadoContratoEstado { get => estadoContratoEstado; set => estadoContratoEstado = value; }
+        public DateTime EstadoContratoFechaCreacion { get => estadoContratoFechaCreacion; set => estadoContratoFechaCreacion = value; }
+
+       
+        public bool EstaActivo()
+        {
+            return estadoContratoEstado == 'A' || estadoContratoEstado == 'a';
+        }
+
+        public void Activar()
+        {
+            estadoContratoEstado = 'A';
+        }
+
+        public void Desactivar()
+        {
+            estadoContratoEstado = 'I';
+        }
+
+        public bool EsVigente()
+        {
+            return estadoContratoNombre.ToLower().Contains("vigente") || estadoContratoNombre.ToLower().Contains("activo");
+        }
+
+        public bool EsFinalizado()
+        {
+            return estadoContratoNombre.ToLower().Contains("finalizado") || estadoContratoNombre.ToLower().Contains("concluido");
+        }
+
+        public string Resumen()
+        {
+            string estado = EstaActivo() ? "Activo" : "Inactivo";
+            return $"{estadoContratoNombre} ({estado})";
+        }
     }
 }

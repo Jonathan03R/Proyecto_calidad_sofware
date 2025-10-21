@@ -28,6 +28,5 @@ namespace capa_dominio
         }
 
 
-        
     }
 }

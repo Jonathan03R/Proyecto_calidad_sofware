@@ -19,6 +19,7 @@ namespace capa_dominio
         public string ParametroCodigo { get => parametroCodigo; set => parametroCodigo = value; }
         public string ParametroNombre { get => parametroNombre; set => parametroNombre = value; }
         public decimal ParametroValor { get => parametroValor; set => parametroValor = value; }
+
         public DateTime ParametroFechaVigencia { get => parametroFechaVigencia; set => parametroFechaVigencia = value; }
         public string ParametroEstado { get => parametroEstado; set => parametroEstado = value; }
 
@@ -28,3 +29,4 @@ namespace capa_dominio
         }
     }
 }
+

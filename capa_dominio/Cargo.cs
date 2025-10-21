@@ -8,11 +8,20 @@ namespace capa_dominio
 {
     public class Cargo
     {
-        public int CargoId { get; set; }
-        public string Nombre { get; set; }
-        public char Estado { get; set; } = 'A';
-        public DateTime FechaCreacion { get; set; }
+        private int cargoId;
+        private string cargoNombre;
 
-        public bool EstaActivo() => Estado == 'A';
+        public int CargoId
+        {
+            get => cargoId;
+            set => cargoId = value;
+        }
+
+        public string CargoNombre
+        {
+            get => cargoNombre;
+            set => cargoNombre = value;
+        }
     }
 }
+

@@ -8,28 +8,84 @@ namespace capa_dominio
 {
     public class Contrato
     {
-        public int ContratoId { get; set; }
-        public int TrabajadorId { get; set; }
-        public int CargoId { get; set; }
-        public TipoPension tipoPension { get; set; }
-        public int TipoSalarioId { get; set; }
-        public int HorarioTrabajoId { get; set; }
-        public int EstadoContratoId { get; set; }
-        public int SedeId { get; set; }
-        public DateTime FechaInicio { get; set; }
-        public DateTime FechaFin { get; set; }
-        public decimal Salario { get; set; }
-        public string ModoPago { get; set; }
-        public string DocumentoUrl { get; set; }
-        public string DescripcionFunciones { get; set; }
-        public string Observaciones { get; set; }
-        public char Estado { get; set; } = 'A';
-        public DateTime FechaCreacion { get; set; }
 
-        // ✅ Reglas reales del negocio
-        public bool FechasValidas() => FechaFin >= FechaInicio;
-        public bool EstaActivo() => Estado == 'A';
-        public bool EstaSuspendido() => Estado == 'S';
-        public bool EstaInactivo() => Estado == 'I';
+        private int contratoId;
+        private Trabajador trabajador;
+        private Cargo cargo;
+        private Area area;
+        private TipoPension tipoPension;
+        private TipoSalario tipoSalario;
+        private TipoJornada tipoJornada;
+        private EstadoContrato estadoContrato;
+        private DateTime contratoFechaInicio;
+        private DateTime? contratoFechaFin;
+        private int? contratoHorasSemanales;
+        private decimal? contratoTarifaHora;
+        private decimal? contratoSalario;
+        private string contratoModoPago;
+        private string contratoDocumentoUrl;
+        private string contratoDescripcionFunciones;
+        private string contratoObservaciones;
+        private DateTime contratoFechaCreacion;
+
+        // 🔹 Propiedades públicas (con acceso controlado)
+        public int ContratoId { get => contratoId; set => contratoId = value; }
+        public Trabajador Trabajador { get => trabajador; set => trabajador = value; }
+        public Cargo Cargo { get => cargo; set => cargo = value; }
+        public Area Area { get => area; set => area = value; }
+        public TipoPension TipoPension { get => tipoPension; set => tipoPension = value; }
+        public TipoSalario TipoSalario { get => tipoSalario; set => tipoSalario = value; }
+        public TipoJornada TipoJornada { get => tipoJornada; set => tipoJornada = value; }
+        public EstadoContrato EstadoContrato { get => estadoContrato; set => estadoContrato = value; }
+        public DateTime ContratoFechaInicio { get => contratoFechaInicio; set => contratoFechaInicio = value; }
+        public DateTime? ContratoFechaFin { get => contratoFechaFin; set => contratoFechaFin = value; }
+        public int? ContratoHorasSemanales { get => contratoHorasSemanales; set => contratoHorasSemanales = value; }
+        public decimal? ContratoTarifaHora { get => contratoTarifaHora; set => contratoTarifaHora = value; }
+        public decimal? ContratoSalario
+        {
+            get => contratoSalario;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentException("El salario no puede ser negativo");
+                contratoSalario = value;
+            }
+        }
+        public string ContratoModoPago { get => contratoModoPago; set => contratoModoPago = value; }
+        public string ContratoDocumentoUrl { get => contratoDocumentoUrl; set => contratoDocumentoUrl = value; }
+        public string ContratoDescripcionFunciones { get => contratoDescripcionFunciones; set => contratoDescripcionFunciones = value; }
+        public string ContratoObservaciones { get => contratoObservaciones; set => contratoObservaciones = value; }
+        public DateTime ContratoFechaCreacion { get => contratoFechaCreacion; set => contratoFechaCreacion = value; }
+
+        // 🔹 Métodos de lógica de dominio
+        public bool EstaVigente()
+        {
+            return !contratoFechaFin.HasValue || contratoFechaFin.Value >= DateTime.Now;
+        }
+
+        public bool EsPorHora()
+        {
+            return tipoSalario != null && tipoSalario.TipoSalarioNombre.ToLower().Contains("hora");
+        }
+
+        public bool EsDeJornadaCompleta()
+        {
+            return tipoJornada != null && tipoJornada.TipoJornadaNombre.ToLower().Contains("completa");
+        }
+
+        public decimal CalcularValorHora()
+        {
+            if (contratoSalario.HasValue && contratoHorasSemanales.HasValue && contratoHorasSemanales > 0)
+            {
+                // Aproximadamente 4.33 semanas por mes
+                return Math.Round((contratoSalario.Value / (contratoHorasSemanales.Value * 4.33m)), 2);
+            }
+            return contratoTarifaHora ?? 0;
+        }
+
+        public override string ToString()
+        {
+            return $"Contrato #{contratoId} - {cargo?.CargoNombre ?? "Sin cargo"} ({trabajador?.TrabajadorNombreCompleto ?? "Sin trabajador"})";
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +8,24 @@ namespace capa_dominio
 {
     public class Area
     {
-        public int AreaId { get; set; }
-        public string Nombre { get; set; }
-        public string Descripcion { get; set; }
-        public int SedeId { get; set; }
-        public char Estado { get; set; } = 'A';
-        public DateTime FechaCreacion { get; set; }
+        
+        private int areaId;
+        private string areaNombre;
+        private string areaDescripcion;
+        private string sedeNombre; 
+        private string sedeDireccion; 
+        private string sedeDepartamento; 
+        private string sedeProvincia; 
 
-        public bool EstaActivo() => Estado == 'A';
+        
+        public int AreaId { get => areaId; set => areaId = value; }
+        public string AreaNombre { get => areaNombre; set => areaNombre = value; }
+        public string AreaDescripcion { get => areaDescripcion; set => areaDescripcion = value; }
+        public string SedeNombre { get => sedeNombre; set => sedeNombre = value; } 
+        public string SedeDireccion { get => sedeDireccion; set => sedeDireccion = value; } 
+        public string SedeDepartamento { get => sedeDepartamento; set => sedeDepartamento = value; } 
+        public string SedeProvincia { get => sedeProvincia; set => sedeProvincia = value; } 
+
+
     }
 }

@@ -8,7 +8,6 @@ namespace capa_dominio
 {
     public class CTS
     {
-
         private int ctsId;
         private Trabajador trabajador;
         private string ctsSemestre;
@@ -32,9 +31,25 @@ namespace capa_dominio
         {
             return ctsEstado == "Pendiente";
         }
+
         public bool EstaDepositada()
         {
             return ctsEstado == "Depositada";
         }
+
+
+        public void CalcularMonto(decimal sueldoBasico, decimal asignacionFamiliar, decimal promedioBonos)
+        {
+            // RN: La CTS se calcula proporcionalmente a los días trabajados (180 días = semestre completo)
+            ctsMonto = (sueldoBasico + asignacionFamiliar + promedioBonos) * (ctsDiasTrabajados / 180m);
+            ctsFechaCalculo = DateTime.Now;
+        }
+
+        public void RegistrarDeposito()
+        {
+            ctsEstado = "Depositada";
+            ctsFechaDeposito = DateTime.Now;
+        }
     }
 }
+

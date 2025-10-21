@@ -21,5 +21,6 @@ namespace capa_dominio
 
         public bool EstaActivo() => Estado == 'A';
 
+
     }
 }
