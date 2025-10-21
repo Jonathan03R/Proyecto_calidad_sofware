@@ -40,7 +40,7 @@ namespace capa_persistencia.modulo_principal
                                 SedeDireccion = reader.GetString(reader.GetOrdinal("sede_direccion")),
                                 SedeDepartamento = reader.GetString(reader.GetOrdinal("sede_departamento")),
                                 SedeProvincia = reader.GetString(reader.GetOrdinal("sede_provincia")),
-                                SedeEstado = 'A' // assuming active since filtered
+                                SedeEstado = 'A' 
                             };
                             sedeDict[sedeId] = sede;
                             sedes.Add(sede);
