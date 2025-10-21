@@ -163,11 +163,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="modulo_base\Conexion.cs" />
+    <Compile Include="modulo_base\ExcepcionNomina.cs" />
     <Compile Include="modulo_base\ExcepcionTrabajadoresValido.cs" />
     <Compile Include="modulo_principal\Adelanto_sueldo.cs" />
     <Compile Include="modulo_principal\Areas.cs" />
     <Compile Include="modulo_principal\Cargos.cs" />
     <Compile Include="modulo_principal\Contratos.cs" />
+    <Compile Include="modulo_principal\DetallesNomina.cs" />
+    <Compile Include="modulo_principal\ImpuestoRenta.cs" />
+    <Compile Include="modulo_principal\Nominas.cs" />
+    <Compile Include="modulo_principal\Parametros.cs" />
     <Compile Include="modulo_principal\Sedes.cs" />
     <Compile Include="modulo_principal\ReporteNomina.cs" />
     <Compile Include="modulo_principal\SistemasPensiones.cs" />
