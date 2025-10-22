@@ -8,6 +8,7 @@ namespace capa_dominio
 {
     public class Trabajador
     {
+        public static int trabajadorID;
         private int trabajadorId;
         private string codigo;
         private string nombres;

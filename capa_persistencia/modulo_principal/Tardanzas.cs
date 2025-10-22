@@ -1,23 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using capa_dominio;
 using capa_persistencia.modulo_base;
 using Microsoft.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
     // DTO para nomina.tardanzas
-    public class Tardanza
-    {
-        public int TardanzaId { get; set; }
-        public int TrabajadorId { get; set; }
-        public DateTime TardanzaFecha { get; set; }
-        public int TardanzaMinutos { get; set; }               
-        public decimal TardanzaHoras { get; set; }             
-        public decimal TardanzaValorHoraNormal { get; set; }   
-        public decimal TardanzaValorDescuento { get; set; }      
-        public string TardanzaObservaciones { get; set; }     
-    }
-
     public class Tardanzas
     {
         private readonly AccesoSQLServer _accesoSQL;
@@ -46,7 +35,10 @@ namespace capa_persistencia.modulo_principal
                         var t = new Tardanza
                         {
                             TardanzaId = reader.GetInt32(reader.GetOrdinal("tardanza_id")),
-                            TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id")),
+                            Trabajador = new Trabajador
+                            {
+                                TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id"))
+                            },
                             TardanzaFecha = reader.GetDateTime(reader.GetOrdinal("tardanza_fecha")),
                             TardanzaMinutos = reader.GetInt32(reader.GetOrdinal("tardanza_minutos")),
                             TardanzaHoras = reader.GetDecimal(reader.GetOrdinal("tardanza_horas")),

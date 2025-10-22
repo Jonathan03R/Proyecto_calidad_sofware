@@ -1,23 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using capa_dominio;
 using capa_persistencia.modulo_base;
 using Microsoft.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
-    // DTO tipado para nomina.faltas
-    public class Falta
-    {
-        public int FaltaId { get; set; }
-        public int TrabajadorId { get; set; }
-        public DateTime FaltaFecha { get; set; }
-        public string FaltaTipo { get; set; }
-        public decimal? FaltaDias { get; set; }
-        public decimal FaltaValorDiaNormal { get; set; }
-        public decimal FaltaValorDescuento { get; set; }
-        public string FaltaObservaciones { get; set; }
-        public string FaltaDocumentoSoporte { get; set; }
-    }
 
     public class Faltas
     {
@@ -49,10 +37,13 @@ namespace capa_persistencia.modulo_principal
                         var f = new Falta
                         {
                             FaltaId = reader.GetInt32(reader.GetOrdinal("falta_id")),
-                            TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id")),
+                            Trabajador = new Trabajador
+                            {
+                                TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id"))
+                            },
                             FaltaFecha = reader.GetDateTime(reader.GetOrdinal("falta_fecha")),
                             FaltaTipo = SafeGetString(reader, "falta_tipo"),
-                            FaltaDias = SafeGetDecimal(reader, "falta_dias"),
+                            FaltaDias = SafeGetDecimalOrDefault(reader, "falta_dias", 0m),
                             FaltaValorDiaNormal = reader.GetDecimal(reader.GetOrdinal("falta_valor_dia_normal")),
                             FaltaValorDescuento = reader.GetDecimal(reader.GetOrdinal("falta_valor_descuento")),
                             FaltaObservaciones = SafeGetString(reader, "falta_observaciones"),
@@ -74,7 +65,7 @@ namespace capa_persistencia.modulo_principal
             return lista;
         }
         // -----------------------
-        // Helpers para NULL-safe
+        // Helpers NULL-safe
         // -----------------------
         private static string SafeGetString(SqlDataReader r, string col)
         {
@@ -82,11 +73,11 @@ namespace capa_persistencia.modulo_principal
             return r.IsDBNull(i) ? null : r.GetString(i);
         }
 
-        private static decimal? SafeGetDecimal(SqlDataReader r, string col)
+        // Devuelve decimal con valor por defecto si la columna es NULL
+        private static decimal SafeGetDecimalOrDefault(SqlDataReader r, string col, decimal defaultValue)
         {
             int i = r.GetOrdinal(col);
-            return r.IsDBNull(i) ? (decimal?)null : r.GetDecimal(i);
+            return r.IsDBNull(i) ? defaultValue : r.GetDecimal(i);
         }
-    
-}
+    }
 }

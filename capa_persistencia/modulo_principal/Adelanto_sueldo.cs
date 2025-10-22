@@ -4,64 +4,70 @@ using capa_persistencia.modulo_base;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using capa_dominio;                       // AdelantoSueldo, Trabajador
+using capa_persistencia.modulo_base;     // AccesoSQLServer
+using Microsoft.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class Adelanto_sueldo
+    public class Adelantos_Repositorio
     {
-        private readonly AccesoSQLServer _accesoSQL;
+        private readonly AccesoSQLServer _accesoSQL = new AccesoSQLServer();
 
-        public Adelanto_sueldo()
+        public List<AdelantoSueldo> ObtenerAdelantosPorTrabajador(int trabajadorId, DateTime fechaInicio, DateTime fechaFin)
         {
-            _accesoSQL = new AccesoSQLServer();
-        }
-
-        /// <summary>
-        /// Inserta un adelanto de sueldo para un trabajador
-        /// </summary>
-        /// <param name="adelanto"></param>
-        /// <exception cref="ExcepcionTrabajador"></exception>
-        public void InsertarAdelantoSueldo(AdelantoSueldoDTO adelanto)
-        {
+            var lista = new List<AdelantoSueldo>();
             try
             {
                 _accesoSQL.AbrirConexion();
-                var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_insertar_adelanto_sueldo");
 
-                comando.Parameters.AddWithValue("@trabajador_id", adelanto.TrabajadorId);
-                comando.Parameters.AddWithValue("@adelanto_monto", adelanto.AdelantoMonto);
-                comando.Parameters.AddWithValue("@adelanto_fecha", adelanto.AdelantoFecha);
-                comando.Parameters.AddWithValue("@adelanto_motivo", adelanto.AdelantoMotivo);
-                comando.Parameters.AddWithValue("@adelanto_observaciones", adelanto.AdelantoObservaciones ?? (object)DBNull.Value);
+                var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("nomina.proc_obtener_adelantos_por_trabajador");
+                cmd.Parameters.AddWithValue("@trabajador_id", trabajadorId);
+                cmd.Parameters.AddWithValue("@fecha_inicio", fechaInicio);
+                cmd.Parameters.AddWithValue("@fecha_fin", fechaFin);
 
-                comando.ExecuteNonQuery();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var adelanto = new AdelantoSueldo
+                        {
+                            AdelantoId = reader.GetInt32(reader.GetOrdinal("adelanto_id")),
+
+                            Trabajador = new Trabajador
+                            {
+                                TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id"))
+                            },
+
+                            AdelantoMonto = reader.GetDecimal(reader.GetOrdinal("adelanto_monto")),
+                            AdelantoFecha = reader.GetDateTime(reader.GetOrdinal("adelanto_fecha")),
+                            AdelantoMotivo = SafeGetString(reader, "adelanto_motivo"),
+                            AdelantoObservaciones = SafeGetString(reader, "adelanto_observaciones")
+                        };
+
+                        lista.Add(adelanto);
+                    }
+                }
+            }
+            catch
+            {
+                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CONSULTA);
             }
             finally
             {
                 _accesoSQL.CerrarConexion();
             }
+
+            return lista;
         }
 
-
-        public void ObtenerAdelatosSueldo()
+        // -----------------------------
+        // Helpers seguros para NULL
+        // -----------------------------
+        private static string SafeGetString(SqlDataReader r, string col)
         {
-            try
-            {
-                _accesoSQL.AbrirConexion();
-
-            }
-            catch (Exception)
-            {
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CONSULTA);
-            }
-            finally
-            {
-                _accesoSQL.CerrarConexion();
-            }
+            int i = r.GetOrdinal(col);
+            return r.IsDBNull(i) ? null : r.GetString(i);
         }
 
         /// <summary>
