@@ -47,7 +47,6 @@
     <Compile Include="CambioContrato.cs" />
     <Compile Include="Cargo.cs" />
     <Compile Include="Contacto.cs" />
-    <Compile Include="CTS.cs" />
     <Compile Include="DetalleNomina.cs" />
     <Compile Include="DetalleParametro.cs" />
     <Compile Include="Contrato.cs" />
@@ -58,7 +57,6 @@
     <Compile Include="ImpuestoRentaAcumuladoDTO.cs" />
     <Compile Include="EstadoContrato.cs" />
     <Compile Include="Falta.cs" />
-    <Compile Include="Gratificacion.cs" />
     <Compile Include="HoraExtra.cs" />
     <Compile Include="HoraTrabajada.cs" />
     <Compile Include="ImpuestoRentaAcumulado.cs" />

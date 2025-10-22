@@ -177,7 +177,7 @@ namespace capa_dominio
             {
                 // Determinar los límites del tramo
                 decimal limiteInferior = tramo.LimiteInferiorUIT;
-                decimal limiteSuperior = tramo.LimiteSuperiorUIT;
+                decimal limiteSuperior = tramo.LimiteSuperiorUIT ?? baseImponibleUIT;
 
                 // Si el tramo superior es 0 o muy alto, considerarlo sin límite
                 if (limiteSuperior == 0)
