@@ -165,7 +165,7 @@
     <Compile Include="modulo_base\Conexion.cs" />
     <Compile Include="modulo_base\ExcepcionNomina.cs" />
     <Compile Include="modulo_base\ExcepcionTrabajadoresValido.cs" />
-    <Compile Include="modulo_principal\Adelantos.cs" />
+    <Compile Include="modulo_principal\Adelanto_sueldo.cs" />
     <Compile Include="modulo_principal\Areas.cs" />
     <Compile Include="modulo_principal\Bonos.cs" />
     <Compile Include="modulo_principal\Cargos.cs" />
@@ -176,6 +176,8 @@
     <Compile Include="modulo_principal\ImpuestoRenta.cs" />
     <Compile Include="modulo_principal\Nominas.cs" />
     <Compile Include="modulo_principal\Parametros.cs" />
+    <Compile Include="modulo_principal\Sedes.cs" />
+    <Compile Include="modulo_principal\ReporteNomina.cs" />
     <Compile Include="modulo_principal\SistemasPensiones.cs" />
     <Compile Include="modulo_principal\Tardanzas.cs" />
     <Compile Include="modulo_principal\TiposJornadas.cs" />
@@ -183,7 +185,12 @@
     <Compile Include="modulo_principal\trabajadores.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\capa_dominio\capa_dominio.csproj">
+      <Project>{55fe5196-96ec-493b-8b32-cdb085434c71}</Project>
+      <Name>capa_dominio</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />

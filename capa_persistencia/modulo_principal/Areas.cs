@@ -2,19 +2,10 @@ using System;
 using System.Collections.Generic;
 using capa_persistencia.modulo_base;
 using Microsoft.Data.SqlClient;
+using capa_dominio;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class AreaTrabajo
-    {
-        public int AreaId { get; set; }
-        public string AreaNombre { get; set; }
-        public string AreaDescripcion { get; set; }
-        public string SedeNombre { get; set; }
-        public string SedeDireccion { get; set; }
-        public string SedeDepartamento { get; set; }
-        public string SedeProvincia { get; set; }
-    }
 
     public class Areas
     {
@@ -25,9 +16,9 @@ namespace capa_persistencia.modulo_principal
             _accesoSQL = new AccesoSQLServer();
         }
 
-        public List<AreaTrabajo> ObtenerAreasTrabajo()
+        public List<Area> ObtenerAreasTrabajo()
         {
-            var areas = new List<AreaTrabajo>();
+            var areas = new List<Area>();
 
             try
             {
@@ -38,7 +29,7 @@ namespace capa_persistencia.modulo_principal
                 {
                     while (reader.Read())
                     {
-                        var area = new AreaTrabajo
+                        var area = new Area
                         {
                             AreaId = reader.GetInt32(reader.GetOrdinal("area_id")),
                             AreaNombre = reader.GetString(reader.GetOrdinal("area_nombre")),
