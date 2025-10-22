@@ -21,7 +21,7 @@ namespace capa_dominio
         private DateTime? contratoFechaFin;
         private int? contratoHorasSemanales;
         private decimal? contratoTarifaHora;
-        private decimal? contratoSalario;
+        private decimal contratoSalario;
         private string contratoModoPago;
         private string contratoDocumentoUrl;
         private string contratoDescripcionFunciones;
@@ -41,7 +41,7 @@ namespace capa_dominio
         public DateTime? ContratoFechaFin { get => contratoFechaFin; set => contratoFechaFin = value; }
         public int? ContratoHorasSemanales { get => contratoHorasSemanales; set => contratoHorasSemanales = value; }
         public decimal? ContratoTarifaHora { get => contratoTarifaHora; set => contratoTarifaHora = value; }
-        public decimal? ContratoSalario
+        public decimal ContratoSalario
         {
             get => contratoSalario;
             set
@@ -77,9 +77,9 @@ namespace capa_dominio
             return contratoTarifaHora ?? 0;
         }
 
-        public override string ToString()
-        {
-            return $"Contrato #{contratoId} - {cargo?.CargoNombre ?? "Sin cargo"} ({trabajador?.TrabajadorNombreCompleto ?? "Sin trabajador"})";
-        }
+        //public override string ToString()
+        //{
+        //    return $"Contrato #{contratoId} - {cargo?.CargoNombre ?? "Sin cargo"} ({trabajador?.TrabajadorNombreCompleto ?? "Sin trabajador"})";
+        //}
     }
 }

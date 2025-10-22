@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace capa_persistencia.modulo_principal
 {
     public class Adelanto_sueldo
@@ -31,17 +32,13 @@ namespace capa_persistencia.modulo_principal
                 _accesoSQL.AbrirConexion();
                 var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_insertar_adelanto_sueldo");
 
-                comando.Parameters.AddWithValue("@trabajador_id", adelanto.TrabajadorId);
+                comando.Parameters.AddWithValue("@trabajador_id", adelanto.Trabajador.TrabajadorId);
                 comando.Parameters.AddWithValue("@adelanto_monto", adelanto.AdelantoMonto);
                 comando.Parameters.AddWithValue("@adelanto_fecha", adelanto.AdelantoFecha);
                 comando.Parameters.AddWithValue("@adelanto_motivo", adelanto.AdelantoMotivo);
                 comando.Parameters.AddWithValue("@adelanto_observaciones", adelanto.AdelantoObservaciones ?? (object)DBNull.Value);
 
                 comando.ExecuteNonQuery();
-            }
-            catch (Exception)
-            {
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CREACION);
             }
             finally
             {
@@ -114,5 +111,6 @@ namespace capa_persistencia.modulo_principal
 
             return adelantos;
         }
+       
     }
 }

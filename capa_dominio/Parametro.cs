@@ -27,6 +27,7 @@ namespace capa_dominio
         {
             return parametroEstado == "Activo" && parametroFechaVigencia <= DateTime.Now;
         }
+
     }
 }
 
