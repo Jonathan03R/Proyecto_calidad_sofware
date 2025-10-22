@@ -1,32 +1,21 @@
-﻿using capa_persistencia.modulo_base;
+﻿using capa_dominio;
+using capa_persistencia.modulo_base;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using static capa_persistencia.modulo_principal.DetallesNomina;
 
 namespace capa_persistencia.modulo_principal
 {
     public class ImpuestoRenta
     {
         private readonly AccesoSQLServer _accesoSQL;
-        public class TramoIR
-        {
-            public int TramoId { get; set; }
-            public int AnioVigencia { get; set; }
-            public int Numero { get; set; }
-            public decimal LimiteInferiorUIT { get; set; }
-            public decimal? LimiteSuperiorUIT { get; set; }
-            public decimal LimiteInferiorSoles { get; set; }
-            public decimal? LimiteSuperiorSoles { get; set; }
-            public decimal TasaPorcentaje { get; set; }
-            public decimal AcumuladoAnteriorSoles { get; set; }
-        }
+        
         public ImpuestoRenta() { _accesoSQL = new AccesoSQLServer(); }
 
         // C-04: tramos IR por año
-        public List<TramoIR> ObtenerTramosIRPorAnio(int anio)
+        public List<ImpuestoRentaTramo> ObtenerTramosIRPorAnio(int anio)
         {
-            var lista = new List<TramoIR>();
+            var lista = new List<ImpuestoRentaTramo>();
             try
             {
                 _accesoSQL.AbrirConexion();
@@ -36,11 +25,11 @@ namespace capa_persistencia.modulo_principal
                 using (var reader = cmd.ExecuteReader())
                     while (reader.Read())
                     {
-                        var tramo = new TramoIR
+                        var tramo = new ImpuestoRentaTramo
                         {
-                            TramoId = reader.GetInt32(reader.GetOrdinal("impuesto_renta_tramo_id")),
+                            ImpuestoRentaTramoId = reader.GetInt32(reader.GetOrdinal("impuesto_renta_tramo_id")),
                             AnioVigencia = reader.GetInt32(reader.GetOrdinal("impuesto_renta_tramo_anio_vigencia")),
-                            Numero = reader.GetInt32(reader.GetOrdinal("impuesto_renta_tramo_numero")),
+                            NumeroTramo = reader.GetInt32(reader.GetOrdinal("impuesto_renta_tramo_numero")),
                             LimiteInferiorUIT = reader.GetDecimal(reader.GetOrdinal("impuesto_renta_tramo_limite_inferior_uit")),
                             LimiteSuperiorUIT = reader.IsDBNull(reader.GetOrdinal("impuesto_renta_tramo_limite_superior_uit"))
                                                    ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("impuesto_renta_tramo_limite_superior_uit")),

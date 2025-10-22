@@ -67,12 +67,6 @@ namespace capa_dominio
         {
             return tipoSalario != null && tipoSalario.TipoSalarioNombre.ToLower().Contains("hora");
         }
-
-        public bool EsDeJornadaCompleta()
-        {
-            return tipoJornada != null && tipoJornada.TipoJornadaNombre.ToLower().Contains("completa");
-        }
-
         public decimal CalcularValorHora()
         {
             if (contratoSalario.HasValue && contratoHorasSemanales.HasValue && contratoHorasSemanales > 0)
