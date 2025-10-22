@@ -23,7 +23,6 @@ namespace capa_persistencia.modulo_principal
         }
         public ImpuestoRenta() { _accesoSQL = new AccesoSQLServer(); }
 
-        // C-04: tramos IR por año
         public List<TramoIR> ObtenerTramosIRPorAnio(int anio)
         {
             var lista = new List<TramoIR>();
