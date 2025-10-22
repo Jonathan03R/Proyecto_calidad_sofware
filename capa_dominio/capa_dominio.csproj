@@ -52,6 +52,9 @@
     <Compile Include="DetalleParametro.cs" />
     <Compile Include="Contrato.cs" />
     <Compile Include="ContratoDetalle.cs" />
+    <Compile Include="dto\AdelantoSueldoDTO.cs" />
+    <Compile Include="dto\ContratoDTO.cs" />
+    <Compile Include="dto\DetalleNominaDTO.cs" />
     <Compile Include="ImpuestoRentaAcumuladoDTO.cs" />
     <Compile Include="EstadoContrato.cs" />
     <Compile Include="Falta.cs" />

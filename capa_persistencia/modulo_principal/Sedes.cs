@@ -15,6 +15,11 @@ namespace capa_persistencia.modulo_principal
             _accesoSQL = new AccesoSQLServer();
         }
 
+        /// <summary>
+        /// obtnego 2 listas, por cada sede obtengo sus areas de las mismas
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ExcepcionTrabajador"></exception>
         public List<Sede> ObtenerSedesConAreas()
         {
             var sedes = new List<Sede>();
@@ -40,7 +45,8 @@ namespace capa_persistencia.modulo_principal
                                 SedeDireccion = reader.GetString(reader.GetOrdinal("sede_direccion")),
                                 SedeDepartamento = reader.GetString(reader.GetOrdinal("sede_departamento")),
                                 SedeProvincia = reader.GetString(reader.GetOrdinal("sede_provincia")),
-                                SedeEstado = 'A' 
+                                SedeEstado = 'A',
+                                Areas = new List<Area>()
                             };
                             sedeDict[sedeId] = sede;
                             sedes.Add(sede);
