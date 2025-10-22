@@ -10,17 +10,17 @@ namespace capa_persistencia.modulo_base
         private SqlTransaction transaccion;
 
         // Variables de conexión
-        private readonly string servidor = "nominas02calidad.database.windows.net";
+        private readonly string servidor = "DESKTOP-HPCSRC4\\SQL2019";
         private readonly string puerto = "1433";
-        private readonly string baseDatos = "nominas02_calidad";
-        private readonly string usuario = "nominas02@nominas02calidad";
-        private readonly string contrasena = "Grupo02_2025";
+        private readonly string baseDatos = "bdProcesarNomina";
+        //private readonly string usuario = "nominas02@nominas02calidad";
+        //private readonly string contrasena = "Grupo02_2025";
 
         private string ConnectionString =>
             $"Server={servidor},{puerto};" +
             $"Database={baseDatos};" +
-            $"User ID={usuario};" +
-            $"Password={contrasena};" +
+            //$"User ID={usuario};" +
+            //$"Password={contrasena};"+
             "Encrypt=True;" +
             "TrustServerCertificate=False;" +
             "Connection Timeout=30;";

@@ -9,24 +9,13 @@ namespace capa_persistencia.modulo_principal
     public class ImpuestoRenta
     {
         private readonly AccesoSQLServer _accesoSQL;
-        public class TramoIR
-        {
-            public int TramoId { get; set; }
-            public int AnioVigencia { get; set; }
-            public int Numero { get; set; }
-            public decimal LimiteInferiorUIT { get; set; }
-            public decimal? LimiteSuperiorUIT { get; set; }
-            public decimal LimiteInferiorSoles { get; set; }
-            public decimal? LimiteSuperiorSoles { get; set; }
-            public decimal TasaPorcentaje { get; set; }
-            public decimal AcumuladoAnteriorSoles { get; set; }
-        }
+       
         public ImpuestoRenta() { _accesoSQL = new AccesoSQLServer(); }
 
         // C-04: tramos IR por año
-        public List<TramoIR> ObtenerTramosIRPorAnio(int anio)
+        public List<ImpuestoRenta> ObtenerTramosIRPorAnio(int anio)
         {
-            var lista = new List<TramoIR>();
+            var lista = new List<ImpuestoRenta>();
             try
             {
                 _accesoSQL.AbrirConexion();
@@ -36,7 +25,7 @@ namespace capa_persistencia.modulo_principal
                 using (var reader = cmd.ExecuteReader())
                     while (reader.Read())
                     {
-                        var tramo = new TramoIR
+                        var tramo = new ImpuestoRenta
                         {
                             TramoId = reader.GetInt32(reader.GetOrdinal("impuesto_renta_tramo_id")),
                             AnioVigencia = reader.GetInt32(reader.GetOrdinal("impuesto_renta_tramo_anio_vigencia")),

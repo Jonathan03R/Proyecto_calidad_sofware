@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,20 +12,22 @@ namespace capa_dominio
 
         private int detalleNominaId;
         private Nomina nomina;
-        private Trabajador trabajador;
         private Contrato contrato;
-
+        private DetalleParametro detalleParametro;
+        private Tardanza tardanza;
+        private AdelantoSueldo adelantoSueldo;
+        private Falta falta;
         private decimal sueldoBasico;
         private decimal remuneracionBruta;
         private decimal asignacionFamiliar;
         private decimal horasExtras;
-        private decimal bonos;
+        private decimal bonosRegulares;
         private decimal otrosIngresos;
         private decimal aporteEssalud;
         private decimal aporteONP;
         private decimal descuentoAFP;
         private decimal impuestoRentaMensual;
-        private decimal descuentoTardanzas;
+        //private decimal descuentoTardanzas;
         private decimal descuentoFaltas;
         private decimal descuentoAdelantos;
 
@@ -37,21 +40,25 @@ namespace capa_dominio
 
         public int DetalleNominaId { get => detalleNominaId; set => detalleNominaId = value; }
         public Nomina Nomina { get => nomina; set => nomina = value; }
-        public Trabajador Trabajador { get => trabajador; set => trabajador = value; }
+       
 
 
         public Contrato Contrato { get => contrato; set => contrato = value; }
+        public Falta Falta { get => falta; set => falta = value; }
+        public AdelantoSueldo AdelantoSueldo { get => adelantoSueldo; set => adelantoSueldo = value; }
+        public Tardanza Tardanzas { get => tardanza; set => tardanza = value; }
+        public DetalleParametro DetalleParametro { get => detalleParametro; set => detalleParametro = value; }
         public decimal SueldoBasico { get => sueldoBasico; set => sueldoBasico = value; }
         public decimal AsignacionFamiliar { get => asignacionFamiliar; set => asignacionFamiliar = value; }
         public decimal HorasExtras { get => horasExtras; set => horasExtras = value; }
         public decimal RemuneracionBruta { get => remuneracionBruta; set => remuneracionBruta = value; }
-        public decimal Bonos { get => bonos; set => bonos = value; }
+        public decimal BonosRegulares { get => bonosRegulares; set => bonosRegulares = value; }
         public decimal OtrosIngresos { get => otrosIngresos; set => otrosIngresos = value; }
         public decimal AporteEssalud { get => aporteEssalud; set => aporteEssalud = value; }
         public decimal AporteONP { get => aporteONP; set => aporteONP = value; }
         public decimal DescuentoAFP { get => descuentoAFP; set => descuentoAFP = value; }
         public decimal ImpuestoRentaMensual { get => impuestoRentaMensual; set => impuestoRentaMensual = value; }
-        public decimal DescuentoTardanzas { get => descuentoTardanzas; set => descuentoTardanzas = value; }
+        //public decimal DescuentoTardanzas { get => descuentoTardanzas; set => descuentoTardanzas = value; }
         public decimal DescuentoFaltas { get => descuentoFaltas; set => descuentoFaltas = value; }
         public decimal DescuentoAdelantos { get => descuentoAdelantos; set => descuentoAdelantos = value; }
         public decimal TotalIngresos { get => totalIngresos; set => totalIngresos = value; }
@@ -60,62 +67,33 @@ namespace capa_dominio
         public bool TieneErrores { get => tieneErrores; set => tieneErrores = value; }
         public string MensajeError { get => mensajeError; set => mensajeError = value; }
 
-        // RN-01 
+        // La remuneración bruta incluye: RB = Sueldo Básico + Asignación Familiar + Horas Extras + Bonos Regulares
         public void CalcularRemuneracionBruta()
         {
-            remuneracionBruta = sueldoBasico + asignacionFamiliar + horasExtras + bonos;
+            
+            remuneracionBruta = contrato.ContratoSalario + asignacionFamiliar + horasExtras + bonosRegulares;
         }
 
-        public void CalcularAporteEssalud(bool redondear = true)
+
+        //La asignación familiar es de 10% de la Remuneración Mínima Legal vigente.
+        //Asignación Familiar = Remuneración Mínima Vital × 0.10 si el trabajador tiene derecho; en caso contrario, 0.
+
+        public decimal CalculoAsignacionFamiliar(bool tieneRemuneacionFamiliar)
         {
-            decimal aporte = remuneracionBruta * 0.09m;
-            aporteEssalud = redondear ? Math.Round(aporte, 2) : aporte;
+            if (tieneRemuneacionFamiliar) { 
+                return asignacionFamiliar = contrato.ContratoSalario * 0.1m;
+            }
+            return 0;
         }
 
-        public void CalcularPrevisionSegunTrabajador(bool redondear = true)
-        {
-            var tp = Contrato.TipoPension;
 
-            if (string.Equals(tp.Entidad, "ONP", StringComparison.OrdinalIgnoreCase))
-            {
-                CalcularAporteONP(redondear);
-            }
-            else if (string.Equals(tp.Entidad, "AFP", StringComparison.OrdinalIgnoreCase))
-            {
-                CalcularDescuentoAFP(tp.PorcentajeComisionFlujo, tp.PorcentajeComisionSaldo, tp.PorcentajeSeguro, redondear);
-            }
-        }
-        public void CalcularAporteONP(bool redondear = true)
-        {
-            decimal aporte = remuneracionBruta * 0.13m;
-            aporteONP = redondear ? Math.Round(aporte, 2) : aporte;
-        }
-
-        public void CalcularDescuentoAFP(decimal porComisionFlujo, decimal porComisionSaldo, decimal porSeguro, bool redondear = true)
-        {
-            decimal aporteFondo = remuneracionBruta * 0.10m;
-            decimal aporteSeguro = remuneracionBruta * porSeguro;
-            decimal totalDescuento;
-
-            if (porComisionFlujo > 0)
-            {
-                decimal aporteComision = remuneracionBruta * porComisionFlujo;
-                totalDescuento = aporteFondo + aporteComision + aporteSeguro;
-            }
-            else
-            {
-                totalDescuento = aporteFondo + aporteSeguro;
-            }
-
-            descuentoAFP = redondear ? Math.Round(totalDescuento, 2) : totalDescuento;
-            aporteONP = 0m;
-        }
-
-        
+//        Las horas extras tienen recargos del 25% para las primeras 2 horas y 35% para horas adicionales, sobre el valor hora del sueldo básico.
+//Valor Hora Extra = Valor Hora Normal × (1 + 0.25) para primeras 2 horas
+//Valor Hora Extra = Valor Hora Normal × (1 + 0.35) para horas adicionales
 
         public void CalcularHorasExtras()
         {
-            decimal valorHoraNormal = SueldoBasico / (30 * 8);
+            decimal valorHoraNormal = contrato.ContratoSalario / (30 * 8);
             decimal montoHorasExtras;
 
             if (HorasExtras <= 2)
@@ -131,27 +109,51 @@ namespace capa_dominio
             horasExtras = Math.Round(montoHorasExtras, 2);
         }
 
-        public void CalcularDescuentoTardanzas()
+
+            //El aporte a AFP comprende: 10% para fondo de pensiones, comisión administrativa variable y seguro de invalidez(SIS).
+     //       El aporte a ONP corresponde al 13% de la remuneración bruta.
+     //Aporte ONP = Remuneración Bruta × 0.13.
+
+
+        public void CalcularSistemaPensiones()
         {
-            decimal valorHora = SueldoBasico / (30 * 8);
-            descuentoTardanzas = Math.Round(DescuentoTardanzas * valorHora, 2);
+            var tp = Contrato.TipoPension;
+
+            if (string.Equals(tp.Entidad, "ONP", StringComparison.OrdinalIgnoreCase))
+            {
+                aporteONP = remuneracionBruta * 0.13m;
+            }
+            else
+            {
+                descuentoAFP = remuneracionBruta * 0.10m;
+            }
         }
 
-        public void CalcularDescuentoFaltas()
-        {
-            decimal valorDia = SueldoBasico / 30;
-            descuentoFaltas = Math.Round(DescuentoFaltas * valorDia, 2);
-        }
+        
 
-        public void CalcularDescuentoAdelantos()
-        {
-            descuentoAdelantos = Math.Round(DescuentoAdelantos, 2);
-        }
+        //public void CalcularDescuentoFaltas()
+        //{
+        //    decimal valorDia = SueldoBasico / 30;
+        //    descuentoFaltas = Math.Round(DescuentoFaltas * valorDia, 2);
+        //}
+
+        //public void CalcularDescuentoAdelantos()
+        //{
+        //    descuentoAdelantos = Math.Round(DescuentoAdelantos, 2);
+        //}
 
         public void CalcularAsignacionFamiliar(Parametro parametroRMV, bool tieneDerechoAsignacionFamiliar)
         {
             asignacionFamiliar = tieneDerechoAsignacionFamiliar ?
                 Math.Round(parametroRMV.ParametroValor * 0.10m, 2) : 0;
+        }
+//        El aporte a Essalud corresponde al 9% de la remuneración bruta y es costo del empleador.
+//Aporte Essalud = Remuneración Bruta × 0.09
+
+        public void CalcularAporteEssalud(Parametro parametroEssalud)
+        {
+         
+            aporteEssalud = Math.Round(remuneracionBruta * parametroEssalud.ParametroValor, 2);
         }
 
         public void CalcularImpuestoRentaQuinta(List<ImpuestoRentaTramo> tramos, decimal valorUIT)
@@ -166,53 +168,53 @@ namespace capa_dominio
                 return;
             }
 
+            // Convertir la base imponible a UIT
             decimal baseImponibleUIT = baseImponibleAnual / valorUIT;
-            decimal impuestoAnual = 0;
+            decimal impuestoAnual = 0m;
+            decimal acumuladoUIT = 0m;
 
-            if (baseImponibleUIT <= 5)
+            foreach (var tramo in tramos.OrderBy(t => t.NumeroTramo))
             {
-                impuestoAnual = baseImponibleAnual * 0.08m;
-            }
-            else if (baseImponibleUIT <= 20)
-            {
-                decimal tramo1 = 5 * valorUIT * 0.08m;
-                decimal tramo2 = (baseImponibleAnual - (5 * valorUIT)) * 0.14m;
-                impuestoAnual = tramo1 + tramo2;
-            }
-            else if (baseImponibleUIT <= 35)
-            {
-                decimal tramo1 = 5 * valorUIT * 0.08m;
-                decimal tramo2 = 15 * valorUIT * 0.14m;
-                decimal tramo3 = (baseImponibleAnual - (20 * valorUIT)) * 0.17m;
-                impuestoAnual = tramo1 + tramo2 + tramo3;
-            }
-            else if (baseImponibleUIT <= 45)
-            {
-                decimal tramo1 = 5 * valorUIT * 0.08m;
-                decimal tramo2 = 15 * valorUIT * 0.14m;
-                decimal tramo3 = 15 * valorUIT * 0.17m;
-                decimal tramo4 = (baseImponibleAnual - (35 * valorUIT)) * 0.20m;
-                impuestoAnual = tramo1 + tramo2 + tramo3 + tramo4;
-            }
-            else
-            {
-                decimal tramo1 = 5 * valorUIT * 0.08m;
-                decimal tramo2 = 15 * valorUIT * 0.14m;
-                decimal tramo3 = 15 * valorUIT * 0.17m;
-                decimal tramo4 = 10 * valorUIT * 0.20m;
-                decimal tramo5 = (baseImponibleAnual - (45 * valorUIT)) * 0.30m;
-                impuestoAnual = tramo1 + tramo2 + tramo3 + tramo4 + tramo5;
+                // Determinar los límites del tramo
+                decimal limiteInferior = tramo.LimiteInferiorUIT;
+                decimal limiteSuperior = tramo.LimiteSuperiorUIT;
+
+                // Si el tramo superior es 0 o muy alto, considerarlo sin límite
+                if (limiteSuperior == 0)
+                    limiteSuperior = baseImponibleUIT;
+
+                // Calcular cuánto de la base cae en este tramo
+                decimal rangoTramo = Math.Min(baseImponibleUIT, limiteSuperior) - limiteInferior;
+
+                if (rangoTramo > 0)
+                {
+                    decimal montoTramo = rangoTramo * valorUIT;
+                    decimal tasa = tramo.TasaPorcentaje / 100m;
+                    impuestoAnual += montoTramo * tasa;
+                    acumuladoUIT += rangoTramo;
+                }
+
+                if (baseImponibleUIT <= limiteSuperior)
+                    break;
             }
 
             impuestoRentaMensual = Math.Round(impuestoAnual / 12, 2);
         }
 
+
         public void CalcularTotales()
         {
             totalIngresos = remuneracionBruta + otrosIngresos;
-            totalDescuentos = aporteEssalud + aporteONP + descuentoAFP + impuestoRentaMensual +
-                             descuentoTardanzas + descuentoFaltas + descuentoAdelantos;
+            totalDescuentos = aporteONP + descuentoAFP + impuestoRentaMensual +
+                              tardanza.TardanzaValorDescuento + Falta.FaltaValorDescuento + descuentoAdelantos;
             netoPagar = totalIngresos - totalDescuentos;
+            
+            
+            Trabajador trabajadorDeTardanza = tardanza.Trabajador;
+            Trabajador trabajadorDeFalta = falta.Trabajador;    
+
+            Console.WriteLine($"El descuento por tardanza pertenece al trabajador: {trabajadorDeTardanza.TrabajadorId}");
+            Console.WriteLine($"El descuento por falta pertenece al trabajador: {trabajadorDeFalta.TrabajadorId}");
         }
     }
 }
