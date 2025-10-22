@@ -92,44 +92,5 @@ namespace capa_persistencia.modulo_principal
             finally { _accesoSQL.CerrarConexion(); }
         }
         
-        public int InsertarAsignacionFamiliarDetalle(
-            int nominaId,
-            int trabajadorId,
-            decimal montoAF,
-            bool tieneErrores = false,
-            string mensajeError = null
-        )
-        {
-            try
-            {
-                _accesoSQL.AbrirConexion();
-
-                var cmd = _accesoSQL.ObtenerComandoDeProcedimiento(
-                    "nomina.proc_insertar_asignacion_familiar_detalle");
-
-                cmd.Parameters.AddWithValue("@nomina_id", nominaId);
-                cmd.Parameters.AddWithValue("@trabajador_id", trabajadorId);
-                cmd.Parameters.AddWithValue("@monto_af", montoAF);
-                cmd.Parameters.AddWithValue("@tiene_errores", tieneErrores);
-                cmd.Parameters.AddWithValue("@mensaje_error", (object)mensajeError ?? DBNull.Value);
-
-                var pOut = new SqlParameter("@detalle_nomina_id", SqlDbType.Int)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                cmd.Parameters.Add(pOut);
-
-                cmd.ExecuteNonQuery();
-                return (int)pOut.Value;
-            }
-            catch (Exception)
-            {
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CREACION);
-            }
-            finally
-            {
-                _accesoSQL.CerrarConexion();
-            }
-        }
     }
 }

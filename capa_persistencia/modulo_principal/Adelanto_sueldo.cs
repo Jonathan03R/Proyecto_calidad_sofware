@@ -1,75 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using capa_persistencia.modulo_base;
+using capa_dominio;                       // AdelantoSueldo, Trabajador
+using capa_persistencia.modulo_base;     // AccesoSQLServer
 using Microsoft.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
-
-    /// Esto tiene que estar en la capa de dominio
-    public class AdelantoSueldo
+    public class Adelantos_Repositorio
     {
-        private int adelantoId;
-        private int trabajadorId;
-        private decimal adelantoMonto;
-        private DateTime adelantoFecha;
-        private string adelantoMotivo;
-        private string adelantoObservaciones;
+        private readonly AccesoSQLServer _accesoSQL = new AccesoSQLServer();
 
-        public int AdelantoId { get => adelantoId; set => adelantoId = value; }
-        public int TrabajadorId { get => trabajadorId; set => trabajadorId = value; }
-        public decimal AdelantoMonto { get => adelantoMonto; set => adelantoMonto = value; }
-        public DateTime AdelantoFecha { get => adelantoFecha; set => adelantoFecha = value; }
-        public string AdelantoMotivo { get => adelantoMotivo; set => adelantoMotivo = value; }
-        public string AdelantoObservaciones { get => adelantoObservaciones; set => adelantoObservaciones = value; }
-
-        public bool EsMontoValido()
+        public List<AdelantoSueldo> ObtenerAdelantosPorTrabajador(int trabajadorId, DateTime fechaInicio, DateTime fechaFin)
         {
-            return adelantoMonto > 0;
-        }
+            var lista = new List<AdelantoSueldo>();
 
-        public bool EsReciente()
-        {
-            return (DateTime.Now - adelantoFecha).TotalDays <= 30;
-        }
-
-    }
-
-    public class Adelanto_sueldo
-    {
-        private readonly AccesoSQLServer _accesoSQL;
-
-        public Adelanto_sueldo()
-        {
-            _accesoSQL = new AccesoSQLServer();
-        }
-
-        public void InsertarAdelantoSueldo(AdelantoSueldo adelanto)
-        {
             try
             {
                 _accesoSQL.AbrirConexion();
-                var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_insertar_adelanto_sueldo");
 
-                comando.Parameters.AddWithValue("@trabajador_id", adelanto.TrabajadorId);
-                comando.Parameters.AddWithValue("@adelanto_monto", adelanto.AdelantoMonto);
-                comando.Parameters.AddWithValue("@adelanto_fecha", adelanto.AdelantoFecha);
-                comando.Parameters.AddWithValue("@adelanto_motivo", adelanto.AdelantoMotivo);
-                comando.Parameters.AddWithValue("@adelanto_observaciones", adelanto.AdelantoObservaciones ?? (object)DBNull.Value);
+                var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("nomina.proc_obtener_adelantos_por_trabajador");
+                cmd.Parameters.AddWithValue("@trabajador_id", trabajadorId);
+                cmd.Parameters.AddWithValue("@fecha_inicio", fechaInicio);
+                cmd.Parameters.AddWithValue("@fecha_fin", fechaFin);
 
-                comando.ExecuteNonQuery();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var adelanto = new AdelantoSueldo
+                        {
+                            AdelantoId = reader.GetInt32(reader.GetOrdinal("adelanto_id")),
+
+                            Trabajador = new Trabajador
+                            {
+                                TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id"))
+                            },
+
+                            AdelantoMonto = reader.GetDecimal(reader.GetOrdinal("adelanto_monto")),
+                            AdelantoFecha = reader.GetDateTime(reader.GetOrdinal("adelanto_fecha")),
+                            AdelantoMotivo = SafeGetString(reader, "adelanto_motivo"),
+                            AdelantoObservaciones = SafeGetString(reader, "adelanto_observaciones")
+                        };
+
+                        lista.Add(adelanto);
+                    }
+                }
             }
-            catch (Exception)
+            catch
             {
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CREACION);
+                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CONSULTA);
             }
             finally
             {
                 _accesoSQL.CerrarConexion();
             }
+
+            return lista;
+        }
+
+        // -----------------------------
+        // Helpers seguros para NULL
+        // -----------------------------
+        private static string SafeGetString(SqlDataReader r, string col)
+        {
+            int i = r.GetOrdinal(col);
+            return r.IsDBNull(i) ? null : r.GetString(i);
         }
     }
 }
