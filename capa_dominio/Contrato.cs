@@ -57,7 +57,7 @@ namespace capa_dominio
         public string ContratoObservaciones { get => contratoObservaciones; set => contratoObservaciones = value; }
         public DateTime ContratoFechaCreacion { get => contratoFechaCreacion; set => contratoFechaCreacion = value; }
 
-        // 🔹 Métodos de lógica de dominio
+
         public bool EstaVigente()
         {
             return !contratoFechaFin.HasValue || contratoFechaFin.Value >= DateTime.Now;
@@ -69,17 +69,12 @@ namespace capa_dominio
         }
         public decimal CalcularValorHora()
         {
-            if (contratoSalario.HasValue && contratoHorasSemanales.HasValue && contratoHorasSemanales > 0)
+            if (contratoHorasSemanales.HasValue && contratoHorasSemanales > 0)
             {
-                // Aproximadamente 4.33 semanas por mes
-                return Math.Round((contratoSalario.Value / (contratoHorasSemanales.Value * 4.33m)), 2);
+                return Math.Round((contratoSalario / (contratoHorasSemanales.Value * 4.33m)), 2);
             }
             return contratoTarifaHora ?? 0;
         }
 
-        //public override string ToString()
-        //{
-        //    return $"Contrato #{contratoId} - {cargo?.CargoNombre ?? "Sin cargo"} ({trabajador?.TrabajadorNombreCompleto ?? "Sin trabajador"})";
-        //}
     }
 }
