@@ -1,72 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using Microsoft.Data.SqlClient;
 using capa_dominio;
 using capa_persistencia.modulo_base;
-using Microsoft.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
-    // DTO para nomina.tardanzas
     public class Tardanzas
     {
-        private readonly AccesoSQLServer _accesoSQL;
+        private readonly string _cs;
+        public Tardanzas(string connectionString) { _cs = connectionString; }
 
-        public Tardanzas()
-        {
-            _accesoSQL = new AccesoSQLServer();
-        }
-
-        // C-TA-01: historial por trabajador
-        // SP: nomina.proc_obtener_tardanzas_por_trabajador(@trabajador_id)
-        public List<Tardanza> ObtenerTardanzasPorTrabajador(int trabajadorId)
+        public List<Tardanza> ObtenerPorTrabajador(int trabajadorId)
         {
             var lista = new List<Tardanza>();
-
             try
             {
-                _accesoSQL.AbrirConexion();
-                var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("nomina.proc_obtener_tardanzas_por_trabajador");
-                cmd.Parameters.AddWithValue("@trabajador_id", trabajadorId);
-
-                using (var reader = cmd.ExecuteReader())
+                using (var cn = new SqlConnection(_cs))
                 {
-                    while (reader.Read())
+                    cn.Open();
+                    using (var cmd = new SqlCommand("nomina.proc_obtener_tardanzas_por_trabajador", cn))
                     {
-                        var t = new Tardanza
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@trabajador_id", SqlDbType.Int).Value = trabajadorId;
+
+                        using (var dr = cmd.ExecuteReader())
                         {
-                            TardanzaId = reader.GetInt32(reader.GetOrdinal("tardanza_id")),
-                            Trabajador = new Trabajador
+                            int iId = dr.GetOrdinal("tardanza_id");
+                            int iTid = dr.GetOrdinal("trabajador_id");
+                            int iFec = dr.GetOrdinal("tardanza_fecha");
+                            int iMin = dr.GetOrdinal("tardanza_minutos");
+                            int iHrs = dr.GetOrdinal("tardanza_horas");
+                            int iObs = dr.GetOrdinal("tardanza_observaciones");
+
+                            while (dr.Read())
                             {
-                                TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id"))
-                            },
-                            TardanzaFecha = reader.GetDateTime(reader.GetOrdinal("tardanza_fecha")),
-                            TardanzaMinutos = reader.GetInt32(reader.GetOrdinal("tardanza_minutos")),
-                            TardanzaHoras = reader.GetDecimal(reader.GetOrdinal("tardanza_horas")),
-                            TardanzaValorHoraNormal = reader.GetDecimal(reader.GetOrdinal("tardanza_valor_hora_normal")),
-                            TardanzaValorDescuento = reader.GetDecimal(reader.GetOrdinal("tardanza_valor_descuento")),
-                            TardanzaObservaciones = SafeGetString(reader, "tardanza_observaciones")
-                        };
-                        lista.Add(t);
+                                lista.Add(new Tardanza
+                                {
+                                    TardanzaId = dr.GetInt32(iId),
+                                    Trabajador = new Trabajador { TrabajadorId = dr.GetInt32(iTid) },
+                                    TardanzaFecha = dr.GetDateTime(iFec),
+                                    TardanzaMinutos = dr.GetInt32(iMin),
+                                    TardanzaHoras = dr.GetDecimal(iHrs),
+                                    TardanzaObservaciones = dr.IsDBNull(iObs) ? null : dr.GetString(iObs)
+                                });
+                            }
+                        }
                     }
                 }
+                return lista;
             }
-            catch
+            catch (Exception ex)
             {
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CONSULTA);
+                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CONSULTA, ex.Message);
             }
-            finally
-            {
-                _accesoSQL.CerrarConexion();
-            }
-
-            return lista;
-        }
-
-        // Helpers NULL-safe
-        private static string SafeGetString(SqlDataReader r, string col)
-        {
-            int i = r.GetOrdinal(col);
-            return r.IsDBNull(i) ? null : r.GetString(i);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using capa_dominio;
+using capa_dominio;
 using capa_persistencia.modulo_base;
 using Microsoft.Data.SqlClient;
 using System;
@@ -11,14 +11,17 @@ namespace capa_persistencia.modulo_principal
     {
         private readonly AccesoSQLServer _accesoSQL = new AccesoSQLServer();
 
+
         public List<AdelantoSueldo> ObtenerAdelantosPorTrabajador(int trabajadorId, DateTime fechaInicio, DateTime fechaFin)
         {
             var lista = new List<AdelantoSueldo>();
+
             try
             {
                 _accesoSQL.AbrirConexion();
 
                 var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("nomina.proc_obtener_adelantos_por_trabajador");
+
                 cmd.Parameters.AddWithValue("@trabajador_id", trabajadorId);
                 cmd.Parameters.AddWithValue("@fecha_inicio", fechaInicio);
                 cmd.Parameters.AddWithValue("@fecha_fin", fechaFin);

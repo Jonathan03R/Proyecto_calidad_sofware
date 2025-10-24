@@ -20,16 +20,13 @@ namespace capa_persistencia.modulo_principal
             conexion.AbrirConexion();
         }
 
-        /// <summary>
-        /// Consulta el detalle de nómina por período.
-        /// Puede filtrarse opcionalmente por CargoID.
-        /// </summary>
         public List<DetalleNomina> ConsultarNominaPorPeriodo(int periodoId, int? cargoId = null)
         {
             List<DetalleNomina> lista = new List<DetalleNomina>();
 
             try
             {
+
                 SqlCommand cmd = conexion.ObtenerComandoDeProcedimiento("proc_Consultar_Nomina_Por_Periodo");
                 cmd.Parameters.AddWithValue("@PeriodoID", periodoId);
                 cmd.Parameters.AddWithValue("@CargoID", cargoId.HasValue ? (object)cargoId.Value : DBNull.Value);
@@ -38,13 +35,52 @@ namespace capa_persistencia.modulo_principal
                 {
                     while (dr.Read())
                     {
+                        
+                        Trabajador t = new Trabajador
+                        {
+                            Codigo = dr["CodigoTrabajador"].ToString(),
+                            //TrabajadorNombreCompleto = dr["NombreCompleto"].ToString(),
+                            TipoIdentificacion = dr["Tipo de Identificacion"].ToString(),
+                            Identificacion = dr["NumeroIdentificacion"].ToString()
+                        };
+
+                        //Cargo cargo = new Cargo
+                        //{
+                        //    CargoNombre = dr["Tipo de Cargo"].ToString()
+                        //};
+
+                        
+                        DateTime? fechaFin = dr["FechaFinContrato"] is DBNull ? (DateTime?)null : Convert.ToDateTime(dr["FechaFinContrato"]);
+
+                        Contrato c = new Contrato
+                        {
+                            ContratoFechaInicio = Convert.ToDateTime(dr["FechaInicioContrato"]),
+                            ContratoFechaFin = fechaFin,
+                            // Aquí puedes mapear otros campos de Contrato (ej. cargo, salario)
+                        };
+
                         DetalleNomina detalle = new DetalleNomina
                         {
+
+                            // Asignación de objetos referenciados (lo que faltaba)
+                            Contrato = c,
+
+                            // Mapeo de Ingresos
                             SueldoBasico = Convert.ToDecimal(dr["SueldoBasico"]),
                             AsignacionFamiliar = Convert.ToDecimal(dr["AsignacionFamiliar"]),
                             HorasExtras = Convert.ToDecimal(dr["MontoHorasExtras"]),
                             BonosRegulares = Convert.ToDecimal(dr["MontoBonos"]),
                             OtrosIngresos = Convert.ToDecimal(dr["OtrosIngresos"]),
+
+                            // Mapeo de Descuentos/Aportes (se debe usar manejo de DBNull si aplican)
+                            AporteEssalud = Convert.ToDecimal(dr["AporteEsSalud"]),
+                            AporteONP = dr["DescuentoONP"] is DBNull ? 0m : Convert.ToDecimal(dr["DescuentoONP"]),
+                            DescuentoAFP = dr["DescuentoAFP"] is DBNull ? 0m : Convert.ToDecimal(dr["DescuentoAFP"]),
+                            ImpuestoRentaMensual = Convert.ToDecimal(dr["RetencionImpuestoRenta"]),
+                            DescuentoFaltas = Convert.ToDecimal(dr["DescuentoFaltas"]),
+                            DescuentoAdelantos = Convert.ToDecimal(dr["DescuentoAdelantos"]),
+
+                            // Mapeo de Totales
                             TotalIngresos = Convert.ToDecimal(dr["TotalHaberes"]),
                             TotalDescuentos = Convert.ToDecimal(dr["TotalDescuentos"]),
                             NetoPagar = Convert.ToDecimal(dr["NetoPagar"])
