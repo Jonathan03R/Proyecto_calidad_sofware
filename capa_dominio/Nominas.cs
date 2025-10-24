@@ -58,11 +58,5 @@ namespace capa_dominio
             nominaTotalDescuentos = detalles.Sum(d => d.TotalDescuentos);
             nominaTotalNeto = detalles.Sum(d => d.RemuneracionBruta);
         }
-
-        public void MarcarComoCancelada(string observacion)
-        {
-            nominaEstado = "Cancelado";
-            nominaObservaciones = observacion;
-        }
     }
 }

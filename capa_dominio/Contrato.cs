@@ -13,14 +13,14 @@ namespace capa_dominio
         private Trabajador trabajador;
         private Cargo cargo;
         private Area area;
-        private TipoPension tipoPension;
-        private TipoSalario tipoSalario;
-        private TipoJornada tipoJornada;
+        private TipoPension tipoPension; 
+        private TipoSalario tipoSalario;  
+        private TipoJornada tipoJornada; ///sacamos este campo
         private EstadoContrato estadoContrato;
         private DateTime contratoFechaInicio;
         private DateTime? contratoFechaFin;
         private int? contratoHorasSemanales;
-        private decimal? contratoTarifaHora;
+        private decimal contratoTarifaHora;
         private decimal contratoSalario;
         private string contratoModoPago;
         private string contratoDocumentoUrl;
@@ -40,7 +40,7 @@ namespace capa_dominio
         public DateTime ContratoFechaInicio { get => contratoFechaInicio; set => contratoFechaInicio = value; }
         public DateTime? ContratoFechaFin { get => contratoFechaFin; set => contratoFechaFin = value; }
         public int? ContratoHorasSemanales { get => contratoHorasSemanales; set => contratoHorasSemanales = value; }
-        public decimal? ContratoTarifaHora { get => contratoTarifaHora; set => contratoTarifaHora = value; }
+        public decimal ContratoTarifaHora { get => contratoTarifaHora; set => contratoTarifaHora = value; }
         public decimal ContratoSalario
         {
             get => contratoSalario;

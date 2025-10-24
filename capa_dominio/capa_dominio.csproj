@@ -54,10 +54,10 @@
     <Compile Include="dto\AdelantoSueldoDTO.cs" />
     <Compile Include="dto\ContratoDTO.cs" />
     <Compile Include="dto\DetalleNominaDTO.cs" />
-    <Compile Include="ImpuestoRentaAcumuladoDTO.cs" />
+    <Compile Include="dto\ImpuestoRentaAcumuladoDTO.cs" />
+    <Compile Include="dto\TrabajadorProcesableDTO.cs" />
     <Compile Include="EstadoContrato.cs" />
     <Compile Include="Falta.cs" />
-    <Compile Include="HoraExtra.cs" />
     <Compile Include="HoraTrabajada.cs" />
     <Compile Include="ImpuestoRentaAcumulado.cs" />
     <Compile Include="ImpuestoRentaTramo.cs" />

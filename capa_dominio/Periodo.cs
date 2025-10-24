@@ -34,16 +34,6 @@ namespace capa_dominio
             return periodoEstado == "Activo";
         }
 
-        public int DuracionEnDias()
-        {
-            return (int)(periodoFechaFin - periodoFechaInicio).TotalDays;
-        }
-
-        public bool EsPeriodoIDValido()
-        {
-            return this.periodoId > 0;
-        }
-
         public bool EsPeriodoActual()
         {
             DateTime today = DateTime.Today;

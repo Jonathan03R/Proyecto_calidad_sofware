@@ -34,10 +34,5 @@ namespace capa_dominio
                    (!detalleParametroAplicaHasta.HasValue || detalleParametroAplicaHasta.Value >= hoy);
         }
 
-        public bool EsValorValido()
-        {
-            return detalleParametroValor > 0;
-        }
-
     }
 }

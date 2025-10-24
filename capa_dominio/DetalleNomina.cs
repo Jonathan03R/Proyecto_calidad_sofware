@@ -20,7 +20,7 @@ namespace capa_dominio
         private decimal sueldoBasico;
         private decimal remuneracionBruta;
         private decimal asignacionFamiliar;
-        private decimal horasExtras;
+        private decimal horasExtras; // es dinero 
         private decimal bonosRegulares;
         private decimal otrosIngresos;
         private decimal aporteEssalud;
@@ -67,7 +67,14 @@ namespace capa_dominio
         public bool TieneErrores { get => tieneErrores; set => tieneErrores = value; }
         public string MensajeError { get => mensajeError; set => mensajeError = value; }
 
+
+        public void CalcularHorasExtras()
+        {
+            horasExtras = contrato.Trabajador.HorasTrabajadas.Sum(h => h.HorasExtra);
+        }
+
         // La remuneración bruta incluye: RB = Sueldo Básico + Asignación Familiar + Horas Extras + Bonos Regulares
+
         public void CalcularRemuneracionBruta()
         {
             
@@ -87,32 +94,9 @@ namespace capa_dominio
         }
 
 
-//        Las horas extras tienen recargos del 25% para las primeras 2 horas y 35% para horas adicionales, sobre el valor hora del sueldo básico.
-//Valor Hora Extra = Valor Hora Normal × (1 + 0.25) para primeras 2 horas
-//Valor Hora Extra = Valor Hora Normal × (1 + 0.35) para horas adicionales
-
-        public void CalcularHorasExtras()
-        {
-            decimal valorHoraNormal = contrato.ContratoSalario / (30 * 8);
-            decimal montoHorasExtras;
-
-            if (HorasExtras <= 2)
-            {
-                montoHorasExtras = HorasExtras * valorHoraNormal * 1.25m;
-            }
-            else
-            {
-                montoHorasExtras = (2 * valorHoraNormal * 1.25m) +
-                                  ((HorasExtras - 2) * valorHoraNormal * 1.35m);
-            }
-
-            horasExtras = Math.Round(montoHorasExtras, 2);
-        }
-
-
             //El aporte a AFP comprende: 10% para fondo de pensiones, comisión administrativa variable y seguro de invalidez(SIS).
-     //       El aporte a ONP corresponde al 13% de la remuneración bruta.
-     //Aporte ONP = Remuneración Bruta × 0.13.
+            // El aporte a ONP corresponde al 13% de la remuneración bruta.
+            //Aporte ONP = Remuneración Bruta × 0.13.
 
 
         public void CalcularSistemaPensiones()
@@ -128,27 +112,8 @@ namespace capa_dominio
                 descuentoAFP = remuneracionBruta * 0.10m;
             }
         }
-
-        
-
-        //public void CalcularDescuentoFaltas()
-        //{
-        //    decimal valorDia = SueldoBasico / 30;
-        //    descuentoFaltas = Math.Round(DescuentoFaltas * valorDia, 2);
-        //}
-
-        //public void CalcularDescuentoAdelantos()
-        //{
-        //    descuentoAdelantos = Math.Round(DescuentoAdelantos, 2);
-        //}
-
-        public void CalcularAsignacionFamiliar(Parametro parametroRMV, bool tieneDerechoAsignacionFamiliar)
-        {
-            asignacionFamiliar = tieneDerechoAsignacionFamiliar ?
-                Math.Round(parametroRMV.ParametroValor * 0.10m, 2) : 0;
-        }
-//        El aporte a Essalud corresponde al 9% de la remuneración bruta y es costo del empleador.
-//Aporte Essalud = Remuneración Bruta × 0.09
+        //El aporte a Essalud corresponde al 9% de la remuneración bruta y es costo del empleador.
+        //Aporte Essalud = Remuneración Bruta × 0.09
 
         public void CalcularAporteEssalud(Parametro parametroEssalud)
         {
