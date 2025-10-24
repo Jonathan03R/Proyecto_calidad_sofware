@@ -8,7 +8,7 @@ namespace capa_dominio
 {
     public class Tardanza
     {
-        
+
         private int tardanzaId;
         private Trabajador trabajador;
         private DateTime tardanzaFecha;
@@ -18,7 +18,7 @@ namespace capa_dominio
         private decimal tardanzaValorDescuento;
         private string tardanzaObservaciones;
 
-       
+
         public int TardanzaId { get => tardanzaId; set => tardanzaId = value; }
         public Trabajador Trabajador { get => trabajador; set => trabajador = value; }
         public DateTime TardanzaFecha { get => tardanzaFecha; set => tardanzaFecha = value; }
@@ -28,27 +28,16 @@ namespace capa_dominio
         public decimal TardanzaValorDescuento { get => tardanzaValorDescuento; set => tardanzaValorDescuento = value; }
         public string TardanzaObservaciones { get => tardanzaObservaciones; set => tardanzaObservaciones = value; }
 
-       
-        public decimal CalcularDescuento()
+
+
+
+        public decimal CalcularDescuentoTardanza()
         {
-            // El descuento se calcula multiplicando el valor por hora por las horas de tardanza
-            tardanzaValorDescuento = tardanzaValorHoraNormal * tardanzaHoras;
+            tardanzaValorHoraNormal = trabajador.Contrato.ContratoSalario / (30 * Trabajador.HoraTrabajada.HorasTrabajadas);
+            TardanzaValorDescuento = Math.Round(tardanzaHoras * tardanzaValorHoraNormal, 2);
+
             return tardanzaValorDescuento;
         }
 
-        public bool EsTardanzaLeve()
-        {
-            return tardanzaMinutos <= 15;
-        }
-
-        public bool EsTardanzaGrave()
-        {
-            return tardanzaMinutos > 60;
-        }
-
-        public string Resumen()
-        {
-            return $"{tardanzaFecha.ToShortDateString()} - {tardanzaMinutos} min ({tardanzaHoras} h) - Descuento: S/. {tardanzaValorDescuento}";
-        }
     }
 }

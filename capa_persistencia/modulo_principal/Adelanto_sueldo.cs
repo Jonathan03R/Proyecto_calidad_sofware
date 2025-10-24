@@ -1,27 +1,18 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Data;
-using Microsoft.Data.SqlClient;
 using capa_dominio;
 using capa_persistencia.modulo_base;
+using Microsoft.Data.SqlClient;
+using System;
+using System.Collections.Generic;
 
 
 namespace capa_persistencia.modulo_principal
 {
-    public class AdelantoSueldoRepositorio
+    public class Adelanto_sueldo
     {
-        private readonly AccesoSQLServer _accesoSQL;
+        private readonly AccesoSQLServer _accesoSQL = new AccesoSQLServer();
 
-        public AdelantoSueldoRepositorio()
-        {
-            _accesoSQL = new AccesoSQLServer();
-        }
 
-        public IList<AdelantoSueldo> ObtenerPorTrabajador(
-            int trabajadorId,
-            DateTime? fechaInicio = null,
-            DateTime? fechaFin = null)
+        public List<AdelantoSueldo> ObtenerAdelantosPorTrabajador(int trabajadorId, DateTime fechaInicio, DateTime fechaFin)
         {
             var lista = new List<AdelantoSueldo>();
 
@@ -31,37 +22,36 @@ namespace capa_persistencia.modulo_principal
 
                 var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("nomina.proc_obtener_adelantos_por_trabajador");
 
-                cmd.Parameters.Add(new SqlParameter("@trabajador_id", SqlDbType.Int) { Value = trabajadorId });
-                cmd.Parameters.Add(new SqlParameter("@fecha_inicio", SqlDbType.Date) { Value = (object)fechaInicio ?? DBNull.Value });
-                cmd.Parameters.Add(new SqlParameter("@fecha_fin", SqlDbType.Date) { Value = (object)fechaFin ?? DBNull.Value });
+                cmd.Parameters.AddWithValue("@trabajador_id", trabajadorId);
+                cmd.Parameters.AddWithValue("@fecha_inicio", fechaInicio);
+                cmd.Parameters.AddWithValue("@fecha_fin", fechaFin);
 
                 using (var reader = cmd.ExecuteReader())
-                    while (reader.Read())
                 {
-                    var adelanto = new AdelantoSueldo
+                    while (reader.Read())
                     {
-                        AdelantoId = reader.GetInt32(reader.GetOrdinal("adelanto_id")),
-                        AdelantoMonto = reader.GetDecimal(reader.GetOrdinal("adelanto_monto")),
-                        AdelantoFecha = reader.GetDateTime(reader.GetOrdinal("adelanto_fecha")),
-                        AdelantoMotivo = reader.GetString(reader.GetOrdinal("adelanto_motivo")),
-                        AdelantoObservaciones = reader.IsDBNull(reader.GetOrdinal("adelanto_observaciones"))
-                            ? null
-                            : reader.GetString(reader.GetOrdinal("adelanto_observaciones")),
-                        // Mapea el Trabajador del dominio con su Id
-                        Trabajador = new Trabajador
+                        var adelanto = new AdelantoSueldo
                         {
-                            // Ajusta el nombre de la propiedad si tu clase difiere
-                            TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id"))
-                        }
-                    };
+                            AdelantoId = reader.GetInt32(reader.GetOrdinal("adelanto_id")),
 
-                    lista.Add(adelanto);
+                            Trabajador = new Trabajador
+                            {
+                                TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id"))
+                            },
+
+                            AdelantoMonto = reader.GetDecimal(reader.GetOrdinal("adelanto_monto")),
+                            AdelantoFecha = reader.GetDateTime(reader.GetOrdinal("adelanto_fecha")),
+                            AdelantoMotivo = reader.IsDBNull(reader.GetOrdinal("adelanto_motivo")) ? null : reader.GetString(reader.GetOrdinal("adelanto_motivo")),
+                            AdelantoObservaciones = reader.IsDBNull(reader.GetOrdinal("adelanto_observaciones")) ? null : reader.GetString(reader.GetOrdinal("adelanto_observaciones"))
+                        };
+
+                        lista.Add(adelanto);
+                    }
                 }
             }
-            catch (SqlException ex)
+            catch
             {
-                // Usa tu excepción de persistencia estándar
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CONSULTA, ex.Message);
+                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CONSULTA);
             }
             finally
             {
