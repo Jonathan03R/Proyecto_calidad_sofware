@@ -8,21 +8,20 @@ namespace capa_dominio
 {
     public class HoraTrabajada
     {
-        // ======== Atributos privados ==========
         private int horaTrabajadaId;
-        private Contrato contrato;
         private DateTime horaTrabajadaFecha;
         private TimeSpan? horaTrabajadaHoraEntrada;
         private TimeSpan? horaTrabajadaHoraSalida;
         private decimal horasTrabajadas;
-        private decimal horasExtra;
+        private int horasExtra; // va a ser dinero
+        private decimal valorHoraExtra;
         private decimal horaTrabajadaDescanso;
         private string horaTrabajadaObservaciones;
         private DateTime registroFechaCreacion;
+        private Trabajador trabajador;
 
-        // ======== Propiedades públicas ==========
+        public Trabajador Trabajador { get => trabajador; set => trabajador = value; }
         public int HoraTrabajadaId { get => horaTrabajadaId; set => horaTrabajadaId = value; }
-        public Contrato Contrato { get => contrato; set => contrato = value; }
         public DateTime HoraTrabajadaFecha { get => horaTrabajadaFecha; set => horaTrabajadaFecha = value; }
         public TimeSpan? HoraTrabajadaHoraEntrada { get => horaTrabajadaHoraEntrada; set => horaTrabajadaHoraEntrada = value; }
         public TimeSpan? HoraTrabajadaHoraSalida { get => horaTrabajadaHoraSalida; set => horaTrabajadaHoraSalida = value; }
@@ -32,21 +31,33 @@ namespace capa_dominio
         public string HoraTrabajadaObservaciones { get => horaTrabajadaObservaciones; set => horaTrabajadaObservaciones = value; }
         public DateTime RegistroFechaCreacion { get => registroFechaCreacion; set => registroFechaCreacion = value; }
 
-        // ======== Métodos de negocio ==========
         public decimal CalcularHorasTotales()
         {
             return horasTrabajadas + horasExtra - horaTrabajadaDescanso;
         }
 
+        public decimal CalculoPagoHorasExtras() 
+        {
+            decimal tarifaPorHora = trabajador.Contrato.ContratoTarifaHora ;
+            decimal tarifaHoraNormal = 10.0m; 
+            decimal tarifaHoraExtra = tarifaHoraNormal * 1.5m;
+            return horasExtra * tarifaHoraExtra;
+        }
+
         public bool EsDiaLaboral()
         {
-            // Considera como día laboral de lunes (1) a sábado (6)
             return horaTrabajadaFecha.DayOfWeek != DayOfWeek.Sunday;
         }
 
-        public bool TieneHorasExtras()
+
+        /// <summary>
+        /// El cálculo de las horas extras se basa en horasTrabajadas.
+        /// Se calcula el tiempo entre la hora de entrada y salida.
+        /// Si supera las horasTrabajadas, lo restante son horas extras.
+        /// </summary>
+        public void CalcularHorasTrabajadas()
         {
-            return horasExtra > 0;
+             TimeSpan HorasTrabajadas = horaTrabajadaHoraSalida.Value - horaTrabajadaHoraEntrada.Value;
         }
     }
 }

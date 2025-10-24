@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace capa_dominio
 {
+
+    /// <summary>
+    ///  esta clase en la base de datos solo almacena datos como pendienten cancelado etc etc 
+    /// </summary>
     public class EstadoContrato
     {
         private int estadoContratoId;
@@ -19,36 +23,5 @@ namespace capa_dominio
         public char EstadoContratoEstado { get => estadoContratoEstado; set => estadoContratoEstado = value; }
         public DateTime EstadoContratoFechaCreacion { get => estadoContratoFechaCreacion; set => estadoContratoFechaCreacion = value; }
 
-       
-        public bool EstaActivo()
-        {
-            return estadoContratoEstado == 'A' || estadoContratoEstado == 'a';
-        }
-
-        public void Activar()
-        {
-            estadoContratoEstado = 'A';
-        }
-
-        public void Desactivar()
-        {
-            estadoContratoEstado = 'I';
-        }
-
-        public bool EsVigente()
-        {
-            return estadoContratoNombre.ToLower().Contains("vigente") || estadoContratoNombre.ToLower().Contains("activo");
-        }
-
-        public bool EsFinalizado()
-        {
-            return estadoContratoNombre.ToLower().Contains("finalizado") || estadoContratoNombre.ToLower().Contains("concluido");
-        }
-
-        public string Resumen()
-        {
-            string estado = EstaActivo() ? "Activo" : "Inactivo";
-            return $"{estadoContratoNombre} ({estado})";
-        }
     }
 }

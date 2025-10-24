@@ -16,9 +16,10 @@ namespace capa_dominio
         private string tipoIdentificacion;
         private string identificacion;
         private char estado;
+        private List<HoraTrabajada> horasTrabajadas = new List<HoraTrabajada>();
         private List<Contacto> contactos = new List<Contacto>();
-        private List<Contrato> contratos = new List<Contrato>();
-            
+        private Contrato contrato;
+
         public int TrabajadorId { get => trabajadorId; set => trabajadorId = value; }
 
         public string Codigo { get => codigo; set => codigo = value; }
@@ -35,10 +36,21 @@ namespace capa_dominio
 
         public List<Contacto> Contactos { get => contactos; set => contactos = value; }
 
-        public List<Contrato> Contratos { get => contratos; set => contratos = value; }
-        public string TrabajadorNombreCompleto { get; internal set; }
+        public Contrato Contrato { get => contrato; set => contrato = value; }
 
-        // Métodos de negocio
-        public bool EstaActivo() => Estado == 'A';
+        //public List<Contrato> Contratos { get => contratos; set => contratos = value; }
+
+        public List<HoraTrabajada> HorasTrabajadas { get => horasTrabajadas; set => horasTrabajadas = value; }
+        public string TrabajadorNombreCompleto { get; internal set; }
+       
+        public void calculaHorasTrabajadas() { 
+            decimal totalHoras = 0;
+            foreach (var hora in horasTrabajadas)
+            {
+                totalHoras += hora.HorasTrabajadas;
+            }
+        }
+
+
     }
 }

@@ -11,8 +11,7 @@ namespace capa_dominio
         public int TipoPensionId { get; set; }
         public string Nombre { get; set; }
         public string Entidad { get; set; } // "ONP" o "AFP"
-        //public char Estado { get; set; } = 'A';
-        //public DateTime FechaCreacion { get; set; }
+        
 
     }
 }
