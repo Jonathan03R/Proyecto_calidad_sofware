@@ -171,7 +171,7 @@ namespace capa_dominio
         {
             totalIngresos = remuneracionBruta + otrosIngresos;
             totalDescuentos = aporteONP + descuentoAFP + impuestoRentaMensual +
-                              tardanza.TardanzaValorDescuento + Falta.FaltaValorDescuento + descuentoAdelantos;
+                              tardanza.TardanzaValorDescuento + descuentoAdelantos;
             netoPagar = totalIngresos - totalDescuentos;
             
             

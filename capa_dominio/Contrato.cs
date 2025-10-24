@@ -67,14 +67,6 @@ namespace capa_dominio
         {
             return tipoSalario != null && tipoSalario.TipoSalarioNombre.ToLower().Contains("hora");
         }
-        public decimal CalcularValorHora()
-        {
-            if (contratoHorasSemanales.HasValue && contratoHorasSemanales > 0)
-            {
-                return Math.Round((contratoSalario / (contratoHorasSemanales.Value * 4.33m)), 2);
-            }
-            return contratoTarifaHora ?? 0;
-        }
 
     }
 }

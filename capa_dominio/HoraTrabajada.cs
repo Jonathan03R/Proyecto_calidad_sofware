@@ -25,8 +25,9 @@ namespace capa_dominio
         public DateTime HoraTrabajadaFecha { get => horaTrabajadaFecha; set => horaTrabajadaFecha = value; }
         public TimeSpan? HoraTrabajadaHoraEntrada { get => horaTrabajadaHoraEntrada; set => horaTrabajadaHoraEntrada = value; }
         public TimeSpan? HoraTrabajadaHoraSalida { get => horaTrabajadaHoraSalida; set => horaTrabajadaHoraSalida = value; }
+        public int HorasExtra { get => horasExtra; set => horasExtra = value; }
         public decimal HorasTrabajadas { get => horasTrabajadas; set => horasTrabajadas = value; }
-        public decimal HorasExtra { get => horasExtra; set => horasExtra = value; }
+        public decimal ValorHoraExtra { get => valorHoraExtra; set => valorHoraExtra = value; }
         public decimal HoraTrabajadaDescanso { get => horaTrabajadaDescanso; set => horaTrabajadaDescanso = value; }
         public string HoraTrabajadaObservaciones { get => horaTrabajadaObservaciones; set => horaTrabajadaObservaciones = value; }
         public DateTime RegistroFechaCreacion { get => registroFechaCreacion; set => registroFechaCreacion = value; }
