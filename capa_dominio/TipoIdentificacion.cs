@@ -22,14 +22,5 @@ namespace capa_dominio
         public char TipoIdentificacionEstado { get => tipoIdentificacionEstado; set => tipoIdentificacionEstado = value; }
         public DateTime TipoIdentificacionFechaCreacion { get => tipoIdentificacionFechaCreacion; set => tipoIdentificacionFechaCreacion = value; }
         
-        public bool EsActivo()
-        {
-            return tipoIdentificacionEstado == 'A';
-        }
-
-        public bool EsValido()
-        {
-            return !string.IsNullOrEmpty(tipoIdentificacionValor);
-        }
     }
 }

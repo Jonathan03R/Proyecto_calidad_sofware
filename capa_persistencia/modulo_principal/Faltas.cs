@@ -43,9 +43,6 @@ namespace capa_persistencia.modulo_principal
                             },
                             FaltaFecha = reader.GetDateTime(reader.GetOrdinal("falta_fecha")),
                             FaltaTipo = SafeGetString(reader, "falta_tipo"),
-                            FaltaDias = SafeGetDecimalOrDefault(reader, "falta_dias", 0m),
-                            FaltaValorDiaNormal = reader.GetDecimal(reader.GetOrdinal("falta_valor_dia_normal")),
-                            FaltaValorDescuento = reader.GetDecimal(reader.GetOrdinal("falta_valor_descuento")),
                             FaltaObservaciones = SafeGetString(reader, "falta_observaciones"),
                             FaltaDocumentoSoporte = SafeGetString(reader, "falta_documento_soporte")
                         };
@@ -64,6 +61,7 @@ namespace capa_persistencia.modulo_principal
 
             return lista;
         }
+
         // -----------------------
         // Helpers NULL-safe
         // -----------------------

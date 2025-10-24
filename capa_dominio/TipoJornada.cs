@@ -22,21 +22,6 @@ namespace capa_dominio
         public char TipoJornadaEstado { get => tipoJornadaEstado; set => tipoJornadaEstado = value; }
         public DateTime TipoJornadaFechaCreacion { get => tipoJornadaFechaCreacion; set => tipoJornadaFechaCreacion = value; }
 
-        
-        public bool EstaActiva()
-        {
-            return tipoJornadaEstado == 'A' || tipoJornadaEstado == 'a';
-        }
-
-        public void Activar()
-        {
-            tipoJornadaEstado = 'A';
-        }
-
-        public void Desactivar()
-        {
-            tipoJornadaEstado = 'I';
-        }
 
         public bool EsTiempoCompleto()
         {
@@ -53,10 +38,5 @@ namespace capa_dominio
             return tipoJornadaNombre.ToLower().Contains("hora");
         }
 
-        public string Resumen()
-        {
-            string estado = EstaActiva() ? "Activa" : "Inactiva";
-            return $"{tipoJornadaNombre} ({estado}) - {tipoJornadaDescripcion}";
-        }
     }
 }

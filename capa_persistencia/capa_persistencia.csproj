@@ -166,7 +166,6 @@
     <Compile Include="modulo_base\ExcepcionNomina.cs" />
     <Compile Include="modulo_base\ExcepcionTrabajadoresValido.cs" />
     <Compile Include="modulo_principal\Adelanto_sueldo.cs" />
-    <Compile Include="modulo_principal\Areas.cs" />
     <Compile Include="modulo_principal\AsignacionFamiliar.cs" />
     <Compile Include="modulo_principal\Bonos.cs" />
     <Compile Include="modulo_principal\Cargos.cs" />

@@ -82,12 +82,6 @@ namespace capa_persistencia.modulo_principal
             return lista;
         }
 
-        // rubi tienes chamba
-
-        public List<ParametroVigente> AsignacionFamiliar()
-        {
-
-        }
     }
 }
 

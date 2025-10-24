@@ -20,16 +20,7 @@ namespace capa_dominio
         public char TipoSalarioEstado { get => tipoSalarioEstado; set => tipoSalarioEstado = value; }
         public DateTime TipoSalarioFechaCreacion { get => tipoSalarioFechaCreacion; set => tipoSalarioFechaCreacion = value; }
 
-        
-        public bool EsActivo()
-        {
-            return tipoSalarioEstado == 'A';
-        }
 
-        public bool EsValido()
-        {
-            return !string.IsNullOrEmpty(tipoSalarioNombre);
-        }
     }
 }
 

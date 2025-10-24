@@ -30,27 +30,11 @@ namespace capa_dominio
         public decimal ImpuestoRentaDeduccion7UIT { get => impuestoRentaDeduccion7UIT; set => impuestoRentaDeduccion7UIT = value; }
         public DateTime ImpuestoRentaFechaUltimaActualizacion { get => impuestoRentaFechaUltimaActualizacion; set => impuestoRentaFechaUltimaActualizacion = value; }
 
-        
-        public void ActualizarAcumulados(decimal remuneracionBruta, decimal impuestoRetenido)
-        {
-            impuestoRentaRemuneracionBrutaAcumulada += remuneracionBruta;
-            impuestoRentaRetenidoAcumulado += impuestoRetenido;
-            impuestoRentaBaseImponibleAcumulada = impuestoRentaRemuneracionBrutaAcumulada - impuestoRentaDeduccion7UIT;
-            impuestoRentaFechaUltimaActualizacion = DateTime.Now;
-        }
 
         public decimal CalcularBaseImponibleActual()
         {
             decimal baseImponible = impuestoRentaRemuneracionBrutaAcumulada - impuestoRentaDeduccion7UIT;
             return baseImponible > 0 ? baseImponible : 0;
-        }
-
-        public void ReiniciarAcumulados()
-        {
-            impuestoRentaRemuneracionBrutaAcumulada = 0;
-            impuestoRentaRetenidoAcumulado = 0;
-            impuestoRentaBaseImponibleAcumulada = 0;
-            impuestoRentaFechaUltimaActualizacion = DateTime.Now;
         }
 
     }
