@@ -1,26 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using capa_dominio;
 using capa_persistencia.modulo_base;
 using Microsoft.Data.SqlClient;
+using System;
+using System.Collections.Generic;
 
 namespace capa_persistencia.modulo_principal
 {
     public class Parametros
     {
         private readonly AccesoSQLServer _accesoSQL;
-        public class ParametroVigente
-        {
-            public int ParametroId { get; set; }          
-            public string Codigo { get; set; }
-            public string Nombre { get; set; }
-            public decimal Valor { get; set; }
-            public DateTime FechaVigencia { get; set; }
-            public string Estado { get; set; }
-        }
         public Parametros() { _accesoSQL = new AccesoSQLServer(); }
 
         // C-03: TOP 1 parámetro vigente por código
-        public ParametroVigente ObtenerParametroVigentePorCodigo(string codigo)
+
+        /// <summary>
+        /// revision , YA QUE ABAJO ESTOY OBTENIENDO LOS PARAMETROS
+        /// </summary>
+        /// <param name="codigo"></param>
+        /// <returns></returns>
+        /// <exception cref="ExcepcionNomina"></exception>
+        public Parametro ObtenerParametroVigentePorCodigo(string codigo)
         {
             try
             {
@@ -28,19 +27,19 @@ namespace capa_persistencia.modulo_principal
                 var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("parametros.proc_obtener_parametro_por_codigo_vigente");
                 cmd.Parameters.AddWithValue("@parametro_codigo", codigo);
 
-                using (var reader = cmd.ExecuteReader()) 
-                if (reader.Read())
-                {
-                    return new ParametroVigente
+                using (var reader = cmd.ExecuteReader())
+                    if (reader.Read())
                     {
-                        ParametroId = reader.GetInt32(reader.GetOrdinal("parametro_id")),
-                        Codigo = reader.GetString(reader.GetOrdinal("parametro_codigo")),
-                        Nombre = reader.GetString(reader.GetOrdinal("parametro_nombre")),
-                        Valor = reader.GetDecimal(reader.GetOrdinal("parametro_valor")),
-                        FechaVigencia = reader.GetDateTime(reader.GetOrdinal("parametro_fecha_vigencia")),
-                        Estado = reader.GetString(reader.GetOrdinal("parametro_estado"))
-                    };
-                }
+                        return new Parametro
+                        {
+                            ParametroId = reader.GetInt32(reader.GetOrdinal("parametro_id")),
+                            ParametroCodigo = reader.GetString(reader.GetOrdinal("parametro_codigo")),
+                            ParametroNombre = reader.GetString(reader.GetOrdinal("parametro_nombre")),
+                            ParametroValor = reader.GetDecimal(reader.GetOrdinal("parametro_valor")),
+                            ParametroFechaVigencia = reader.GetDateTime(reader.GetOrdinal("parametro_fecha_vigencia")),
+                            ParametroEstado = reader.GetString(reader.GetOrdinal("parametro_estado"))
+                        };
+                    }
                 return null;
             }
             catch (Exception)
@@ -51,9 +50,9 @@ namespace capa_persistencia.modulo_principal
         }
 
         // C-05: lista de parámetros vigentes para nómina
-        public List<ParametroVigente> ListarParametrosVigentesParaNomina()
+        public List<Parametro> ListarParametrosVigentesParaNomina()
         {
-            var lista = new List<ParametroVigente>();
+            var lista = new List<Parametro>();
             try
             {
                 _accesoSQL.AbrirConexion();
@@ -62,12 +61,14 @@ namespace capa_persistencia.modulo_principal
                 using (var reader = cmd.ExecuteReader())
                     while (reader.Read())
                     {
-                        var p = new ParametroVigente
+                        var p = new Parametro
                         {
-                            Codigo = reader.GetString(reader.GetOrdinal("parametro_codigo")),
-                            Nombre = reader.GetString(reader.GetOrdinal("parametro_nombre")),
-                            Valor = reader.GetDecimal(reader.GetOrdinal("parametro_valor")),
-                            FechaVigencia = reader.GetDateTime(reader.GetOrdinal("parametro_fecha_vigencia"))
+                            ParametroId = reader.GetInt32(reader.GetOrdinal("parametro_id")),
+                            ParametroCodigo = reader.GetString(reader.GetOrdinal("parametro_codigo")),
+                            ParametroNombre = reader.GetString(reader.GetOrdinal("parametro_nombre")),
+                            ParametroValor = reader.GetDecimal(reader.GetOrdinal("parametro_valor")),
+                            ParametroFechaVigencia = reader.GetDateTime(reader.GetOrdinal("parametro_fecha_vigencia")),
+                            //FechaVigencia = reader.GetDateTime(reader.GetOrdinal("parametro_fecha_vigencia"))
                         };
                         lista.Add(p);
                     }
@@ -79,6 +80,13 @@ namespace capa_persistencia.modulo_principal
             finally { _accesoSQL.CerrarConexion(); }
 
             return lista;
+        }
+
+        // rubi tienes chamba
+
+        public List<ParametroVigente> AsignacionFamiliar()
+        {
+
         }
     }
 }

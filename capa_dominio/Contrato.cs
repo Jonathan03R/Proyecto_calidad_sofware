@@ -21,7 +21,7 @@ namespace capa_dominio
         private DateTime? contratoFechaFin;
         private int? contratoHorasSemanales;
         private decimal? contratoTarifaHora;
-        private decimal? contratoSalario;
+        private decimal contratoSalario;
         private string contratoModoPago;
         private string contratoDocumentoUrl;
         private string contratoDescripcionFunciones;
@@ -41,7 +41,7 @@ namespace capa_dominio
         public DateTime? ContratoFechaFin { get => contratoFechaFin; set => contratoFechaFin = value; }
         public int? ContratoHorasSemanales { get => contratoHorasSemanales; set => contratoHorasSemanales = value; }
         public decimal? ContratoTarifaHora { get => contratoTarifaHora; set => contratoTarifaHora = value; }
-        public decimal? ContratoSalario
+        public decimal ContratoSalario
         {
             get => contratoSalario;
             set
@@ -57,7 +57,7 @@ namespace capa_dominio
         public string ContratoObservaciones { get => contratoObservaciones; set => contratoObservaciones = value; }
         public DateTime ContratoFechaCreacion { get => contratoFechaCreacion; set => contratoFechaCreacion = value; }
 
-        // 🔹 Métodos de lógica de dominio
+
         public bool EstaVigente()
         {
             return !contratoFechaFin.HasValue || contratoFechaFin.Value >= DateTime.Now;
@@ -67,25 +67,14 @@ namespace capa_dominio
         {
             return tipoSalario != null && tipoSalario.TipoSalarioNombre.ToLower().Contains("hora");
         }
-
-        public bool EsDeJornadaCompleta()
-        {
-            return tipoJornada != null && tipoJornada.TipoJornadaNombre.ToLower().Contains("completa");
-        }
-
         public decimal CalcularValorHora()
         {
-            if (contratoSalario.HasValue && contratoHorasSemanales.HasValue && contratoHorasSemanales > 0)
+            if (contratoHorasSemanales.HasValue && contratoHorasSemanales > 0)
             {
-                // Aproximadamente 4.33 semanas por mes
-                return Math.Round((contratoSalario.Value / (contratoHorasSemanales.Value * 4.33m)), 2);
+                return Math.Round((contratoSalario / (contratoHorasSemanales.Value * 4.33m)), 2);
             }
             return contratoTarifaHora ?? 0;
         }
 
-        public override string ToString()
-        {
-            return $"Contrato #{contratoId} - {cargo?.CargoNombre ?? "Sin cargo"} ({trabajador?.TrabajadorNombreCompleto ?? "Sin trabajador"})";
-        }
     }
 }

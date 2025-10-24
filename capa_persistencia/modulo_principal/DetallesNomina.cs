@@ -1,6 +1,7 @@
-﻿using System;
+﻿using capa_dominio.dto;
 using capa_persistencia.modulo_base;
 using Microsoft.Data.SqlClient;
+using System;
 using System.Data;
 
 namespace capa_persistencia.modulo_principal
@@ -11,36 +12,7 @@ namespace capa_persistencia.modulo_principal
 
         public DetallesNomina() { _accesoSQL = new AccesoSQLServer(); }
 
-        // I-03: INSERT detalle -> devuelve @detalle_nomina_id
-        public int InsertarDetalleNomina(
-            int nominaId,
-            int trabajadorId,
-            decimal remuneracionBruta,
-            decimal sueldoBasico,
-            decimal asignacionFamiliar,
-            decimal horasExtras,
-            decimal bonosRegulares,
-            decimal otrosIngresos,
-            string sistemaPensionAplicado,
-            decimal aporteEssalud,
-            decimal aporteOnp,
-            decimal descuentoAfp,
-            decimal remuneracionAcumuladaAnual,
-            decimal baseImponibleAnual,
-            decimal impuestoRentaAnual,
-            decimal impuestoRentaMensual,
-            decimal uitValor,
-            decimal deduccion7Uit,
-            decimal descuentoTardanzas,
-            decimal descuentoFaltas,
-            decimal descuentoAdelantos,
-            decimal otrosDescuentos,
-            decimal totalIngresos,
-            decimal totalDescuentos,
-            decimal netoPagar,
-            bool tieneErrores = false,
-            string mensajeError = null
-        )
+        public int InsertarDetalleNomina(DetalleNominaDTO detalle)
         {
             try
             {
@@ -48,33 +20,33 @@ namespace capa_persistencia.modulo_principal
                 var cmd = _accesoSQL.ObtenerComandoDeProcedimiento(
                     "nomina.proc_insertar_detalle_nomina_por_trabajador");
 
-                cmd.Parameters.AddWithValue("@nomina_id", nominaId);
-                cmd.Parameters.AddWithValue("@trabajador_id", trabajadorId);
-                cmd.Parameters.AddWithValue("@remuneracion_bruta", remuneracionBruta);
-                cmd.Parameters.AddWithValue("@sueldo_basico", sueldoBasico);
-                cmd.Parameters.AddWithValue("@asignacion_familiar", asignacionFamiliar);
-                cmd.Parameters.AddWithValue("@horas_extras", horasExtras);
-                cmd.Parameters.AddWithValue("@bonos_regulares", bonosRegulares);
-                cmd.Parameters.AddWithValue("@otros_ingresos", otrosIngresos);
-                cmd.Parameters.AddWithValue("@sistema_pension_aplicado", (object)sistemaPensionAplicado ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@aporte_essalud", aporteEssalud);
-                cmd.Parameters.AddWithValue("@aporte_onp", aporteOnp);
-                cmd.Parameters.AddWithValue("@descuento_afp", descuentoAfp);
-                cmd.Parameters.AddWithValue("@remuneracion_acumulada_anual", remuneracionAcumuladaAnual);
-                cmd.Parameters.AddWithValue("@base_imponible_anual", baseImponibleAnual);
-                cmd.Parameters.AddWithValue("@impuesto_renta_anual", impuestoRentaAnual);
-                cmd.Parameters.AddWithValue("@impuesto_renta_mensual", impuestoRentaMensual);
-                cmd.Parameters.AddWithValue("@uit_valor", uitValor);
-                cmd.Parameters.AddWithValue("@deduccion_7uit", deduccion7Uit);
-                cmd.Parameters.AddWithValue("@descuento_tardanzas", descuentoTardanzas);
-                cmd.Parameters.AddWithValue("@descuento_faltas", descuentoFaltas);
-                cmd.Parameters.AddWithValue("@descuento_adelantos", descuentoAdelantos);
-                cmd.Parameters.AddWithValue("@otros_descuentos", otrosDescuentos);
-                cmd.Parameters.AddWithValue("@total_ingresos", totalIngresos);
-                cmd.Parameters.AddWithValue("@total_descuentos", totalDescuentos);
-                cmd.Parameters.AddWithValue("@neto_pagar", netoPagar);
-                cmd.Parameters.AddWithValue("@tiene_errores", tieneErrores);
-                cmd.Parameters.AddWithValue("@mensaje_error", (object)mensajeError ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@nomina_id", detalle.NominaId);
+                cmd.Parameters.AddWithValue("@trabajador_id", detalle.TrabajadorId);
+                cmd.Parameters.AddWithValue("@remuneracion_bruta", detalle.RemuneracionBruta);
+                cmd.Parameters.AddWithValue("@sueldo_basico", detalle.SueldoBasico);
+                cmd.Parameters.AddWithValue("@asignacion_familiar", detalle.AsignacionFamiliar);
+                cmd.Parameters.AddWithValue("@horas_extras", detalle.HorasExtras);
+                cmd.Parameters.AddWithValue("@bonos_regulares", detalle.BonosRegulares);
+                cmd.Parameters.AddWithValue("@otros_ingresos", detalle.OtrosIngresos);
+                cmd.Parameters.AddWithValue("@sistema_pension_aplicado", (object)detalle.SistemaPensionAplicado ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@aporte_essalud", detalle.AporteEssalud);
+                cmd.Parameters.AddWithValue("@aporte_onp", detalle.AporteOnp);
+                cmd.Parameters.AddWithValue("@descuento_afp", detalle.DescuentoAfp);
+                cmd.Parameters.AddWithValue("@remuneracion_acumulada_anual", detalle.RemuneracionAcumuladaAnual);
+                cmd.Parameters.AddWithValue("@base_imponible_anual", detalle.BaseImponibleAnual);
+                cmd.Parameters.AddWithValue("@impuesto_renta_anual", detalle.ImpuestoRentaAnual);
+                cmd.Parameters.AddWithValue("@impuesto_renta_mensual", detalle.ImpuestoRentaMensual);
+                cmd.Parameters.AddWithValue("@uit_valor", detalle.UitValor);
+                cmd.Parameters.AddWithValue("@deduccion_7uit", detalle.Deduccion7Uit);
+                cmd.Parameters.AddWithValue("@descuento_tardanzas", detalle.DescuentoTardanzas);
+                cmd.Parameters.AddWithValue("@descuento_faltas", detalle.DescuentoFaltas);
+                cmd.Parameters.AddWithValue("@descuento_adelantos", detalle.DescuentoAdelantos);
+                cmd.Parameters.AddWithValue("@otros_descuentos", detalle.OtrosDescuentos);
+                cmd.Parameters.AddWithValue("@total_ingresos", detalle.TotalIngresos);
+                cmd.Parameters.AddWithValue("@total_descuentos", detalle.TotalDescuentos);
+                cmd.Parameters.AddWithValue("@neto_pagar", detalle.NetoPagar);
+                cmd.Parameters.AddWithValue("@tiene_errores", detalle.TieneErrores);
+                cmd.Parameters.AddWithValue("@mensaje_error", (object)detalle.MensajeError ?? DBNull.Value);
 
                 var pOut = new SqlParameter("@detalle_nomina_id", SqlDbType.Int)
                 {
@@ -92,44 +64,5 @@ namespace capa_persistencia.modulo_principal
             finally { _accesoSQL.CerrarConexion(); }
         }
         
-        public int InsertarAsignacionFamiliarDetalle(
-            int nominaId,
-            int trabajadorId,
-            decimal montoAF,
-            bool tieneErrores = false,
-            string mensajeError = null
-        )
-        {
-            try
-            {
-                _accesoSQL.AbrirConexion();
-
-                var cmd = _accesoSQL.ObtenerComandoDeProcedimiento(
-                    "nomina.proc_insertar_asignacion_familiar_detalle");
-
-                cmd.Parameters.AddWithValue("@nomina_id", nominaId);
-                cmd.Parameters.AddWithValue("@trabajador_id", trabajadorId);
-                cmd.Parameters.AddWithValue("@monto_af", montoAF);
-                cmd.Parameters.AddWithValue("@tiene_errores", tieneErrores);
-                cmd.Parameters.AddWithValue("@mensaje_error", (object)mensajeError ?? DBNull.Value);
-
-                var pOut = new SqlParameter("@detalle_nomina_id", SqlDbType.Int)
-                {
-                    Direction = ParameterDirection.Output
-                };
-                cmd.Parameters.Add(pOut);
-
-                cmd.ExecuteNonQuery();
-                return (int)pOut.Value;
-            }
-            catch (Exception)
-            {
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CREACION);
-            }
-            finally
-            {
-                _accesoSQL.CerrarConexion();
-            }
-        }
     }
 }

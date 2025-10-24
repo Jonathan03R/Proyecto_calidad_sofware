@@ -6,6 +6,7 @@ using Microsoft.Data.SqlClient;
 using capa_dominio;
 using capa_persistencia.modulo_base;
 
+
 namespace capa_persistencia.modulo_principal
 {
     public class AdelantoSueldoRepositorio
@@ -69,5 +70,6 @@ namespace capa_persistencia.modulo_principal
 
             return lista;
         }
+
     }
 }

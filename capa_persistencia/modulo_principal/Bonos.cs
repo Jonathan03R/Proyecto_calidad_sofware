@@ -1,4 +1,6 @@
-﻿using capa_persistencia.modulo_base;
+﻿using capa_dominio;
+using capa_persistencia.modulo_base;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,19 +9,9 @@ using System.Threading.Tasks;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class Bonos
+    public class Bonos_Repositorio
 
     {
-        public class Bono
-        {
-            public int BonoId { get; set; }
-            public int TrabajadorId { get; set; }
-            public string BonoTipo { get; set; }
-            public string BonoConcepto { get; set; }
-            public decimal BonoMonto { get; set; }
-            public DateTime BonoFecha { get; set; }
-            public string BonoObservaciones { get; set; }
-        }
 
         private readonly AccesoSQLServer _accesoSQL = new AccesoSQLServer();
         
@@ -39,7 +31,10 @@ namespace capa_persistencia.modulo_principal
                         lista.Add(new Bono
                         {
                             BonoId = reader.GetInt32(reader.GetOrdinal("bono_id")),
-                            TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id")),
+                            Trabajador = new Trabajador
+                            {
+                                TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id"))
+                            },
                             BonoTipo = reader.IsDBNull(reader.GetOrdinal("bono_tipo")) ? null : reader.GetString(reader.GetOrdinal("bono_tipo")),
                             BonoConcepto = reader.IsDBNull(reader.GetOrdinal("bono_concepto")) ? null : reader.GetString(reader.GetOrdinal("bono_concepto")),
                             BonoMonto = reader.GetDecimal(reader.GetOrdinal("bono_monto")),

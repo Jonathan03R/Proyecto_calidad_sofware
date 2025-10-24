@@ -167,12 +167,13 @@
     <Compile Include="modulo_base\ExcepcionTrabajadoresValido.cs" />
     <Compile Include="modulo_principal\Adelanto_sueldo.cs" />
     <Compile Include="modulo_principal\Areas.cs" />
+    <Compile Include="modulo_principal\AsignacionFamiliar.cs" />
     <Compile Include="modulo_principal\Bonos.cs" />
     <Compile Include="modulo_principal\Cargos.cs" />
     <Compile Include="modulo_principal\Contratos.cs" />
     <Compile Include="modulo_principal\DetallesNomina.cs" />
     <Compile Include="modulo_principal\Faltas.cs" />
-    <Compile Include="modulo_principal\HorasTrabajadas.cs" />
+    <Compile Include="modulo_principal\HorasExtras.cs" />
     <Compile Include="modulo_principal\ImpuestoRenta.cs" />
     <Compile Include="modulo_principal\Nominas.cs" />
     <Compile Include="modulo_principal\Parametros.cs" />
