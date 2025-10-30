@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Optimization;
 
-namespace CapaPresentacion
+namespace capa_presentacion
 {
     public class BundleConfig
     {

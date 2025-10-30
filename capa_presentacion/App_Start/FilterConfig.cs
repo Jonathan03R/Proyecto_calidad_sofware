@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Mvc;
 
-namespace CapaPresentacion
+namespace capa_presentacion
 {
     public class FilterConfig
     {

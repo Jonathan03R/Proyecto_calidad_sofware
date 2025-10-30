@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace CapaPresentacion.Controllers
+namespace capa_presentacion.Controllers
 {
     public class HomeController : Controller
     {
