@@ -1,9 +1,9 @@
-﻿using System;
+﻿using capa_dominio;
+using capa_persistencia.modulo_base;
+using Microsoft.Data.SqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using Microsoft.Data.SqlClient;
-using capa_dominio;
-using capa_persistencia.modulo_base;
 
 namespace capa_persistencia.modulo_principal
 {
@@ -27,28 +27,47 @@ namespace capa_persistencia.modulo_principal
 
                         using (var dr = cmd.ExecuteReader())
                         {
-                            int iId = dr.GetOrdinal("tardanza_id");
-                            int iTid = dr.GetOrdinal("trabajador_id");
-                            int iFec = dr.GetOrdinal("tardanza_fecha");
-                            int iMin = dr.GetOrdinal("tardanza_minutos");
-                            int iHrs = dr.GetOrdinal("tardanza_horas");
-                            int iObs = dr.GetOrdinal("tardanza_observaciones");
-
                             while (dr.Read())
                             {
-                                lista.Add(new Tardanza
+                                var t = new Tardanza
                                 {
-                                    TardanzaId = dr.GetInt32(iId),
-                                    Trabajador = new Trabajador { TrabajadorId = dr.GetInt32(iTid) },
-                                    TardanzaFecha = dr.GetDateTime(iFec),
-                                    TardanzaMinutos = dr.GetInt32(iMin),
-                                    TardanzaHoras = dr.GetDecimal(iHrs),
-                                    TardanzaObservaciones = dr.IsDBNull(iObs) ? null : dr.GetString(iObs)
-                                });
+                                    TardanzaId = dr.GetInt32(dr.GetOrdinal("tardanza_id")),
+                                    Trabajador = new Trabajador
+                                    {
+                                        TrabajadorId = dr.GetInt32(dr.GetOrdinal("trabajador_id"))
+                                    },
+                                    TardanzaFecha = dr.GetDateTime(dr.GetOrdinal("tardanza_fecha")),
+
+                                    TardanzaMinutos = dr.IsDBNull(dr.GetOrdinal("tardanza_minutos"))
+                                                        ? 0
+                                                        : dr.GetInt32(dr.GetOrdinal("tardanza_minutos")),
+
+                                    TardanzaHoras = dr.IsDBNull(dr.GetOrdinal("tardanza_horas"))
+                                                        ? 0m
+                                                        : dr.GetDecimal(dr.GetOrdinal("tardanza_horas")),
+
+                                    TardanzaValorHoraNormal = dr.IsDBNull(dr.GetOrdinal("tardanza_valor_hora_normal"))
+                                                        ? 0m
+                                                        : dr.GetDecimal(dr.GetOrdinal("tardanza_valor_hora_normal")),
+
+                                    TardanzaValorDescuento = dr.IsDBNull(dr.GetOrdinal("tardanza_valor_descuento"))
+                                                        ? 0m
+                                                        : dr.GetDecimal(dr.GetOrdinal("tardanza_valor_descuento")),
+
+                                    TardanzaObservaciones = dr.IsDBNull(dr.GetOrdinal("tardanza_observaciones"))
+                                                        ? string.Empty
+                                                        : dr.GetString(dr.GetOrdinal("tardanza_observaciones"))
+                                };
+
+                                if (t.TardanzaValorHoraNormal == 0m || t.TardanzaValorDescuento == 0m)
+                                    t.CalcularDescuentoTardanza();
+
+                                lista.Add(t);
                             }
                         }
                     }
                 }
+
                 return lista;
             }
             catch (Exception ex)

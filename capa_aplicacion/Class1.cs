@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace capa_aplicacion
 {
-    public class Class1
+    public class borrar
     {
+
+
+        private int primer;
     }
 }
