@@ -31,13 +31,13 @@ namespace capa_dominio
 
 
 
-        public decimal CalcularDescuentoTardanza()
-        {
-            tardanzaValorHoraNormal = trabajador.Contrato.ContratoSalario / (30 * Trabajador.HoraTrabajada.HorasTrabajadas);
-            TardanzaValorDescuento = Math.Round(tardanzaHoras * tardanzaValorHoraNormal, 2);
+        //public decimal CalcularDescuentoTardanza()
+        //{
+        //    tardanzaValorHoraNormal = trabajador.Contrato.ContratoSalario / (30 * Trabajador.HoraTrabajada.HorasTrabajadas);
+        //    TardanzaValorDescuento = Math.Round(tardanzaHoras * tardanzaValorHoraNormal, 2);
 
-            return tardanzaValorDescuento;
-        }
+        //    return tardanzaValorDescuento;
+        //}
 
     }
 }

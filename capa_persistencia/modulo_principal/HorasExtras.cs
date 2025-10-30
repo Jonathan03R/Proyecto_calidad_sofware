@@ -41,15 +41,14 @@ namespace capa_persistencia.modulo_principal
                         var item = new HoraTrabajada
                         {
                             HoraTrabajadaId = SafeGetInt32(reader, "HoraTrabajadaId") ?? 0,
-                            Contrato = SafeGetInt32(reader, "ContratoId") is int cid
-                                ? new Contrato { ContratoId = cid }
+                            Trabajador = SafeGetInt32(reader, "TrabajadorId") is int cid
+                                ? new Trabajador { TrabajadorId = cid }
                                 : null,
                             HoraTrabajadaFecha = reader.GetDateTime(reader.GetOrdinal("Fecha")),
                             HoraTrabajadaHoraEntrada = SafeGetTime(reader, "HoraEntrada"),
                             HoraTrabajadaHoraSalida = SafeGetTime(reader, "HoraSalida"),
 
                             HorasTrabajadas = reader.GetDecimal(reader.GetOrdinal("HorasNormales")),
-                            HorasExtra = reader.GetDecimal(reader.GetOrdinal("HorasExtra")),
                             HoraTrabajadaDescanso = reader.GetDecimal(reader.GetOrdinal("HorasDescanso")),
                             HoraTrabajadaObservaciones = SafeGetString(reader, "Observaciones"),
                             RegistroFechaCreacion = SafeGetDateTime(reader, "RegistroFechaCreacion") ?? default

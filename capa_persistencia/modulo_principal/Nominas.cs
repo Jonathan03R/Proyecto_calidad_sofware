@@ -1,11 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using capa_dominio.dto;
 using capa_persistencia.modulo_base;
 using Microsoft.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
+// <<<<<<< CapaPresentacionH2
     
+// =======
+//     // DTO (mover a Dominio si ya lo tienes allí)
+
+
+// >>>>>>> main
     public class Nominas
     {
         private readonly AccesoSQLServer _accesoSQL;

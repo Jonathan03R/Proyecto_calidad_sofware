@@ -24,20 +24,5 @@ namespace capa_dominio
         public char TiposHorasExtrasEstado { get => tiposHorasExtrasEstado; set => tiposHorasExtrasEstado = value; }
         public DateTime TiposHorasExtrasFechaCreacion { get => tiposHorasExtrasFechaCreacion; set => tiposHorasExtrasFechaCreacion = value; }
 
-        
-        public bool EstaActivo()
-        {
-            return tiposHorasExtrasEstado == 'A';
-        }
-
-        public decimal CalcularPago(decimal valorHoraNormal, decimal cantidadHoras)
-        {
-            return valorHoraNormal * cantidadHoras * tiposHorasExtrasMultiplicador;
-        }
-
-        public string Resumen()
-        {
-            return $"{tiposHorasExtrasNombre} ({tiposHorasExtrasCodigo}) - Multiplicador: x{tiposHorasExtrasMultiplicador}";
-        }
     }
 }

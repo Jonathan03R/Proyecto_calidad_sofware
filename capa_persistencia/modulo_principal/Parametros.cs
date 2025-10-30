@@ -73,7 +73,11 @@ namespace capa_persistencia.modulo_principal
 
             return lista;
         }
-    }
+// <<<<<<< CapaPresentacionH2
+// =======
+
+// >>>>>>> main
+//     }
 }
 
 
