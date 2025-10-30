@@ -42,10 +42,37 @@ namespace capa_persistencia.modulo_principal
                                 TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id"))
                             },
                             FaltaFecha = reader.GetDateTime(reader.GetOrdinal("falta_fecha")),
-                            FaltaTipo = SafeGetString(reader, "falta_tipo"),
-                            FaltaObservaciones = SafeGetString(reader, "falta_observaciones"),
-                            FaltaDocumentoSoporte = SafeGetString(reader, "falta_documento_soporte")
+// <<<<<<< CapaPresentacionH2
+//                             FaltaTipo = reader.IsDBNull(reader.GetOrdinal("falta_tipo"))
+//                                 ? string.Empty
+//                                 : reader.GetString(reader.GetOrdinal("falta_tipo")),
+
+//                             FaltaDias = reader.IsDBNull(reader.GetOrdinal("falta_dias"))
+//                                 ? 0m
+//                                 : reader.GetDecimal(reader.GetOrdinal("falta_dias")),
+
+//                             FaltaValorDiaNormal = reader.IsDBNull(reader.GetOrdinal("falta_valor_dia_normal"))
+//                                 ? 0m
+//                                 : reader.GetDecimal(reader.GetOrdinal("falta_valor_dia_normal")),
+
+//                             FaltaValorDescuento = reader.IsDBNull(reader.GetOrdinal("falta_valor_descuento"))
+//                                 ? 0m
+//                                 : reader.GetDecimal(reader.GetOrdinal("falta_valor_descuento")),
+
+//                             FaltaObservaciones = reader.IsDBNull(reader.GetOrdinal("falta_observaciones"))
+//                                 ? string.Empty
+//                                 : reader.GetString(reader.GetOrdinal("falta_observaciones")),
+
+//                             FaltaDocumentoSoporte = reader.IsDBNull(reader.GetOrdinal("falta_documento_soporte"))
+//                                 ? string.Empty
+//                                 : reader.GetString(reader.GetOrdinal("falta_documento_soporte"))
+// =======
+//                             FaltaTipo = SafeGetString(reader, "falta_tipo"),
+//                             FaltaObservaciones = SafeGetString(reader, "falta_observaciones"),
+//                             FaltaDocumentoSoporte = SafeGetString(reader, "falta_documento_soporte")
+// >>>>>>> main
                         };
+
                         lista.Add(f);
                     }
                 }
@@ -61,21 +88,24 @@ namespace capa_persistencia.modulo_principal
 
             return lista;
         }
+// <<<<<<< CapaPresentacionH2
+// =======
 
-        // -----------------------
-        // Helpers NULL-safe
-        // -----------------------
-        private static string SafeGetString(SqlDataReader r, string col)
-        {
-            int i = r.GetOrdinal(col);
-            return r.IsDBNull(i) ? null : r.GetString(i);
-        }
+//         // -----------------------
+//         // Helpers NULL-safe
+//         // -----------------------
+//         private static string SafeGetString(SqlDataReader r, string col)
+//         {
+//             int i = r.GetOrdinal(col);
+//             return r.IsDBNull(i) ? null : r.GetString(i);
+//         }
 
-        // Devuelve decimal con valor por defecto si la columna es NULL
-        private static decimal SafeGetDecimalOrDefault(SqlDataReader r, string col, decimal defaultValue)
-        {
-            int i = r.GetOrdinal(col);
-            return r.IsDBNull(i) ? defaultValue : r.GetDecimal(i);
-        }
+//         // Devuelve decimal con valor por defecto si la columna es NULL
+//         private static decimal SafeGetDecimalOrDefault(SqlDataReader r, string col, decimal defaultValue)
+//         {
+//             int i = r.GetOrdinal(col);
+//             return r.IsDBNull(i) ? defaultValue : r.GetDecimal(i);
+//         }
+// >>>>>>> main
     }
 }
