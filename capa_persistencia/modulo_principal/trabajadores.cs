@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using capa_persistencia.modulo_base;
-using Microsoft.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {

@@ -1,6 +1,5 @@
 ﻿using capa_dominio;
 using capa_persistencia.modulo_base;
-using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 

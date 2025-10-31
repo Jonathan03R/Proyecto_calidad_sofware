@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using capa_dominio;                      
 using capa_persistencia.modulo_base; 
-using Microsoft.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
