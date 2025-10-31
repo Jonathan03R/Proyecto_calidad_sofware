@@ -1,8 +1,8 @@
 ﻿using capa_dominio.dto;
 using capa_persistencia.modulo_base;
-using Microsoft.Data.SqlClient;
 using System;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
