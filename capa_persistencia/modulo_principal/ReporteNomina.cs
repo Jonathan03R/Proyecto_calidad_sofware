@@ -20,6 +20,41 @@ namespace capa_persistencia.modulo_principal
             conexion.AbrirConexion();
         }
 
+        // Se agrego esto porque Copilot dijo que esto unia el nombre completo
+        // en nombres y apellidos de forma segura
+        private static string SafeGet(SqlDataReader dr, string columnName)
+        {
+            try
+            {
+                int idx = dr.GetOrdinal(columnName);
+                return dr.IsDBNull(idx) ? null : dr.GetString(idx);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static void SplitFullName(string fullName, out string nombres, out string apellidos)
+        {
+            nombres = string.Empty;
+            apellidos = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(fullName)) return;
+
+            var parts = fullName.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length == 1)
+            {
+                nombres = parts[0];
+                apellidos = string.Empty;
+            }
+            else
+            {
+                apellidos = parts[parts.Length - 1];
+                nombres = string.Join(" ", parts.Take(parts.Length - 1));
+            }
+        }
+
         public List<DetalleNomina> ConsultarNominaPorPeriodo(int periodoId, int? cargoId = null)
         {
             List<DetalleNomina> lista = new List<DetalleNomina>();
@@ -35,34 +70,43 @@ namespace capa_persistencia.modulo_principal
                 {
                     while (dr.Read())
                     {
-                        
+                        // Intentamos obtener nombres y apellidos por separado; si no existen, separamos NombreCompleto.
+                        string nombres = SafeGet(dr, "Nombres") ?? SafeGet(dr, "nombres");
+                        string apellidos = SafeGet(dr, "Apellidos") ?? SafeGet(dr, "apellidos");
+
+                        if (string.IsNullOrWhiteSpace(nombres) && string.IsNullOrWhiteSpace(apellidos))
+                        {
+                            var full = SafeGet(dr, "NombreCompleto") ?? SafeGet(dr, "nombre_completo") ?? SafeGet(dr, "Nombre") ?? SafeGet(dr, "nombre");
+                            SplitFullName(full, out nombres, out apellidos);
+                        }
+
                         Trabajador t = new Trabajador
                         {
-                            Codigo = dr["CodigoTrabajador"].ToString(),
-                            //TrabajadorNombreCompleto = dr["NombreCompleto"].ToString(),
-                            TipoIdentificacion = dr["Tipo de Identificacion"].ToString(),
-                            Identificacion = dr["NumeroIdentificacion"].ToString()
+                            Codigo = SafeGet(dr, "CodigoTrabajador") ?? SafeGet(dr, "codigo_trabajador") ?? string.Empty,
+                            Nombres = nombres ?? string.Empty,
+                            Apellidos = apellidos ?? string.Empty,
+                            TipoIdentificacion = SafeGet(dr, "Tipo de Identificacion") ?? SafeGet(dr, "tipo_identificacion") ?? string.Empty,
+                            Identificacion = SafeGet(dr, "NumeroIdentificacion") ?? SafeGet(dr, "numero_identificacion") ?? SafeGet(dr, "identificacion") ?? string.Empty
                         };
 
-                        //Cargo cargo = new Cargo
-                        //{
-                        //    CargoNombre = dr["Tipo de Cargo"].ToString()
-                        //};
+                        Cargo cargo = new Cargo
+                        {
+                            CargoNombre = dr["Tipo de Cargo"].ToString()
+                        };
 
-                        
                         DateTime? fechaFin = dr["FechaFinContrato"] is DBNull ? (DateTime?)null : Convert.ToDateTime(dr["FechaFinContrato"]);
 
                         Contrato c = new Contrato
                         {
                             ContratoFechaInicio = Convert.ToDateTime(dr["FechaInicioContrato"]),
                             ContratoFechaFin = fechaFin,
-                            // Aquí puedes mapear otros campos de Contrato (ej. cargo, salario)
+                            // Asignamos el trabajador al contrato para que la cadena completa esté disponible donde se use.
+                            Trabajador = t
                         };
 
                         DetalleNomina detalle = new DetalleNomina
                         {
-
-                            // Asignación de objetos referenciados (lo que faltaba)
+                            // Asignación de objetos referenciados
                             Contrato = c,
 
                             // Mapeo de Ingresos
@@ -84,6 +128,12 @@ namespace capa_persistencia.modulo_principal
                             TotalIngresos = Convert.ToDecimal(dr["TotalHaberes"]),
                             TotalDescuentos = Convert.ToDecimal(dr["TotalDescuentos"]),
                             NetoPagar = Convert.ToDecimal(dr["NetoPagar"])
+
+                        };
+
+                        Periodo periodo = new Periodo
+                        {
+                            PeriodoNombre = dr["PeriodoNombre"].ToString(),
                         };
 
                         lista.Add(detalle);
