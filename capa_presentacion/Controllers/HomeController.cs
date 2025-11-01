@@ -24,7 +24,7 @@ namespace capa_presentacion.Controllers
         {
             ViewBag.Message = "Your contact page.";
 
-            return View();
+            return View(); //Hola como estan xd
         }
     }
 }
