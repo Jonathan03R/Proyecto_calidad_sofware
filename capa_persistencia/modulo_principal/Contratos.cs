@@ -9,10 +9,11 @@ namespace capa_persistencia.modulo_principal
     {
         private readonly AccesoSQLServer _accesoSQL;
 
-        public Contratos()
+        public Contratos(AccesoSQLServer accesoSQL)
         {
-            _accesoSQL = new AccesoSQLServer();
+            _accesoSQL = accesoSQL;
         }
+
 
         public int CrearContratoEmpleado(ContratoDTO contrato)
         {

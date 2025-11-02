@@ -19,6 +19,7 @@ namespace capa_dominio
         private List<HoraTrabajada> horasTrabajadas = new List<HoraTrabajada>();
         private List<Contacto> contactos = new List<Contacto>();
         private Contrato contrato;
+        private List<Hijo> hijos;
 
         public int TrabajadorId { get => trabajadorId; set => trabajadorId = value; }
 
@@ -41,6 +42,8 @@ namespace capa_dominio
         //public List<Contrato> Contratos { get => contratos; set => contratos = value; }
 
         public List<HoraTrabajada> HorasTrabajadas { get => horasTrabajadas; set => horasTrabajadas = value; }
+
+        public List<Hijo> Hijos { get => hijos; set => hijos = value; } 
         public string TrabajadorNombreCompleto { get; internal set; }
        
         public void calculaHorasTrabajadas() { 
@@ -51,7 +54,15 @@ namespace capa_dominio
             }
         }
 
-
-
+        // Según la ley peruana, tiene derecho si tiene al menos un hijo menor de 18
+        // o mayor de edad con discapacidad o estudiante dependiente
+        public bool TieneDerechoAsignacionFamiliar()
+        {
+            return hijos.Any(h =>
+                h.Estado == 'a' &&
+                (h.FechaNacimiento > DateTime.Now.AddYears(-18) ||
+                 h.TieneDiscapacidad ||
+                 h.Estudia));
+        }
     }
 }
