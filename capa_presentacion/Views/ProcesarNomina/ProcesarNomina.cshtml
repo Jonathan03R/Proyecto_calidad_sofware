@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "Procesar Nómina";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Procesar Nómina - <span id="cabeceraMes">@ViewBag.MesDescripcion</span></h2>
+
+        <!-- botón con data-periodo (puede ser "2025-09" u "SEPTIEMBRE 2025") -->
+        <button class="btn btn-outline-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#ModalParametrosPeriodo"
+                data-periodo="@DateTime.Now.ToString("yyyy-MM")"
+                id="btnAbrirParametros">
+            Parámetros
+        </button>
+    </div>
+
+    <!-- resto de vista -->
+
+</div>
+
+@Html.Partial("modals/_ParametrosPeriodoModal")
+@Html.Partial("modals/_DetalleNominaEmpleadoModal")

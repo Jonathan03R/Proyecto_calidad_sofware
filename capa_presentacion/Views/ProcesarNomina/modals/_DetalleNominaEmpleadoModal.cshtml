@@ -1,0 +1,64 @@
+﻿<div class="modal fade" id="ModalDetalleNominaEmpleado" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Detalle del Cálculo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row mb-3">
+                    <div class="col-6"><strong>Empleado</strong></div>
+                    <div class="col-6 text-end" id="lblEmpleadoNombre">--</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-6"><strong>Cargo</strong></div>
+                    <div class="col-6 text-end" id="lblCargo">--</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-6"><strong>Tipo de Contrato</strong></div>
+                    <div class="col-6 text-end" id="lblTipoContrato">--</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-6"><strong>Días Trabajados</strong></div>
+                    <div class="col-6 text-end" id="lblDiasTrabajados">--</div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-6">
+                        <h6>Ingresos</h6>
+                        <table class="table table-sm table-borderless" id="tblIngresos"></table>
+                    </div>
+
+                    <div class="col-6">
+                        <h6>Descuentos</h6>
+                        <table class="table table-sm table-borderless" id="tblDescuentos"></table>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="row">
+                    <div class="col text-center">
+                        <strong>Remuneración Bruta:</strong> S/ <span id="lblBruta">0.00</span>
+                    </div>
+                    <div class="col text-center">
+                        <strong>Total Descuento:</strong> S/ <span id="lblTotalDescuento">0.00</span>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <h5>Neto a Pagar: S/ <span id="lblNetoPagar">0.00</span></h5>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+

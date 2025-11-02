@@ -1,0 +1,104 @@
+﻿<!-- modals/_ParametrosPeriodoModal.cshtml -->
+<div class="modal fade" id="ModalParametrosPeriodo" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloModalPeriodo">--</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-6">
+                        <p>
+                            <strong>Sueldo Mínimo</strong><br> al <span id="lblFechaVigencia">--</span>
+                            <span class="float-end">S/ <span id="lblRMV">0.00</span></span>
+                        </p>
+
+                        <p>
+                            <strong>UIT</strong><br>
+                            <span class="float-end">S/ <span id="lblUIT">0.00</span></span>
+                        </p>
+
+                        <p>
+                            <strong>Asignación Familiar</strong><br>
+                            <span class="float-end"><span id="lblAsignacion">0</span> %</span>
+                        </p>
+
+                        <p>
+                            <strong>Deducción anual</strong><br>
+                            <span class="float-end">S/ <span id="lblDeduccionAnual">0.00</span></span>
+                        </p>
+                    </div>
+
+                    <div class="col-6">
+                        <p>
+                            <strong>EsSalud (%)</strong>
+                            <span class="float-end"><span id="lblEsSalud">0</span> %</span>
+                        </p>
+
+                        <p>
+                            <strong>EsSalud (si EPS)</strong>
+                            <span class="float-end"><span id="lblEsSaludEPS">0</span> %</span>
+                        </p>
+
+                        <p>
+                            <strong>AFP (%)</strong>
+                            <span class="float-end"><span id="lblAFP">0</span> %</span>
+                        </p>
+
+                        <p>
+                            <strong>ONP (%)</strong>
+                            <span class="float-end"><span id="lblONP">0</span> %</span>
+                        </p>
+                    </div>
+                </div>
+
+                <hr />
+
+                <h6>Cotización Previsional</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered" id="tblCotizacionesAFP">
+                        <thead>
+                            <tr>
+                                <th>AFP</th>
+                                <th>Comisión (Flujo)</th>
+                                <th>Comisión (Saldo)</th>
+                                <th>Seguro</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- se llena por JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <h6 class="mt-4">Tasas de Impuesto (Quinta Categoría)</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered" id="tblTramosIR">
+                        <thead>
+                            <tr>
+                                <th>Tramo</th>
+                                <th>Límite (UIT)</th>
+                                <th>Límite Inferior (S/.)</th>
+                                <th>Límite Superior (S/.)</th>
+                                <th>Tasa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- se llena por JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
