@@ -1,4 +1,5 @@
 ﻿using capa_dominio;
+using capa_dominio.dto;
 using capa_persistencia.modulo_base;
 using capa_persistencia.modulo_principal;
 using System;
@@ -19,7 +20,7 @@ namespace capa_aplicacion.Servicios
             reporteNomina = new ReporteNomina();
         }
 
-        public List<DetalleNomina> ConsultarNominaPorPeriodo(int periodoId, int? cargoId = null)
+        public List<ReporteNominaDTO> ConsultarNominaPorPeriodo(int periodoId, int? cargoId = null)
         {
             try
             {
@@ -27,16 +28,19 @@ namespace capa_aplicacion.Servicios
                 {
                     var periodos = reporteNomina.ListarPeriodos();
                     if (periodos == null || periodos.Count == 0)
-                        return new List<DetalleNomina>();
+                        return new List<ReporteNominaDTO>();
 
                     periodoId = periodos.First().PeriodoId;
                 }
 
-                var detalles = reporteNomina.ConsultarNominaPorPeriodo(periodoId, cargoId);
-                return detalles ?? new List<DetalleNomina>();
+                var reporte = reporteNomina.ConsultarNominaPorPeriodo(periodoId, cargoId);
+                return reporte ?? new List<ReporteNominaDTO>();
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine("❌ Error exacto: " + ex.Message);
+                System.Diagnostics.Debug.WriteLine("🔍 Traza del error: " + ex.StackTrace);
+
                 throw new Exception("Error al ConsultarNominaPorPeriodo", ex);
             }
         }

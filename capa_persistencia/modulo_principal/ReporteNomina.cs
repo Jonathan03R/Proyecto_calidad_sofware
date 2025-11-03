@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using capa_dominio;
+using capa_dominio.dto;
 using capa_persistencia.modulo_base;
 
 namespace capa_persistencia.modulo_principal
@@ -20,125 +21,90 @@ namespace capa_persistencia.modulo_principal
             conexion.AbrirConexion();
         }
 
-        // Se agrego esto porque Copilot dijo que esto unia el nombre completo
-        // en nombres y apellidos de forma segura
-        private static string SafeGet(SqlDataReader dr, string columnName)
+        public List<ReporteNominaDTO> ConsultarNominaPorPeriodo(int periodoId, int? cargoId = null)
         {
-            try
-            {
-                int idx = dr.GetOrdinal(columnName);
-                return dr.IsDBNull(idx) ? null : dr.GetString(idx);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        private static void SplitFullName(string fullName, out string nombres, out string apellidos)
-        {
-            nombres = string.Empty;
-            apellidos = string.Empty;
-
-            if (string.IsNullOrWhiteSpace(fullName)) return;
-
-            var parts = fullName.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length == 1)
-            {
-                nombres = parts[0];
-                apellidos = string.Empty;
-            }
-            else
-            {
-                apellidos = parts[parts.Length - 1];
-                nombres = string.Join(" ", parts.Take(parts.Length - 1));
-            }
-        }
-
-        public List<DetalleNomina> ConsultarNominaPorPeriodo(int periodoId, int? cargoId = null)
-        {
-            List<DetalleNomina> lista = new List<DetalleNomina>();
+            List<ReporteNominaDTO> listaReporte = new List<ReporteNominaDTO>();
 
             try
             {
-
                 SqlCommand cmd = conexion.ObtenerComandoDeProcedimiento("proc_Consultar_Nomina_Por_Periodo");
                 cmd.Parameters.AddWithValue("@PeriodoID", periodoId);
-                cmd.Parameters.AddWithValue("@CargoID", cargoId.HasValue ? (object)cargoId.Value : DBNull.Value);
+                cmd.Parameters.AddWithValue("@CargoID", (object)cargoId ?? DBNull.Value);
 
                 using (SqlDataReader dr = cmd.ExecuteReader())
                 {
                     while (dr.Read())
                     {
-                        // Intentamos obtener nombres y apellidos por separado; si no existen, separamos NombreCompleto.
-                        string nombres = SafeGet(dr, "Nombres") ?? SafeGet(dr, "nombres");
-                        string apellidos = SafeGet(dr, "Apellidos") ?? SafeGet(dr, "apellidos");
-
-                        if (string.IsNullOrWhiteSpace(nombres) && string.IsNullOrWhiteSpace(apellidos))
+                        ReporteNominaDTO reporte = new ReporteNominaDTO
                         {
-                            var full = SafeGet(dr, "NombreCompleto") ?? SafeGet(dr, "nombre_completo") ?? SafeGet(dr, "Nombre") ?? SafeGet(dr, "nombre");
-                            SplitFullName(full, out nombres, out apellidos);
-                        }
+                            // Datos del Trabajador
+                            CodigoTrabajador = dr["CodigoTrabajador"].ToString(),
+                            Nombres = dr["Nombres"].ToString(),
+                            Apellidos = dr["Apellidos"].ToString(),
+                            TipoDeIdentificacion = dr["Tipo de Identificacion"].ToString(),
+                            NumeroIdentificacion = dr["NumeroIdentificacion"].ToString(),
+                            SistemaPension = dr["SistemaPension"].ToString(),
+                            TipoTrabajador = dr["TipoTrabajador"].ToString(),
+                            FechaInicioContrato = Convert.ToDateTime(dr["FechaInicioContrato"]),
+                            FechaFinContrato = dr["FechaFinContrato"] != DBNull.Value
+                                ? (DateTime?)Convert.ToDateTime(dr["FechaFinContrato"])
+                                : null,
 
-                        Trabajador t = new Trabajador
-                        {
-                            Codigo = SafeGet(dr, "CodigoTrabajador") ?? SafeGet(dr, "codigo_trabajador") ?? string.Empty,
-                            Nombres = nombres ?? string.Empty,
-                            Apellidos = apellidos ?? string.Empty,
-                            TipoIdentificacion = SafeGet(dr, "Tipo de Identificacion") ?? SafeGet(dr, "tipo_identificacion") ?? string.Empty,
-                            Identificacion = SafeGet(dr, "NumeroIdentificacion") ?? SafeGet(dr, "numero_identificacion") ?? SafeGet(dr, "identificacion") ?? string.Empty
-                        };
+                            // Jornada Laboral
+                            TipoDeJornadaPactada = dr["TipoDeJornadaPactada"].ToString(),
+                            HorasSemanalesPactadas = dr["HorasSemanalesPactadas"] != DBNull.Value
+                                ? (decimal?)Convert.ToDecimal(dr["HorasSemanalesPactadas"])
+                                : null,
+                            HorasTrabajadasEstimadas = dr["HorasTrabajadasEstimadas"] != DBNull.Value
+                                ? (decimal?)Convert.ToDecimal(dr["HorasTrabajadasEstimadas"])
+                                : null,
+                            HorasExtrasReales = dr["HorasExtrasReales"] != DBNull.Value
+                                ? (decimal?)Convert.ToDecimal(dr["HorasExtrasReales"])
+                                : null,
 
-                        Cargo cargo = new Cargo
-                        {
-                            CargoNombre = dr["Tipo de Cargo"].ToString()
-                        };
-
-                        DateTime? fechaFin = dr["FechaFinContrato"] is DBNull ? (DateTime?)null : Convert.ToDateTime(dr["FechaFinContrato"]);
-
-                        Contrato c = new Contrato
-                        {
-                            ContratoFechaInicio = Convert.ToDateTime(dr["FechaInicioContrato"]),
-                            ContratoFechaFin = fechaFin,
-                            // Asignamos el trabajador al contrato para que la cadena completa esté disponible donde se use.
-                            Trabajador = t
-                        };
-
-                        DetalleNomina detalle = new DetalleNomina
-                        {
-                            // Asignación de objetos referenciados
-                            Contrato = c,
-
-                            // Mapeo de Ingresos
+                            // Ingresos
                             SueldoBasico = Convert.ToDecimal(dr["SueldoBasico"]),
                             AsignacionFamiliar = Convert.ToDecimal(dr["AsignacionFamiliar"]),
-                            HorasExtras = Convert.ToDecimal(dr["MontoHorasExtras"]),
-                            BonosRegulares = Convert.ToDecimal(dr["MontoBonos"]),
+                            MontoHorasExtras = Convert.ToDecimal(dr["MontoHorasExtras"]),
+                            MontoBonos = Convert.ToDecimal(dr["MontoBonos"]),
                             OtrosIngresos = Convert.ToDecimal(dr["OtrosIngresos"]),
+                            TotalHaberesBruto = Convert.ToDecimal(dr["TotalHaberesBruto"]),
+                            TotalHaberes = Convert.ToDecimal(dr["TotalHaberes"]),
 
-                            // Mapeo de Descuentos/Aportes (se debe usar manejo de DBNull si aplican)
-                            AporteEssalud = Convert.ToDecimal(dr["AporteEsSalud"]),
-                            AporteONP = dr["DescuentoONP"] is DBNull ? 0m : Convert.ToDecimal(dr["DescuentoONP"]),
-                            DescuentoAFP = dr["DescuentoAFP"] is DBNull ? 0m : Convert.ToDecimal(dr["DescuentoAFP"]),
-                            ImpuestoRentaMensual = Convert.ToDecimal(dr["RetencionImpuestoRenta"]),
+                            // Descuentos Legales
+                            AporteSistemaPension = Convert.ToDecimal(dr["AporteSistemaPension"]),
+                            DescuentoONP = Convert.ToDecimal(dr["DescuentoONP"]),
+                            DescuentoAFP = Convert.ToDecimal(dr["DescuentoAFP"]),
+                            RetencionImpuestoRenta = Convert.ToDecimal(dr["RetencionImpuestoRenta"]),
+
+                            // Aportes del Empleador
+                            AporteEsSalud = Convert.ToDecimal(dr["AporteEsSalud"]),
+                            BaseImponibleEsSalud = Convert.ToDecimal(dr["BaseImponibleEsSalud"]),
+
+                            // Otros Descuentos
                             DescuentoFaltas = Convert.ToDecimal(dr["DescuentoFaltas"]),
                             DescuentoAdelantos = Convert.ToDecimal(dr["DescuentoAdelantos"]),
+                            OtrosDescuentos = Convert.ToDecimal(dr["OtrosDescuentos"]),
 
-                            // Mapeo de Totales
-                            TotalIngresos = Convert.ToDecimal(dr["TotalHaberes"]),
+                            // Totales
                             TotalDescuentos = Convert.ToDecimal(dr["TotalDescuentos"]),
-                            NetoPagar = Convert.ToDecimal(dr["NetoPagar"])
+                            NetoPagar = Convert.ToDecimal(dr["NetoPagar"]),
 
+                            // Datos de Contexto
+                            PeriodoNomina = dr["PeriodoNomina"].ToString()
                         };
 
-                        Periodo periodo = new Periodo
-                        {
-                            PeriodoNombre = dr["PeriodoNombre"].ToString(),
-                        };
-
-                        lista.Add(detalle);
+                        listaReporte.Add(reporte);
                     }
                 }
+            }
+            catch (FormatException ex)
+            {
+                throw new Exception($"Error de formato al convertir datos: {ex.Message}. Verifique los tipos de datos en la consulta.", ex);
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception($"Error al ejecutar proc_Consultar_Nomina_Por_Periodo: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
@@ -149,7 +115,7 @@ namespace capa_persistencia.modulo_principal
                 conexion.CerrarConexion();
             }
 
-            return lista;
+            return listaReporte;
         }
 
         /// <summary>
