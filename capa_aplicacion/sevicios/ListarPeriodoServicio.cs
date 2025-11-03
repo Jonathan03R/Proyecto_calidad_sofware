@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace capa_aplicacion
+namespace capa_aplicacion.sevicios
 {
-    public class borrar
+    public class ListarPeriodoServicio
     {
-
-
-        private int primer;
     }
 }

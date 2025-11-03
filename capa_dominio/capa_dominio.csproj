@@ -59,6 +59,7 @@
     <Compile Include="dto\TrabajadorProcesableDTO.cs" />
     <Compile Include="EstadoContrato.cs" />
     <Compile Include="Falta.cs" />
+    <Compile Include="Hijos.cs" />
     <Compile Include="HoraTrabajada.cs" />
     <Compile Include="ImpuestoRentaAcumulado.cs" />
     <Compile Include="ImpuestoRentaTramo.cs" />

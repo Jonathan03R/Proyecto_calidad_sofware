@@ -41,9 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="mapeadores\DetalleNominaMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Servicios\ReporteService.cs" />
+    <Compile Include="sevicios\ListarPeriodoServicio.cs" />
+    <Compile Include="sevicios\NominasServicios.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\capa_dominio\capa_dominio.csproj">
