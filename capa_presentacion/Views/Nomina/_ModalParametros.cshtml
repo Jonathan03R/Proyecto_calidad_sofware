@@ -1,0 +1,38 @@
+﻿@* Modal ligero en CSS (sin dependencias) *@
+<div id="modalParametros" class="">
+    <div class="modal-card">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="m-0">Parámetros oficiales</h5>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-close="modalParametros">Cerrar</button>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-3"><strong>RMV:</strong> S/ <span data-param="RMV">-</span></div>
+            <div class="col-md-3"><strong>UIT:</strong> S/ <span data-param="UIT">-</span></div>
+            <div class="col-md-3"><strong>Asig. Familiar:</strong> <span data-param="AsigFam">-</span></div>
+            <div class="col-md-3"><strong>EsSalud:</strong> <span data-param="EsSalud">-</span></div>
+            <div class="col-md-3"><strong>ONP:</strong> <span data-param="ONP">-</span></div>
+            <div class="col-md-3"><strong>AFP Fondo:</strong> <span data-param="AFPF">-</span></div>
+            <div class="col-md-3"><strong>AFP Comisión:</strong> <span data-param="AFPC">-</span></div>
+            <div class="col-md-3"><strong>AFP Seguro:</strong> <span data-param="AFPS">-</span></div>
+        </div>
+
+        <hr />
+
+        <h6>Tabla de Impuesto a la Renta (Tramos)</h6>
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Desde (UIT)</th>
+                        <th>Hasta (UIT)</th>
+                        <th>Tasa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="3" class="text-center">Cargando…</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
