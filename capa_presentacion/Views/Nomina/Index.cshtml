@@ -1,0 +1,64 @@
+﻿@model capa_presentacion.Models.ViewModels.NominaPeriodoVM
+@{
+    ViewBag.Title = "Procesar Nómina";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Procesar Nómina por período</h2>
+
+    <form id="frmNomina" class="form-nomina">
+        <div class="form-group">
+            <div>
+                <label for="ddlPeriodo">Período</label>
+                <select id="ddlPeriodo">
+                    <option value="">-- Cargando períodos... --</option>
+                </select>
+            </div>
+            <div>
+                <div class="form-group">
+                    <label for="ddlTipoNomina">Tipo de Nómina</label>
+                    <select id="ddlTipoNomina">
+                        <option value="">Todos los tipos</option>
+                        <option value="Mensual">Mensual</option>
+                        <option value="Quincenal">Quincenal</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+            <button id="btnProcesar" type="button" class="btn-primary">▶ Procesar Nómina</button>
+            <button id="btnParametros" type="button" class="btn-secondary">⚖ Parámetros oficiales</button>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col-lg-8">
+            @Html.Partial("_TablaVigentes")
+        </div>
+        <div class="col-lg-4">
+            <h5 class="mb-2">Resumen</h5>
+            @Html.Partial("_TablaResumen")
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <h5 class="mb-2">Errores (si los hubiera)</h5>
+            @Html.Partial("_TablaErrores")
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_ModalParametros")
+@Html.Partial("_ModalConfirmarProcesamiento")
+@Html.Partial("_Toast")
+
+@* Si NO los pusiste en _Layout, descomenta estos *@
+
+<script src="~/Scripts/nomina/nomina.mock.api.js"></script>
+<script src="~/Scripts/nomina/nomina.validation.js"></script>
+<script src="~/Scripts/nomina/nomina.ui.js"></script>
+<link rel="stylesheet" href="~/Content/css/nomina.css" />
+

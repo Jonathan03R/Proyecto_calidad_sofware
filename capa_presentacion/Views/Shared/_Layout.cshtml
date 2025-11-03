@@ -1,40 +1,66 @@
-﻿<!DOCTYPE html>
-<html>
+﻿@*
+    _Layout.cshtml — Plantilla principal del sistema de nómina
+    Versión sin Bootstrap: usa solo CSS local
+*@
+<!DOCTYPE html>
+<html lang="es">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Mi aplicación ASP.NET</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - Sistema de Nómina</title>
+
+    <!-- Estilos propios -->
+    <link rel="stylesheet" href="~/Content/css/nomina.css" />
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
-        <div class="container">
-            @Html.ActionLink("Nombre de la aplicación", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Alternar navegación" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Inicio", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Acerca de", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Contacto", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                </ul>
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-cabecera">
+                   <img src="~/Content/img/icons/LogoPrincipal.svg" alt="LogoPrincipal" class="icon" />
+                   <div class="texto-cabecera">
+                       <a href="/Nomina/Index" class="navbar-brand">GRUPO-02</a>
+                       <a href="/Nomina/Index" class="navbar-brand2">Sistema de Nómina</a>
+                   </div>
             </div>
-        </div>
-    </nav>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Mi aplicación ASP.NET</p>
-        </footer>
-    </div>
+            <div>
+                <nav class="navbar-links">
+                    <a href="/Nomina/Dashboard" class="@(ViewBag.Title == "Dashboard" ? "active" : "")">
+                        <img src="~/Content/img/icons/Dashboard.svg" alt="Dashboard" class="icon" /> Dashboard
+                    </a>
+                    <a href="/Nomina/Index" class="@(ViewBag.Title == "Procesar Nómina" ? "active" : "")">
+                        <img src="~/Content/img/icons/Nomina.svg" alt="Nómina" class="icon" /> Procesar Nómina
+                    </a>
+                    <a href="/Nomina/Historial" class="@(ViewBag.Title == "Historial de Nóminas" ? "active" : "")">
+                        <img src="~/Content/img/icons/Reportes.svg" alt="Historial" class="icon" /> Historial
+                    </a>
+                    <a href="/Nomina/Empleados" class="@(ViewBag.Title == "Empleados" ? "active" : "")">
+                        <img src="~/Content/img/icons/Empleados.svg" alt="Empleados" class="icon" /> Empleados
+                    </a>
+                    <a href="/Nomina/Reportes" class="@(ViewBag.Title == "Reportes" ? "active" : "")">
+                        <img src="~/Content/img/icons/Reportes.svg" alt="Reportes" class="icon" /> Reportes
+                    </a>
+                    <a href="/Nomina/Parámetros" class="@(ViewBag.Title == "Parámetros" ? "active" : "")">
+                        <img src="~/Content/img/icons/Parametros.svg" alt="Parámetros" class="icon" /> Parámetros
+                    </a>
+                </nav>
+            </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
+        </div>
+    </header>
+
+    <main class="main-content">
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <p>© @DateTime.Now.Year - Sistema de Nómina | Desarrollado por el equipo numero 2</p>
+    </footer>
+
+    <!-- Scripts propios -->
+    <script src="~/Scripts/nomina/nomina.mock.api.js"></script>
+    <script src="~/Scripts/nomina/nomina.validation.js"></script>
+    <script src="~/Scripts/nomina/nomina.ui.js"></script>
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

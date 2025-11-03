@@ -1,0 +1,146 @@
+﻿@model IEnumerable<capa_presentacion.Models.ViewModels.NominaPeriodoVM>
+@{
+    ViewBag.Title = "Historial de Nóminas";
+
+    // Utilitarios para llenar combos
+    var periodos = (Model ?? Enumerable.Empty<capa_presentacion.Models.ViewModels.NominaPeriodoVM>())
+                   .Select(p => p.PeriodoNombre)
+                   .Distinct()
+                   .OrderBy(x => x)
+                   .ToList();
+
+    var tipos = new[] { "Mensual", "Quincenal" };
+}
+
+<div class="historial-wrapper">
+    <h2 class="mb">Historial de Nóminas</h2>
+
+    <!-- Filtros -->
+    <div class="filter-bar">
+        <div class="filter-item">
+            <label for="fSearch">Buscar</label>
+            <div class="input-icon">
+                <input id="fSearch" type="text" placeholder="Buscar por período o usuario..." />
+            </div>
+        </div>
+
+        <div class="filter-item">
+            <label for="fPeriodo">Fecha</label>
+            <select id="fPeriodo">
+                <option value="">Todos los períodos</option>
+                @foreach (var per in periodos)
+                {
+                    <option value="@per">@per</option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-item">
+            <label for="fTipo">Tipo</label>
+            <select id="fTipo">
+                <option value="">Todos los tipos</option>
+                @foreach (var t in tipos)
+                {
+                    <option value="@t">@t</option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-item">
+            <label for="fEstado">Estado</label>
+            <select id="fEstado">
+                <option value="">Todos los estados</option>
+                <option value="si">Procesado</option>
+                <option value="no">No procesado</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-box">
+        <table class="table-plain" id="tblHistorial">
+            <thead>
+                <tr>
+                    <th colspan="3" class="text-center">
+                        <h2 class="mb-3">Ejecuciones de Nomina</h2>
+                    </th>
+                </tr>
+                <tr>
+                    <th>Período</th>
+                    <th>Tipo</th>
+                    <th class="t-center">Procesado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var p in Model)
+                    {
+                        <tr data-periodo="@p.PeriodoNombre"
+                            data-tipo="@p.TipoPago"
+                            data-estado="@(p.YaProcesado ? "si" : "no")">
+                            <td>@p.PeriodoNombre</td>
+                            <td>@p.TipoPago</td>
+                            <td class="t-center">
+                                @if (p.YaProcesado)
+                                {
+                                    <span class="badge-ok">Sí</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-muted">No</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="3" class="t-center">Sin datos</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+// Filtro simple en cliente
+(function () {
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+  const inp = $('#fSearch');
+  const selPeriodo = $('#fPeriodo');
+  const selTipo = $('#fTipo');
+  const selEstado = $('#fEstado');
+  const rows = () => $$('#tblHistorial tbody tr');
+
+  function normalizar(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+
+  function aplicaFiltros(){
+    const q = normalizar(inp.value);
+    const periodo = selPeriodo.value;
+    const tipo = selTipo.value;
+    const estado = selEstado.value;
+
+    rows().forEach(tr => {
+      const per = tr.getAttribute('data-periodo');
+      const tip = tr.getAttribute('data-tipo');
+      const est = tr.getAttribute('data-estado'); // si | no
+      const textoFila = normalizar(tr.innerText);
+
+      const okSearch  = !q || textoFila.includes(q);
+      const okPeriodo = !periodo || per === periodo;
+      const okTipo    = !tipo || tip === tipo;
+      const okEstado  = !estado || est === estado;
+
+      tr.style.display = (okSearch && okPeriodo && okTipo && okEstado) ? '' : 'none';
+    });
+  }
+
+  [inp, selPeriodo, selTipo, selEstado].forEach(el => el && el.addEventListener('input', aplicaFiltros));
+  [selPeriodo, selTipo, selEstado].forEach(el => el && el.addEventListener('change', aplicaFiltros));
+})();
+    </script>
+}
