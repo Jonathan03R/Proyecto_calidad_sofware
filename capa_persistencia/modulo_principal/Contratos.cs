@@ -1,7 +1,8 @@
-using System;
-using capa_persistencia.modulo_base;
 using capa_dominio;
 using capa_dominio.dto;
+using capa_persistencia.modulo_base;
+using System;
+using System.Collections.Generic;
 
 namespace capa_persistencia.modulo_principal
 {
@@ -106,6 +107,54 @@ namespace capa_persistencia.modulo_principal
             {
                 _accesoSQL.CerrarConexion();
             }
+        }
+
+        public List<ContratoDTO> ObtenerContratosPorTrabajador(int trabajadorId)
+        {
+            List<ContratoDTO> contratos = new List<ContratoDTO>();
+
+            try
+            {
+                _accesoSQL.AbrirConexion();
+                var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_contratos_por_trabajador");
+                comando.Parameters.AddWithValue("@trabajador_id", trabajadorId);
+
+                using (var reader = comando.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        ContratoDTO contrato = new ContratoDTO
+                        {
+                            TrabajadorId = reader.IsDBNull(reader.GetOrdinal("TrabajadorId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("TrabajadorId")),
+                            CargoId = reader.IsDBNull(reader.GetOrdinal("CargoId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("CargoId")),
+                            AreaId = reader.IsDBNull(reader.GetOrdinal("AreaId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("AreaId")),
+                            TipoPensionId = reader.IsDBNull(reader.GetOrdinal("TipoPensionId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("TipoPensionId")),
+                            TipoSalarioId = reader.IsDBNull(reader.GetOrdinal("TipoSalarioId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("TipoSalarioId")),
+                            TipoJornadaId = reader.IsDBNull(reader.GetOrdinal("TipoJornadaId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("TipoJornadaId")),
+                            FechaInicio = reader.GetDateTime(reader.GetOrdinal("FechaInicio")),
+                            FechaFin = reader.IsDBNull(reader.GetOrdinal("FechaFin")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("FechaFin")),
+                            Salario = reader.IsDBNull(reader.GetOrdinal("Salario")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("Salario")),
+                            TarifaHora = reader.IsDBNull(reader.GetOrdinal("TarifaHora")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("TarifaHora")),
+                            ModoPago = reader.IsDBNull(reader.GetOrdinal("ModoPago")) ? null : reader["ModoPago"].ToString(),
+                            DocumentoUrl = reader.IsDBNull(reader.GetOrdinal("DocumentoUrl")) ? null : reader["DocumentoUrl"].ToString(),
+                            DescripcionFunciones = reader.IsDBNull(reader.GetOrdinal("DescripcionFunciones")) ? null : reader["DescripcionFunciones"].ToString(),
+                            Observaciones = reader.IsDBNull(reader.GetOrdinal("Observaciones")) ? null : reader["Observaciones"].ToString()
+                        };
+
+                        contratos.Add(contrato);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CONSULTA);
+            }
+            finally
+            {
+                _accesoSQL.CerrarConexion();
+            }
+
+            return contratos;
         }
 
     }
