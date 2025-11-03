@@ -15,10 +15,9 @@ namespace capa_persistencia.modulo_principal
     {
         private readonly AccesoSQLServer conexion;
 
-        public ReporteNomina()
+        public ReporteNomina(AccesoSQLServer accesoSQLServer)
         {
-            conexion = new AccesoSQLServer();
-            conexion.AbrirConexion();
+            this.conexion = accesoSQLServer;
         }
 
         public List<ReporteNominaDTO> ConsultarNominaPorPeriodo(int periodoId, int? cargoId = null)
@@ -110,10 +109,7 @@ namespace capa_persistencia.modulo_principal
             {
                 throw new Exception("Error al consultar nómina por período.", ex);
             }
-            finally
-            {
-                conexion.CerrarConexion();
-            }
+            
 
             return listaReporte;
         }

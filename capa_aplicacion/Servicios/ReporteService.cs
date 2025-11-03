@@ -14,50 +14,46 @@ namespace capa_aplicacion.Servicios
     public class ReporteService
     {
         private readonly ReporteNomina reporteNomina;
+        private readonly AccesoSQLServer conexion;
 
         public ReporteService()
         {
-            reporteNomina = new ReporteNomina();
+            conexion = new AccesoSQLServer();
+            reporteNomina = new ReporteNomina(conexion);
         }
 
         public List<ReporteNominaDTO> ConsultarNominaPorPeriodo(int periodoId, int? cargoId = null)
         {
+            List<ReporteNominaDTO> listaReporte;
             try
             {
-                if (periodoId <= 0)
-                {
-                    var periodos = reporteNomina.ListarPeriodos();
-                    if (periodos == null || periodos.Count == 0)
-                        return new List<ReporteNominaDTO>();
-
-                    periodoId = periodos.First().PeriodoId;
-                }
-
-                var reporte = reporteNomina.ConsultarNominaPorPeriodo(periodoId, cargoId);
-                return reporte ?? new List<ReporteNominaDTO>();
+                conexion.AbrirConexion();
+                listaReporte = reporteNomina.ConsultarNominaPorPeriodo(periodoId, cargoId);
+                conexion.CerrarConexion();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("❌ Error exacto: " + ex.Message);
-                System.Diagnostics.Debug.WriteLine("🔍 Traza del error: " + ex.StackTrace);
-
-                throw new Exception("Error al ConsultarNominaPorPeriodo", ex);
+                throw ex;
             }
+            return listaReporte;
         }
 
         // Puse Listar Pwriodos por aqui ya que no se si lo van a poner en otro servicio
         // Por el momento lo dejo aqui
         public List<Periodo> ListarPeriodos(int? periodoId = null, string periodoNombre = null)
         {
+            List<Periodo> listaPeriodo;
             try
             {
-                var periodos = reporteNomina.ListarPeriodos(periodoId, periodoNombre);
-                return periodos ?? new List<Periodo>();
+                conexion.AbrirConexion();
+                listaPeriodo = reporteNomina.ListarPeriodos(periodoId, periodoNombre);
+                conexion.CerrarConexion();
             }
             catch (Exception ex)
             {
-                throw new Exception("Error en ReporteService.ListarPeriodos", ex);
+                throw ex;
             }
+            return listaPeriodo;
         }
     }
 }
