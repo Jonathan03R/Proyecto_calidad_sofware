@@ -1,7 +1,4 @@
-﻿@*
-    _Layout.cshtml — Plantilla principal del sistema de nómina
-    Versión sin Bootstrap: usa solo CSS local
-*@
+﻿@* Views/Shared/_Layout.cshtml *@
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,56 +7,115 @@
     <title>@ViewBag.Title - Sistema de Nómina</title>
 
     <!-- Estilos propios -->
-    <link rel="stylesheet" href="~/Content/css/nomina.css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/layout.css")?v=@DateTime.Now.Ticks" />
+
+    @RenderSection("Head", required: false)
 </head>
 <body>
+    @{
+        var action = (string)ViewContext.RouteData.Values["action"];
+        var controller = (string)ViewContext.RouteData.Values["controller"];
+    }
     <header class="navbar">
         <div class="navbar-container">
             <div class="navbar-cabecera">
-                   <img src="~/Content/img/icons/LogoPrincipal.svg" alt="LogoPrincipal" class="icon" />
-                   <div class="texto-cabecera">
-                       <a href="/Nomina/Index" class="navbar-brand">GRUPO-02</a>
-                       <a href="/Nomina/Index" class="navbar-brand2">Sistema de Nómina</a>
-                   </div>
-            </div>
-            <div>
-                <nav class="navbar-links">
-                    <a href="/Nomina/Dashboard" class="@(ViewBag.Title == "Dashboard" ? "active" : "")">
-                        <img src="~/Content/img/icons/Dashboard.svg" alt="Dashboard" class="icon" /> Dashboard
-                    </a>
-                    <a href="/Nomina/Index" class="@(ViewBag.Title == "Procesar Nómina" ? "active" : "")">
-                        <img src="~/Content/img/icons/Nomina.svg" alt="Nómina" class="icon" /> Procesar Nómina
-                    </a>
-                    <a href="/Nomina/Historial" class="@(ViewBag.Title == "Historial de Nóminas" ? "active" : "")">
-                        <img src="~/Content/img/icons/Reportes.svg" alt="Historial" class="icon" /> Historial
-                    </a>
-                    <a href="/Nomina/Empleados" class="@(ViewBag.Title == "Empleados" ? "active" : "")">
-                        <img src="~/Content/img/icons/Empleados.svg" alt="Empleados" class="icon" /> Empleados
-                    </a>
-                    <a href="/Nomina/Reportes" class="@(ViewBag.Title == "Reportes" ? "active" : "")">
-                        <img src="~/Content/img/icons/Reportes.svg" alt="Reportes" class="icon" /> Reportes
-                    </a>
-                    <a href="/Nomina/Parámetros" class="@(ViewBag.Title == "Parámetros" ? "active" : "")">
-                        <img src="~/Content/img/icons/Parametros.svg" alt="Parámetros" class="icon" /> Parámetros
-                    </a>
-                </nav>
+                <img src="@Url.Content("~/Content/img/icons/LogoPrincipal.svg")" alt="LogoPrincipal" class="icon" />
+                <div class="texto-cabecera">
+                    <a href="@Url.Action("Index","Nomina")" class="navbar-brand">GRUPO-02</a>
+                    <a href="@Url.Action("Index","Nomina")" class="navbar-brand2">Sistema de Nómina</a>
+                </div>
             </div>
 
+            <nav class="navbar-links">
+                <a href="@Url.Action("Dashboard","Nomina")"
+                   class="@(ViewBag.Title as string == "Dashboard" ? "active" : "")">
+                    <img src="@Url.Content("~/Content/img/icons/Dashboard.svg")" alt="Dashboard" class="icon" />
+                    Dashboard
+                </a>
+
+                <div class="nav-sub">
+                    <button type="button" class="nav-sub-toggle" aria-expanded="false" aria-controls="subNomina">
+                        <img src="@Url.Content("~/Content/img/icons/Nomina.svg")" alt="Nómina" class="icon" />
+                        <span>Procesar Nómina</span>
+                        <span class="chev">▾</span>
+                    </button>
+
+                    <div class="nav-sub-menu" id="subNomina">
+                        <a href="@Url.Action("Index","Nomina")"
+                           class="nav-sub-item @(action == "Index" ? "current" : "")">Vigentes</a>
+                        <a href="@Url.Action("Historial","Nomina")"
+                           class="nav-sub-item @(action == "Historial" ? "current" : "")">Historial</a>
+                    </div>
+                </div>
+
+                <a href="@Url.Action("Empleados","Nomina")"
+                   class="@(action == "Empleados" ? "active" : "")">
+                    <img src="@Url.Content("~/Content/img/icons/Empleados.svg")" alt="Empleados" class="icon" />
+                    Empleados
+                </a>
+
+                <a href="@Url.Action("Reportes","Nomina")"
+                   class="@(action == "Reportes" ? "active" : "")">
+                    <img src="@Url.Content("~/Content/img/icons/Reportes.svg")" alt="Reportes" class="icon" />
+                    Reportes
+                </a>
+
+                <a href="@Url.Action("Parametros","Nomina")"
+                   class="@(action == "Parametros" ? "active" : "")">
+                    <img src="@Url.Content("~/Content/img/icons/Parametros.svg")" class="icon" alt="Parámetros" />
+                    Parametros
+                </a>
+            </nav>
         </div>
     </header>
 
-    <main class="main-content">
-        @RenderBody()
-    </main>
+    <!-- Slot de acciones de la página (definible por cada vista) -->
+    @RenderSection("PageActions", required: false)
 
+    <!-- Contenido principal -->
+<main class="main-content">
+    @Html.Partial("~/Views/Shared/_PageHeader.cshtml")
+    @RenderBody()
+</main>
+        <!-- Aquí se inyectará dinámicamente el modal -->
+  
     <footer class="footer">
-        <p>© @DateTime.Now.Year - Sistema de Nómina | Desarrollado por el equipo numero 2</p>
+        @*<p>© @DateTime.Now.Year - Sistema de Nómina | Desarrollado por el equipo número 2</p>*@
     </footer>
 
     <!-- Scripts propios -->
-    <script src="~/Scripts/nomina/nomina.mock.api.js"></script>
-    <script src="~/Scripts/nomina/nomina.validation.js"></script>
-    <script src="~/Scripts/nomina/nomina.ui.js"></script>
+    <script src="@Url.Content("~/Scripts/nomina/nomina.mock.api.js")"></script>
+    <script src="@Url.Content("~/Scripts/nomina/nomina.validation.js")"></script>
+
+
+    <script>
+        (function () {
+            const wrap = document.querySelector('.nav-sub');
+            if (!wrap) return;
+
+            const btn = wrap.querySelector('.nav-sub-toggle');
+            const menu = wrap.querySelector('#subNomina');
+
+            function toggle(open) {
+                menu.classList.toggle('show', open);
+                wrap.classList.toggle('open', open);
+                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            }
+
+            btn.addEventListener('click', () => toggle(!menu.classList.contains('show')));
+
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(!menu.classList.contains('show')); }
+                if (e.key === 'Escape') toggle(false);
+            });
+
+            document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) toggle(false); });
+            menu.addEventListener('click', (e) => { if (e.target.closest('a')) toggle(false); });
+
+            const p = location.pathname.toLowerCase();
+            if (p.includes('/nomina/index') || p.includes('/nomina/historial')) toggle(true);
+        })();
+    </script>
 
     @RenderSection("Scripts", required: false)
 </body>

@@ -150,13 +150,22 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\css\empleados.css" />
+    <Content Include="Content\css\historial.css" />
+    <Content Include="Content\css\layout.css" />
     <Content Include="Content\css\nomina.css" />
+    <Content Include="Content\css\parametros.css" />
+    <Content Include="Content\css\procesar.css" />
     <Content Include="Content\img\icons\Dashboard.svg" />
     <Content Include="Content\img\icons\Empleados.svg" />
+    <Content Include="Content\img\icons\empleadosInactivos.svg" />
     <Content Include="Content\img\icons\LogoPrincipal.svg" />
     <Content Include="Content\img\icons\Nomina.svg" />
+    <Content Include="Content\img\icons\nominasPendientes.svg" />
+    <Content Include="Content\img\icons\nominasProcesadas.svg" />
     <Content Include="Content\img\icons\Parametros.svg" />
     <Content Include="Content\img\icons\Reportes.svg" />
+    <Content Include="Content\img\icons\TotalNomina.svg" />
     <Content Include="Content\util.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -203,6 +212,7 @@
     <Content Include="Views\Nomina\_ModalConfirmarProcesamiento.cshtml" />
     <Content Include="Views\Nomina\_Toast.cshtml" />
     <Content Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <Content Include="Views\Shared\_PageHeader.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

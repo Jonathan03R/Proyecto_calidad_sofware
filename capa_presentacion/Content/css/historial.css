@@ -1,0 +1,204 @@
+﻿
+/* === FORMULARIO DE NÓMINA === */
+.form-nomina {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.btn-primary {
+    background-color: #2563EB;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+}
+
+/* ==== HISTORIAL (FILTROS) ==== */
+.historial-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px
+}
+
+.filter-bar {
+    display: flex;
+    background-color: #FFFFFF;
+    padding: 20px;
+    justify-content: space-between;
+    border-radius: 10px;
+    border: 1px solid #E5E7EB;
+    gap:30px;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 180px; /* evita que se encojan demasiado */
+    flex: 1; /* permite que se adapten */
+}
+
+label, select {
+    padding: 5px;
+    border-radius: 5px;
+    border-color: #D1D5DB;
+}
+
+.input-icon input[type="text"],
+select {
+    padding: 8px 10px;
+    border-radius: 5px;
+    border: 1px solid #D1D5DB;
+    background-color: #fff;
+    font-size: 14px;
+    color: #111827;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    width: 100%;
+}
+
+.filter-item label {
+    font-weight: 500;
+    color: #374151;
+}
+
+.input-icon {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+/* ==== HISTORIAL (TABLA) ==== */
+.historial {
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    border-color: #E5E7EB;
+}
+
+.tabla-historial {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .tabla-historial thead th h2 {
+        font-size: 16px;
+        font-weight: 500;
+        color: #111827;
+    }
+
+    .tabla-historial th, .tabla-historial td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .tabla-historial thead th {
+        /*        background: #f7f8fb;*/
+        text-align: left;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+
+/* ==== HISTORIAL (BOTONES) ==== */
+.btn-mini {
+    padding: 5px 10px;
+    font-size: 13px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+    .btn-mini.primary {
+        background-color: #2563EB;
+    }
+
+        .btn-mini.primary:hover {
+            background-color: #0056b3;
+        }
+
+    .btn-mini.slate {
+        background-color: #4B5563;
+    }
+
+        .btn-mini.slate:hover {
+            background-color: #495057;
+        }
+
+    .btn-mini.warn {
+        background-color: #D97706;
+    }
+
+        .btn-mini.warn:hover {
+            background-color: #b02a37;
+        }
+
+/* ==== HISTORIAL () ==== */
+.hist-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-top: 1px solid #e2e6ea;
+    background-color: #f8f9fa;
+    font-size: 14px;
+    color: #555;
+    border-radius: 0 0 8px 8px;
+}
+
+    .hist-footer .muted {
+        color: #6c757d;
+        font-style: italic;
+    }
+
+.pager {
+    display: flex;
+    gap: 6px;
+}
+
+    .pager .pg {
+        padding: 6px 12px;
+        font-size: 13px;
+        border: 1px solid #dee2e6;
+        background-color: white;
+        color: #333;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .pager .pg:hover:not(:disabled) {
+            background-color: #007bff;
+            color: white;
+            border-color: #2563EB;
+        }
+
+        .pager .pg.current {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+            font-weight: bold;
+        }
+
+        .pager .pg:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+.t-center {
+    text-align: center;
+}

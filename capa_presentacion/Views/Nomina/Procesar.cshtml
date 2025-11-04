@@ -1,4 +1,8 @@
-﻿@model capa_presentacion.Models.ViewModels.ProcesarNominaResultadoVM
+﻿@section Estilos {
+    <link rel="stylesheet" href="~/Content/css/procesar.css" />
+}
+
+@model capa_presentacion.Models.ViewModels.ProcesarNominaResultadoVM
 @{
     ViewBag.Title = "Procesando Nómina";
 }
@@ -40,4 +44,4 @@
 @* Opcional si no está en _Layout *@
 <script src="~/Scripts/nomina/nomina.mock.api.js"></script>
 <script src="~/Scripts/nomina/nomina.validation.js"></script>
-<script src="~/Scripts/nomina/nomina.ui.js"></script> 
+<script src="~/Scripts/nomina/nomina.ui.js"></script>
