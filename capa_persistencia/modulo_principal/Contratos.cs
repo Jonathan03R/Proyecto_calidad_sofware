@@ -10,17 +10,17 @@ namespace capa_persistencia.modulo_principal
     {
         private readonly AccesoSQLServer _accesoSQL;
 
-        public Contratos()
+        public Contratos(AccesoSQLServer accesoSQL)
         {
-            _accesoSQL = new AccesoSQLServer();
+            _accesoSQL = accesoSQL;
         }
 
         public Contratos(AccesoSQLServer acceso)
         {
             _accesoSQL = acceso;
         }
-
         // CREAR CONTRATO
+
         public int CrearContratoEmpleado(ContratoDTO contrato)
         {
             try
@@ -153,7 +153,7 @@ namespace capa_persistencia.modulo_principal
         }
 
         // ============================================================
-        // NUEVOS MÉTODOS PARA LOS LISTADOS DE REFERENCIA
+        // NUEVOS Mï¿½TODOS PARA LOS LISTADOS DE REFERENCIA
         // ============================================================
 
         // Listar trabajadores
@@ -176,7 +176,7 @@ namespace capa_persistencia.modulo_principal
             return trabajadores;
         }
 
-        // Listar áreas
+        // Listar ï¿½reas
         public List<AreaDTO> ObtenerAreas()
         {
             List<AreaDTO> areas = new List<AreaDTO>();
@@ -216,7 +216,7 @@ namespace capa_persistencia.modulo_principal
             return cargos;
         }
 
-        // Listar tipos de pensión
+        // Listar tipos de pensiï¿½n
         public List<TipoPensionDTO> ObtenerTiposPension()
         {
             List<TipoPensionDTO> pensiones = new List<TipoPensionDTO>();

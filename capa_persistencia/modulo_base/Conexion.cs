@@ -9,9 +9,11 @@ namespace capa_persistencia.modulo_base
         private SqlConnection conexion;
         private SqlTransaction transaccion;
 
+
         // Configuración de conexión para Azure SQL
         private readonly string servidor = "nominas02calidad.database.windows.net";
         private readonly string baseDatos = "bdProcesarNomina";
+
         private readonly string usuario = "nominas02@nominas02calidad";
         private readonly string contrasena = "Grupo02_2025";
 
@@ -20,16 +22,16 @@ namespace capa_persistencia.modulo_base
             $"Server={servidor};" +
             $"Database={baseDatos};" +
             $"User ID={usuario};" +
-            $"Password={contrasena};" +
+            $"Password={contrasena};"+
             "Encrypt=True;" +
             "TrustServerCertificate=True;" +
             "Connection Timeout=30;";
 
-        // Abrir conexión
         public void AbrirConexion()
         {
             try
             {
+                System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
                 conexion = new SqlConnection(ConnectionString);
                 conexion.Open();
                 Console.WriteLine("✅ Conexión con Azure SQL establecida correctamente.");

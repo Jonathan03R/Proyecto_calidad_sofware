@@ -1,0 +1,708 @@
+﻿@{
+    ViewBag.Title = "Gestión de Reportes de Nómina";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .container-fluid {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background-color: #ffffff;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            padding: 20px 0;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #e8ecf1;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h4 {
+            color: #2d3748;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-header p {
+            color: #718096;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: #f7fafc;
+            color: #3182ce;
+        }
+
+        .sidebar-menu a.active {
+            background-color: #e6f2ff;
+            color: #3182ce;
+            border-right: 3px solid #3182ce;
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header-section h1 {
+            color: #2d3748;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .header-section p {
+            color: #718096;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .btn-generar {
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-generar:hover {
+            background-color: #2c5aa0;
+        }
+
+        /* Filtros */
+        .filtros-section {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .filtros-row {
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            color: #4a5568;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #2d3748;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        }
+
+        .btn-consultar {
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-consultar:hover {
+            background-color: #2c5aa0;
+        }
+
+        /* Alertas */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background-color: #c6f6d5;
+            color: #22543d;
+            border-left: 4px solid #38a169;
+        }
+
+        .alert-danger {
+            background-color: #fed7d7;
+            color: #742a2a;
+            border-left: 4px solid #e53e3e;
+        }
+
+        /* Tabla con scroll horizontal */
+        .table-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden; /* Oculta el scrollbar del contenedor principal si la tabla tiene border-radius */
+            max-width: 100%;
+        }
+
+        .table-responsive {
+            overflow-x: auto; /* ✨ Asegura el scroll horizontal */
+            overflow-y: visible;
+            max-width: 100%;
+        }
+
+        .table-responsive::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+
+        table {
+            width: 100%;
+            min-width: 3000px; /* Fuerza el ancho para activar el scroll horizontal */
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #f7fafc;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 15px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5568;
+            text-align: left;
+            border-bottom: 2px solid #e8ecf1;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px;
+            font-size: 13px;
+            color: #2d3748;
+            border-bottom: 1px solid #e8ecf1;
+            white-space: nowrap;
+        }
+
+        tbody tr:hover {
+            background-color: #f7fafc;
+        }
+
+        .neto-pagar {
+            font-weight: 600;
+            color: #38a169;
+        }
+
+        /* ------------------------------------------- */
+        /* ✨ MEJORA: Columnas Pegajosas (Sticky) */
+        /* ------------------------------------------- */
+
+        /* Columna 1 (Código) - Fija a la izquierda */
+        th:nth-child(1), td:nth-child(1) {
+            position: sticky;
+            left: 0;
+            z-index: 12;
+            background-color: #f7fafc; /* Mantener color de thead */
+            border-right: 1px solid #e8ecf1;
+        }
+
+        td:nth-child(1) {
+            background-color: #ffffff; /* Color de fondo de las celdas del cuerpo */
+        }
+
+        /* Columna 2 (Nombres) - Fija junto a la primera */
+        th:nth-child(2), td:nth-child(2) {
+            position: sticky;
+            left: 100px; /* Ajustar este valor (ancho de la Columna 1) */
+            z-index: 11;
+            background-color: #f7fafc;
+            border-right: 1px solid #e8ecf1;
+        }
+
+        td:nth-child(2) {
+            background-color: #ffffff;
+        }
+
+        /* Columna 32 (Neto a Pagar) - Fija a la derecha */
+        th:last-child, td:last-child {
+            position: sticky;
+            right: 0;
+            z-index: 12;
+            background-color: #e6f2ff; /* Resaltar el Neto a Pagar */
+            border-left: 2px solid #3182ce;
+            font-weight: 700;
+        }
+
+        /* Asegura que el color de fondo de thead sea el mismo para las cabeceras pegajosas */
+        th:nth-child(1), th:nth-child(2), th:last-child {
+             background-color: #f7fafc;
+        }
+
+        /* ------------------------------------------- */
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #2d3748;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-name {
+            color: #2d3748;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3182ce;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h4>📊 Sistema de Reportes</h4>
+                <p>Gestión de Reportes de Nómina por Período</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#">
+                        <span>📄</span>
+                        Contratos
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span>👥</span>
+                        Empleados
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span>📷</span>
+                        Nóminas
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="active">
+                        <span>📊</span>
+                        Reportes
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span>⚙️</span>
+                        Configuración
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="header-section">
+                <div>
+                    <h1>Gestión de Reportes de Nómina</h1>
+                    <p>Genera todos los reportes de los trabajadores por periodo</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div class="user-section">
+                        <div class="user-avatar">A</div>
+                        <span class="user-name">Admin RH</span>
+                    </div>
+                    <button class="btn-generar" onclick="generarReportePDF()">
+                        <span>+</span> Generar Reporte (PDF/Excel)
+                    </button>
+                </div>
+            </div>
+
+            <div id="alertSuccess" class="alert alert-success"></div>
+            <div id="alertError" class="alert alert-danger"></div>
+
+            <div class="filtros-section">
+                <div class="filtros-row">
+                    <div class="form-group">
+                        <label for="periodoId">Periodo</label>
+                        <select id="periodoId" class="form-control">
+                            <option value="">Mes/Año</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cargoId">Tipo de Trabajador</label>
+                        <select id="cargoId" class="form-control">
+                            <option value="">Todos los tipos</option>
+                        </select>
+                    </div>
+                    <button id="btnConsultar" class="btn-consultar" onclick="consultarReporte()">
+                        <span>🔍</span> Consultar reporte
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="sticky-col-1">Código</th>
+                                <th>Nombres</th>
+                                <th>Apellidos</th>
+                                <th>Tipo ID</th>
+                                <th>Número ID</th>
+                                <th>Sistema Pensión</th>
+                                <th>Tipo Trabajador</th>
+                                <th>Fecha Inicio</th>
+                                <th>Fecha Fin</th>
+                                <th>Jornada</th>
+                                <th>Hrs Semanales</th>
+                                <th>Hrs Trabajadas</th>
+                                <th>Hrs Extras</th>
+                                <th>Sueldo Básico</th>
+                                <th>Asig. Familiar</th>
+                                <th>Monto Hrs Extras</th>
+                                <th>Bonos</th>
+                                <th>Otros Ingresos</th>
+                                <th>Total Haberes Bruto</th>
+                                <th>Total Haberes</th>
+                                <th>Aporte Pensión</th>
+                                <th>Descuento ONP</th>
+                                <th>Descuento AFP</th>
+                                <th>Retención Renta</th>
+                                <th>Aporte EsSalud</th>
+                                <th>Base Imponible</th>
+                                <th>Desc. Faltas</th>
+                                <th>Desc. Adelantos</th>
+                                <th>Otros Desc.</th>
+                                <th>Total Descuentos</th>
+                                <th class="sticky-col-right">Neto a Pagar</th>
+                                <th>Periodo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td colspan="32">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">📋</div>
+                                        <p>No hay datos disponibles. Seleccione un período y haga clic en "Consultar reporte".</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let datosNomina = [];
+        let periodoSeleccionado = null;
+
+        $(document).ready(function() {
+            // Cargar cargos (si aplica, no estaba en tu código original, se mantiene vacío por ahora)
+            // cargarCargos();
+            cargarPeriodos();
+        });
+
+        function cargarPeriodos() {
+            $.ajax({
+                url: '@Url.Action("ListarPeriodos", "GenerarReporte")',
+                type: 'GET',
+                success: function(response) {
+                    if (response.consultaExitosa) {
+                        let select = $('#periodoId');
+                        select.empty();
+                        select.append('<option value="">Mes/Año</option>');
+
+                        response.data.forEach(function(periodo) {
+                            select.append(`<option value="${periodo.PeriodoId}">${periodo.PeriodoNombre}</option>`);
+                        });
+
+                        mostrarMensaje('success', 'Períodos cargados correctamente.');
+                    } else {
+                        mostrarMensaje('error', 'Error al cargar períodos: ' + response.mensaje);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    mostrarMensaje('error', 'Error de conexión al cargar períodos.');
+                    console.error('Error:', error);
+                }
+            });
+        }
+
+        function consultarReporte() {
+            let periodoId = $('#periodoId').val();
+            let cargoId = $('#cargoId').val();
+
+            if (!periodoId) {
+                mostrarMensaje('error', 'Debe seleccionar un período.');
+                return;
+            }
+
+            periodoSeleccionado = periodoId;
+            mostrarCargando();
+
+            let url = '@Url.Action("ListarNominaPorPeriodo", "GenerarReporte")';
+            url += '?periodoId=' + periodoId;
+            if (cargoId) {
+                url += '&cargoId=' + cargoId;
+            }
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(response) {
+                    if (response.consultaExitosa) {
+                        datosNomina = response.data;
+                        renderizarTabla(response.data);
+                        mostrarMensaje('success', `Se encontraron ${response.data.length} registros.`);
+                    } else {
+                        mostrarMensaje('error', 'Error al consultar: ' + response.mensaje);
+                        mostrarEstadoVacio();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    mostrarMensaje('error', 'Error de conexión al consultar reporte.');
+                    console.error('Error:', error);
+                    mostrarEstadoVacio();
+                }
+            });
+        }
+
+        function renderizarTabla(data) {
+            datosNomina = data;
+            let tableBody = $('#tableBody');
+            tableBody.empty();
+
+            if (!data || data.length === 0) {
+                mostrarEstadoVacio();
+                return;
+            }
+
+            data.forEach(item => {
+                let row = `
+                    <tr>
+                        <td>${item.CodigoTrabajador || ''}</td>
+                        <td>${item.Nombres || ''}</td>
+                        <td>${item.Apellidos || ''}</td>
+                        <td>${item.TipoDeIdentificacion || ''}</td>
+                        <td>${item.NumeroIdentificacion || ''}</td>
+                        <td>${item.SistemaPension || ''}</td>
+                        <td>${item.TipoTrabajador || ''}</td>
+                        <td>${item.FechaInicioContrato ? new Date(item.FechaInicioContrato).toLocaleDateString() : ''}</td>
+                        <td>${item.FechaFinContrato ? new Date(item.FechaFinContrato).toLocaleDateString() : 'N/A'}</td>
+                        <td>${item.TipoDeJornadaPactada || ''}</td>
+                        <td>${item.HorasSemanalesPactadas != null ? item.HorasSemanalesPactadas.toFixed(2) : 'N/A'}</td>
+                        <td>${item.HorasTrabajadasEstimadas != null ? item.HorasTrabajadasEstimadas.toFixed(2) : 'N/A'}</td>
+                        <td>${item.HorasExtrasReales != null ? item.HorasExtrasReales.toFixed(2) : 'N/A'}</td>
+                        <td>S/ ${item.SueldoBasico.toFixed(2)}</td>
+                        <td>S/ ${item.AsignacionFamiliar.toFixed(2)}</td>
+                        <td>S/ ${item.MontoHorasExtras.toFixed(2)}</td>
+                        <td>S/ ${item.MontoBonos.toFixed(2)}</td>
+                        <td>S/ ${item.OtrosIngresos.toFixed(2)}</td>
+                        <td>S/ ${item.TotalHaberesBruto.toFixed(2)}</td>
+                        <td>S/ ${item.TotalHaberes.toFixed(2)}</td>
+                        <td>S/ ${item.AporteSistemaPension.toFixed(2)}</td>
+                        <td>S/ ${item.DescuentoONP.toFixed(2)}</td>
+                        <td>S/ ${item.DescuentoAFP.toFixed(2)}</td>
+                        <td>S/ ${item.RetencionImpuestoRenta.toFixed(2)}</td>
+                        <td>S/ ${item.AporteEsSalud.toFixed(2)}</td>
+                        <td>S/ ${item.BaseImponibleEsSalud.toFixed(2)}</td>
+                        <td>S/ ${item.DescuentoFaltas.toFixed(2)}</td>
+                        <td>S/ ${item.DescuentoAdelantos.toFixed(2)}</td>
+                        <td>S/ ${item.OtrosDescuentos.toFixed(2)}</td>
+                        <td>S/ ${item.TotalDescuentos.toFixed(2)}</td>
+                        <td class="neto-pagar">S/ ${item.NetoPagar.toFixed(2)}</td>
+                        <td>${item.PeriodoNomina || ''}</td>
+                    </tr>
+                `;
+                tableBody.append(row);
+            });
+        }
+
+        function mostrarMensaje(tipo, mensaje) {
+            let alertSuccess = $('#alertSuccess');
+            let alertError = $('#alertError');
+
+            alertSuccess.removeClass('show');
+            alertError.removeClass('show');
+
+            if (tipo === 'success') {
+                alertSuccess.text('✓ ' + mensaje).addClass('show');
+                setTimeout(() => alertSuccess.removeClass('show'), 5000);
+            } else {
+                alertError.text('✕ ' + mensaje).addClass('show');
+                setTimeout(() => alertError.removeClass('show'), 5000);
+            }
+        }
+
+        function mostrarCargando() {
+            $('#tableBody').html(`
+                <tr>
+                    <td colspan="32">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>Cargando datos...</p>
+                        </div>
+                    </td>
+                </tr>
+            `);
+        }
+
+        function mostrarEstadoVacio() {
+            $('#tableBody').html(`
+                <tr>
+                    <td colspan="32">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📋</div>
+                            <p>No se encontraron registros para el período seleccionado.</p>
+                        </div>
+                    </td>
+                </tr>
+            `);
+        }
+
+        function generarReportePDF() {
+            if (!datosNomina || datosNomina.length === 0) {
+                mostrarMensaje('error', 'No hay datos para generar el reporte. Consulte primero un período.');
+                return;
+            }
+            // Lógica real de generación de PDF/Excel aquí
+            mostrarMensaje('success', 'Preparando la descarga del Reporte...');
+
+            // Ejemplo: Redireccionar a un Action que genera el Excel/PDF
+            // window.location.href = '@Url.Action("GenerarExcel", "GenerarReporte")?periodoId=' + periodoSeleccionado;
+        }
+    </script>
+</body>
+</html>
