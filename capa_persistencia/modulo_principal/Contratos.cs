@@ -1,8 +1,8 @@
-using capa_dominio;
-using capa_dominio.dto;
-using capa_persistencia.modulo_base;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
+using capa_dominio.dto;
+using capa_persistencia.modulo_base;
 
 namespace capa_persistencia.modulo_principal
 {
@@ -15,6 +15,12 @@ namespace capa_persistencia.modulo_principal
             _accesoSQL = new AccesoSQLServer();
         }
 
+        public Contratos(AccesoSQLServer acceso)
+        {
+            _accesoSQL = acceso;
+        }
+
+        // CREAR CONTRATO
         public int CrearContratoEmpleado(ContratoDTO contrato)
         {
             try
@@ -40,16 +46,13 @@ namespace capa_persistencia.modulo_principal
                 var result = comando.ExecuteScalar();
                 return Convert.ToInt32(result);
             }
-            catch (Exception)
-            {
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CREACION);
-            }
             finally
             {
                 _accesoSQL.CerrarConexion();
             }
         }
 
+        // FINALIZAR CONTRATO
         public (int contratoActualizado, int cambioRegistrado) FinalizarContrato(int contratoId, string observaciones = null)
         {
             try
@@ -69,11 +72,8 @@ namespace capa_persistencia.modulo_principal
                         return (contratoActualizado, cambioRegistrado);
                     }
                 }
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_ACTUALIZACION);
-            }
-            catch (Exception)
-            {
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_ACTUALIZACION);
+
+                throw new Exception("Error al finalizar contrato: no se devolvieron resultados.");
             }
             finally
             {
@@ -81,6 +81,7 @@ namespace capa_persistencia.modulo_principal
             }
         }
 
+        // ACTUALIZAR CONTRATO
         public void ActualizarContrato(int contratoId, string usuario, string motivo, ContratoDTO contrato)
         {
             try
@@ -99,16 +100,13 @@ namespace capa_persistencia.modulo_principal
 
                 comando.ExecuteNonQuery();
             }
-            catch (Exception)
-            {
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_ACTUALIZACION);
-            }
             finally
             {
                 _accesoSQL.CerrarConexion();
             }
         }
 
+        // CONSULTAR CONTRATOS POR TRABAJADOR
         public List<ContratoDTO> ObtenerContratosPorTrabajador(int trabajadorId)
         {
             List<ContratoDTO> contratos = new List<ContratoDTO>();
@@ -125,29 +123,26 @@ namespace capa_persistencia.modulo_principal
                     {
                         ContratoDTO contrato = new ContratoDTO
                         {
-                            TrabajadorId = reader.IsDBNull(reader.GetOrdinal("TrabajadorId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("TrabajadorId")),
-                            CargoId = reader.IsDBNull(reader.GetOrdinal("CargoId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("CargoId")),
-                            AreaId = reader.IsDBNull(reader.GetOrdinal("AreaId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("AreaId")),
-                            TipoPensionId = reader.IsDBNull(reader.GetOrdinal("TipoPensionId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("TipoPensionId")),
-                            TipoSalarioId = reader.IsDBNull(reader.GetOrdinal("TipoSalarioId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("TipoSalarioId")),
-                            TipoJornadaId = reader.IsDBNull(reader.GetOrdinal("TipoJornadaId")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("TipoJornadaId")),
+                            ContratoId = reader["ContratoId"] as int?,
+                            TrabajadorId = reader["TrabajadorId"] as int?,
+                            CargoId = reader["CargoId"] as int?,
+                            AreaId = reader["AreaId"] as int?,
+                            TipoPensionId = reader["TipoPensionId"] as int?,
+                            TipoSalarioId = reader["TipoSalarioId"] as int?,
+                            TipoJornadaId = reader["TipoJornadaId"] as int?,
                             FechaInicio = reader.GetDateTime(reader.GetOrdinal("FechaInicio")),
-                            FechaFin = reader.IsDBNull(reader.GetOrdinal("FechaFin")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("FechaFin")),
-                            Salario = reader.IsDBNull(reader.GetOrdinal("Salario")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("Salario")),
-                            TarifaHora = reader.IsDBNull(reader.GetOrdinal("TarifaHora")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("TarifaHora")),
-                            ModoPago = reader.IsDBNull(reader.GetOrdinal("ModoPago")) ? null : reader["ModoPago"].ToString(),
-                            DocumentoUrl = reader.IsDBNull(reader.GetOrdinal("DocumentoUrl")) ? null : reader["DocumentoUrl"].ToString(),
-                            DescripcionFunciones = reader.IsDBNull(reader.GetOrdinal("DescripcionFunciones")) ? null : reader["DescripcionFunciones"].ToString(),
-                            Observaciones = reader.IsDBNull(reader.GetOrdinal("Observaciones")) ? null : reader["Observaciones"].ToString()
+                            FechaFin = reader["FechaFin"] as DateTime?,
+                            Salario = reader["Salario"] as decimal?,
+                            TarifaHora = reader["TarifaHora"] as decimal?,
+                            ModoPago = reader["ModoPago"]?.ToString(),
+                            DocumentoUrl = reader["DocumentoUrl"]?.ToString(),
+                            DescripcionFunciones = reader["DescripcionFunciones"]?.ToString(),
+                            Observaciones = reader["Observaciones"]?.ToString()
                         };
 
                         contratos.Add(contrato);
                     }
                 }
-            }
-            catch (Exception)
-            {
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CONSULTA);
             }
             finally
             {
@@ -157,5 +152,100 @@ namespace capa_persistencia.modulo_principal
             return contratos;
         }
 
+        // ============================================================
+        // NUEVOS MÉTODOS PARA LOS LISTADOS DE REFERENCIA
+        // ============================================================
+
+        // Listar trabajadores
+        public List<TrabajadorDTO> ObtenerTrabajadores()
+        {
+            List<TrabajadorDTO> trabajadores = new List<TrabajadorDTO>();
+            var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_empleados");
+
+            using (var reader = comando.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    trabajadores.Add(new TrabajadorDTO
+                    {
+                        TrabajadorId = Convert.ToInt32(reader["TrabajadorId"]),
+                        NombreCompleto = reader["NombreCompleto"].ToString()
+                    });
+                }
+            }
+            return trabajadores;
+        }
+
+        // Listar áreas
+        public List<AreaDTO> ObtenerAreas()
+        {
+            List<AreaDTO> areas = new List<AreaDTO>();
+            var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_areas_trabajo");
+
+            using (var reader = comando.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    areas.Add(new AreaDTO
+                    {
+                        AreaId = Convert.ToInt32(reader["AreaId"]),
+                        NombreArea = reader["NombreArea"].ToString()
+                    });
+                }
+            }
+            return areas;
+        }
+
+        // Listar cargos
+        public List<CargoDTO> ObtenerCargos()
+        {
+            List<CargoDTO> cargos = new List<CargoDTO>();
+            var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_cargos");
+
+            using (var reader = comando.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    cargos.Add(new CargoDTO
+                    {
+                        CargoId = Convert.ToInt32(reader["CargoId"]),
+                        NombreCargo = reader["NombreCargo"].ToString()
+                    });
+                }
+            }
+            return cargos;
+        }
+
+        // Listar tipos de pensión
+        public List<TipoPensionDTO> ObtenerTiposPension()
+        {
+            List<TipoPensionDTO> pensiones = new List<TipoPensionDTO>();
+            var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_sistema_pensiones");
+
+            using (var reader = comando.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    pensiones.Add(new TipoPensionDTO
+                    {
+                        TipoPensionId = Convert.ToInt32(reader["TipoPensionId"]),
+                        NombreTipo = reader["NombreTipo"].ToString()
+                    });
+                }
+            }
+            return pensiones;
+        }
+
+        // Listar estados de contrato
+        public List<EstadoContratoDTO> ObtenerEstadosContrato()
+        {
+            return new List<EstadoContratoDTO>
+            {
+                new EstadoContratoDTO { EstadoId = 1, NombreEstado = "Activo" },
+                new EstadoContratoDTO { EstadoId = 2, NombreEstado = "Finalizado" },
+                new EstadoContratoDTO { EstadoId = 3, NombreEstado = "Suspendido" },
+                new EstadoContratoDTO { EstadoId = 4, NombreEstado = "Inactivo" }
+            };
+        }
     }
 }

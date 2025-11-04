@@ -59,7 +59,11 @@ namespace capa_persistencia.modulo_principal
                                                         : dr.GetString(dr.GetOrdinal("tardanza_observaciones"))
                                 };
 
-                                if (t.TardanzaValorHoraNormal == 0m || t.TardanzaValorDescuento == 0m);
+                                if (t.TardanzaValorHoraNormal == 0m || t.TardanzaValorDescuento == 0m)
+                                {
+                                    // Aquí puedes agregar lógica adicional si es necesario
+                                    // Por ejemplo, registrar un mensaje o realizar alguna acción específica
+                                }
 
                                 lista.Add(t);
                             }

@@ -53,10 +53,6 @@
       <Project>{1074a41c-3310-4b11-b5a2-64a8f8a02308}</Project>
       <Name>capa_persistencia</Name>
     </ProjectReference>
-    <ProjectReference Include="..\capa_presentacion\capa_presentacion.csproj">
-      <Project>{d82096a8-2cd2-4476-a473-293e74b7f054}</Project>
-      <Name>capa_presentacion</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

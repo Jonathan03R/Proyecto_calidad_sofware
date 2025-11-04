@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace capa_persistencia.modulo_base
 {
@@ -13,36 +9,44 @@ namespace capa_persistencia.modulo_base
         private SqlConnection conexion;
         private SqlTransaction transaccion;
 
-        // Variables de conexión
-        private readonly string servidor = "DESKTOP-HPCSRC4\\SQL2019";
-        private readonly string puerto = "1433";
+        // Configuración de conexión para Azure SQL
+        private readonly string servidor = "nominas02calidad.database.windows.net";
         private readonly string baseDatos = "bdProcesarNomina";
-        //private readonly string usuario = "nominas02@nominas02calidad";
-        //private readonly string contrasena = "Grupo02_2025";
+        private readonly string usuario = "nominas02@nominas02calidad";
+        private readonly string contrasena = "Grupo02_2025";
 
+        // ConnectionString completo
         private string ConnectionString =>
-            $"Server={servidor},{puerto};" +
+            $"Server={servidor};" +
             $"Database={baseDatos};" +
-            //$"User ID={usuario};" +
-            //$"Password={contrasena};"+
+            $"User ID={usuario};" +
+            $"Password={contrasena};" +
             "Encrypt=True;" +
-            "TrustServerCertificate=False;" +
+            "TrustServerCertificate=True;" +
             "Connection Timeout=30;";
 
+        // Abrir conexión
         public void AbrirConexion()
         {
             try
             {
                 conexion = new SqlConnection(ConnectionString);
                 conexion.Open();
-                Console.WriteLine("Conexión con la Base de Datos Azure establecida correctamente.");
+                Console.WriteLine("✅ Conexión con Azure SQL establecida correctamente.");
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine("❌ Error SQL: " + sqlEx.Message);
+                throw new Exception("❌ Error en la conexión con la Base de Datos. Verifica el firewall o las credenciales.", sqlEx);
             }
             catch (Exception err)
             {
-                throw new Exception("Error en la conexión con la Base de Datos.", err);
+                Console.WriteLine("❌ Error general: " + err.Message);
+                throw new Exception("❌ Error en la conexión con la Base de Datos.", err);
             }
         }
 
+        // Cerrar conexión
         public void CerrarConexion()
         {
             try
@@ -56,6 +60,7 @@ namespace capa_persistencia.modulo_base
             }
         }
 
+        // Transacciones
         public void IniciarTransaccion()
         {
             try
@@ -65,7 +70,7 @@ namespace capa_persistencia.modulo_base
             }
             catch (Exception err)
             {
-                throw new Exception("Error al iniciar la transacción con la Base de Datos.", err);
+                throw new Exception("Error al iniciar la transacción.", err);
             }
         }
 
@@ -78,7 +83,7 @@ namespace capa_persistencia.modulo_base
             }
             catch (Exception err)
             {
-                throw new Exception("Error al terminar la transacción con la Base de Datos.", err);
+                throw new Exception("Error al terminar la transacción.", err);
             }
         }
 
@@ -91,10 +96,11 @@ namespace capa_persistencia.modulo_base
             }
             catch (Exception err)
             {
-                throw new Exception("Error al cancelar la transacción con la Base de Datos.", err);
+                throw new Exception("Error al cancelar la transacción.", err);
             }
         }
 
+        // Ejecutar consultas SQL
         public SqlDataReader EjecutarConsulta(string sentenciaSQL)
         {
             try
@@ -102,8 +108,10 @@ namespace capa_persistencia.modulo_base
                 SqlCommand comandoSQL = conexion.CreateCommand();
                 if (transaccion != null)
                     comandoSQL.Transaction = transaccion;
+
                 comandoSQL.CommandText = sentenciaSQL;
                 comandoSQL.CommandType = CommandType.Text;
+
                 return comandoSQL.ExecuteReader();
             }
             catch (Exception err)
@@ -112,6 +120,7 @@ namespace capa_persistencia.modulo_base
             }
         }
 
+        // Obtener comando SQL
         public SqlCommand ObtenerComandoSQL(string sentenciaSQL)
         {
             try
@@ -119,16 +128,19 @@ namespace capa_persistencia.modulo_base
                 SqlCommand comandoSQL = conexion.CreateCommand();
                 if (transaccion != null)
                     comandoSQL.Transaction = transaccion;
+
                 comandoSQL.CommandText = sentenciaSQL;
                 comandoSQL.CommandType = CommandType.Text;
+
                 return comandoSQL;
             }
             catch (Exception err)
             {
-                throw new Exception("Error al obtener comando de ejecución.", err);
+                throw new Exception("Error al obtener comando SQL.", err);
             }
         }
 
+        // Obtener comando de procedimiento almacenado
         public SqlCommand ObtenerComandoDeProcedimiento(string procedimientoAlmacenado)
         {
             try
@@ -136,13 +148,15 @@ namespace capa_persistencia.modulo_base
                 SqlCommand comandoSQL = conexion.CreateCommand();
                 if (transaccion != null)
                     comandoSQL.Transaction = transaccion;
+
                 comandoSQL.CommandText = procedimientoAlmacenado;
                 comandoSQL.CommandType = CommandType.StoredProcedure;
+
                 return comandoSQL;
             }
             catch (Exception err)
             {
-                throw new Exception("Error al obtener comando de ejecución.", err);
+                throw new Exception("Error al obtener comando de procedimiento.", err);
             }
         }
     }

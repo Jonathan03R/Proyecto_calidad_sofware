@@ -1,79 +1,187 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using capa_dominio.dto;
+using capa_persistencia.modulo_base;
 using capa_persistencia.modulo_principal;
 
 namespace capa_aplicacion.Servicios
 {
     public class ServicioContratos
     {
-        private readonly Contratos _repo;
+        private readonly AccesoSQLServer accesoSQLServer;
+        private readonly Contratos contratosRepo;
 
         public ServicioContratos()
         {
-            _repo = new Contratos();
+            accesoSQLServer = new AccesoSQLServer();
+            contratosRepo = new Contratos(accesoSQLServer);
         }
 
         // ✅ CREAR CONTRATO
         public int CrearContrato(ContratoDTO contrato)
         {
-            if (contrato == null)
-                throw new ArgumentNullException(nameof(contrato), "El contrato no puede ser nulo.");
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                if (contrato == null)
+                    throw new ArgumentNullException(nameof(contrato), "El contrato no puede ser nulo.");
 
-            if (contrato.FechaInicio == DateTime.MinValue)
-                throw new ArgumentException("Debe especificar una fecha de inicio válida.");
+                if (contrato.FechaInicio == DateTime.MinValue)
+                    throw new ArgumentException("Debe especificar una fecha de inicio válida.");
 
-            if (contrato.FechaFin.HasValue && contrato.FechaFin < contrato.FechaInicio)
-                throw new ArgumentException("La fecha de fin no puede ser anterior a la fecha de inicio.");
+                if (contrato.FechaFin.HasValue && contrato.FechaFin < contrato.FechaInicio)
+                    throw new ArgumentException("La fecha de fin no puede ser anterior a la fecha de inicio.");
 
-            if ((contrato.Salario ?? 0) <= 0 && (contrato.TarifaHora ?? 0) <= 0)
-                throw new ArgumentException("Debe especificar un salario o una tarifa por hora válida.");
+                if ((contrato.Salario ?? 0) <= 0 && (contrato.TarifaHora ?? 0) <= 0)
+                    throw new ArgumentException("Debe especificar un salario o una tarifa por hora válida.");
 
-            return _repo.CrearContratoEmpleado(contrato);
+                return contratosRepo.CrearContratoEmpleado(contrato);
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
         }
 
         // ✅ ACTUALIZAR CONTRATO
         public void ActualizarContrato(int contratoId, string usuario, string motivo, ContratoDTO contrato)
         {
-            if (contratoId <= 0)
-                throw new ArgumentException("El ID del contrato no es válido.");
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                if (contratoId <= 0)
+                    throw new ArgumentException("El ID del contrato no es válido.");
 
-            if (string.IsNullOrWhiteSpace(usuario))
-                throw new ArgumentException("Debe indicar el usuario que realiza la actualización.");
+                if (string.IsNullOrWhiteSpace(usuario))
+                    throw new ArgumentException("Debe indicar el usuario que realiza la actualización.");
 
-            if (string.IsNullOrWhiteSpace(motivo))
-                throw new ArgumentException("Debe indicar el motivo de la actualización.");
+                if (string.IsNullOrWhiteSpace(motivo))
+                    throw new ArgumentException("Debe indicar el motivo de la actualización.");
 
-            _repo.ActualizarContrato(contratoId, usuario, motivo, contrato);
+                contratosRepo.ActualizarContrato(contratoId, usuario, motivo, contrato);
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
         }
 
         // ✅ FINALIZAR CONTRATO
         public (int contratoActualizado, int cambioRegistrado) FinalizarContrato(int contratoId, string observaciones = null)
         {
-            if (contratoId <= 0)
-                throw new ArgumentException("El ID del contrato no es válido.");
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                if (contratoId <= 0)
+                    throw new ArgumentException("El ID del contrato no es válido.");
 
-            return _repo.FinalizarContrato(contratoId, observaciones);
+                return contratosRepo.FinalizarContrato(contratoId, observaciones);
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
         }
 
         // ✅ CONSULTAR CONTRATOS POR TRABAJADOR
         public List<ContratoDTO> ConsultarContratosPorTrabajador(int trabajadorId)
         {
-            if (trabajadorId <= 0)
-                throw new ArgumentException("El ID del trabajador no es válido.");
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                if (trabajadorId <= 0)
+                    throw new ArgumentException("El ID del trabajador no es válido.");
 
-            return _repo.ObtenerContratosPorTrabajador(trabajadorId);
+                return contratosRepo.ObtenerContratosPorTrabajador(trabajadorId);
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
         }
 
         // ✅ CONSULTAR TODOS LOS CONTRATOS
         public List<ContratoDTO> ConsultarTodosLosContratos()
         {
-            // Este método llamaría a un SP tipo 'proc_obtener_todos_los_contratos'
-            // que devuelva todos los registros de contratos de la empresa
-            throw new NotImplementedException("Implementar consulta general de contratos en la capa de persistencia.");
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                throw new NotImplementedException("Implementar consulta general de contratos en la capa de persistencia.");
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
+        }
+
+        // ✅ LISTAR TRABAJADORES
+        public List<TrabajadorDTO> ObtenerTrabajadores()
+        {
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                return contratosRepo.ObtenerTrabajadores();
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
+        }
+
+        // ✅ LISTAR ÁREAS
+        public List<AreaDTO> ObtenerAreas()
+        {
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                return contratosRepo.ObtenerAreas();
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
+        }
+
+        // ✅ LISTAR CARGOS
+        public List<CargoDTO> ObtenerCargos()
+        {
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                return contratosRepo.ObtenerCargos();
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
+        }
+
+        // ✅ LISTAR ESTADOS DE CONTRATO
+        public List<EstadoContratoDTO> ObtenerEstadosContrato()
+        {
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                return contratosRepo.ObtenerEstadosContrato();
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
+        }
+
+        // ✅ LISTAR TIPOS DE PENSIÓN
+        public List<TipoPensionDTO> ObtenerTiposPension()
+        {
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                return contratosRepo.ObtenerTiposPension();
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
         }
     }
 }
