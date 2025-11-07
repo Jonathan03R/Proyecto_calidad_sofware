@@ -1,9 +1,9 @@
 ﻿using capa_dominio;
 using capa_persistencia.modulo_base;
-using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
@@ -60,7 +60,10 @@ namespace capa_persistencia.modulo_principal
                                 };
 
                                 if (t.TardanzaValorHoraNormal == 0m || t.TardanzaValorDescuento == 0m)
-                                    t.CalcularDescuentoTardanza();
+                                {
+                                    // Aquí puedes agregar lógica adicional si es necesario
+                                    // Por ejemplo, registrar un mensaje o realizar alguna acción específica
+                                }
 
                                 lista.Add(t);
                             }

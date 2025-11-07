@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using capa_persistencia.modulo_base;
-using Microsoft.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
 
-    public class AdelantoSueldo
+    public class AdelantoSueldodto
     {
         public int AdelantoId { get; set; }
         public int TrabajadorId { get; set; }
@@ -25,9 +25,9 @@ namespace capa_persistencia.modulo_principal
             _accesoSQL = new AccesoSQLServer();
         }
 
-        public List<AdelantoSueldo> ObtenerAdelantosPorTrabajador(int trabajadorId, DateTime fechaInicio, DateTime fechaFin)
+        public List<AdelantoSueldodto> ObtenerAdelantosPorTrabajador(int trabajadorId, DateTime fechaInicio, DateTime fechaFin)
         {
-            var lista = new List<AdelantoSueldo>();
+            var lista = new List<AdelantoSueldodto>();
 
             try
             {
@@ -42,7 +42,7 @@ namespace capa_persistencia.modulo_principal
                 {
                     while (reader.Read())
                     {
-                        var a = new AdelantoSueldo
+                        var a = new AdelantoSueldodto
                         {
                             AdelantoId = reader.GetInt32(reader.GetOrdinal("adelanto_id")),
                             TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id")),

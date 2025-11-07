@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\capa_aplicacion\capa_aplicacion.csproj" />
+    <ProjectReference Include="..\capa_dominio\capa_dominio.csproj" />
+    <ProjectReference Include="..\capa_persistencia\capa_persistencia.csproj" />
+    <ProjectReference Include="..\capa_presentacion\capa_presentacion.csproj" />
+  </ItemGroup>
+
+</Project>

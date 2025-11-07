@@ -1,22 +1,26 @@
 ﻿using capa_dominio.dto;
 using capa_persistencia.modulo_base;
-using Microsoft.Data.SqlClient;
 using System;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class DetallesNomina
+    public class DetallesNominaRepositorio
     {
         private readonly AccesoSQLServer _accesoSQL;
 
-        public DetallesNomina() { _accesoSQL = new AccesoSQLServer(); }
+        // ✅ Recibe la instancia desde la capa de aplicación
+        public DetallesNominaRepositorio(AccesoSQLServer accesoSQL)
+        {
+            _accesoSQL = accesoSQL ?? throw new ArgumentNullException(nameof(accesoSQL));
+        }
 
         public int InsertarDetalleNomina(DetalleNominaDTO detalle)
         {
             try
             {
-                _accesoSQL.AbrirConexion();
+
                 var cmd = _accesoSQL.ObtenerComandoDeProcedimiento(
                     "nomina.proc_insertar_detalle_nomina_por_trabajador");
 
@@ -61,8 +65,6 @@ namespace capa_persistencia.modulo_principal
             {
                 throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CREACION);
             }
-            finally { _accesoSQL.CerrarConexion(); }
         }
-        
     }
 }
