@@ -17,9 +17,9 @@ namespace capa_presentacion
                 name: "Default",
                 url: "{controller}/{action}/{id}",
 
-                //defaults: new { controller = "Nomina", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Nomina", action = "Index", id = UrlParameter.Optional }
 
-               defaults: new { controller = "Contratos", action = "Index", id = UrlParameter.Optional }
+                //defaults: new { controller = "Contratos", action = "Index", id = UrlParameter.Optional }
 
             );
 

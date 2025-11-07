@@ -2,126 +2,75 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Sistema de Gestión de Contratos</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - Sistema de Nómina</title>
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/layout.css")?v=@DateTime.Now.Ticks" />
+
+    @RenderSection("Head", required: false)
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
-        <div class="container">
-            @Html.ActionLink("Gestión de Contratos", "Index", "Contratos", new { area = "" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                    title="Alternar navegación" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    @{
+        var action = (string)ViewContext.RouteData.Values["action"];
+        var controller = (string)ViewContext.RouteData.Values["controller"];
+    }
 
-            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Inicio", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Trabajadores", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Áreas", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Cargos", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Tipos de Pensión", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
-                </ul>
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-cabecera">
+                <img src="@Url.Content("~/Content/img/icons/LogoPrincipal.svg")" alt="LogoPrincipal" class="icon" />
+                <div class="texto-cabecera">
+                    <a href="@Url.Action("Index","Nomina")" class="navbar-brand">GRUPO-02</a>
+                    <a href="@Url.Action("Index","Nomina")" class="navbar-brand2">Sistema de Nómina</a>
+                </div>
             </div>
 
-            <nav class="navbar-links">
-                <a href="@Url.Action("Dashboard","Nomina")"
-                   class="@(ViewBag.Title as string == "Dashboard" ? "active" : "")">
-                    <img src="@Url.Content("~/Content/img/icons/Dashboard.svg")" alt="Dashboard" class="icon" />
-                    Dashboard
-                </a>
-
-                <div class="nav-sub">
-                    <button type="button" class="nav-sub-toggle" aria-expanded="false" aria-controls="subNomina">
-                        <img src="@Url.Content("~/Content/img/icons/Nomina.svg")" alt="Nómina" class="icon" />
-                        <span>Procesar Nómina</span>
-                        <span class="chev">▾</span>
-                    </button>
-
-                    <div class="nav-sub-menu" id="subNomina">
-                        <a href="@Url.Action("Index","Nomina")"
-                           class="nav-sub-item @(action == "Index" ? "current" : "")">Vigentes</a>
-                        <a href="@Url.Action("Historial","Nomina")"
-                           class="nav-sub-item @(action == "Historial" ? "current" : "")">Historial</a>
-                    </div>
-                </div>
-
-                <a href="@Url.Action("Empleados","Nomina")"
-                   class="@(action == "Empleados" ? "active" : "")">
-                    <img src="@Url.Content("~/Content/img/icons/Empleados.svg")" alt="Empleados" class="icon" />
-                    Empleados
-                </a>
-
-                <a href="@Url.Action("Reportes","Nomina")"
-                   class="@(action == "Reportes" ? "active" : "")">
-                    <img src="@Url.Content("~/Content/img/icons/Reportes.svg")" alt="Reportes" class="icon" />
-                    Reportes
-                </a>
-
-                <a href="@Url.Action("Parametros","Nomina")"
-                   class="@(action == "Parametros" ? "active" : "")">
-                    <img src="@Url.Content("~/Content/img/icons/Parametros.svg")" class="icon" alt="Parámetros" />
-                    Parametros
-                </a>
-            </nav>
+            @Html.Action("Navbar", "Menu")
         </div>
     </header>
 
-    <!-- Slot de acciones de la página (definible por cada vista) -->
     @RenderSection("PageActions", required: false)
 
     <!-- Contenido principal -->
-<main class="main-content">
-    @Html.Partial("~/Views/Shared/_PageHeader.cshtml")
-    @RenderBody()
-</main>
-        <!-- Aquí se inyectará dinámicamente el modal -->
-  
+    <main class="main-content">
+        @Html.Partial("~/Views/Shared/_PageHeader.cshtml")
+        @RenderBody()
+    </main>
+
     <footer class="footer">
         @*<p>© @DateTime.Now.Year - Sistema de Nómina | Desarrollado por el equipo número 2</p>*@
     </footer>
 
-    <!-- Scripts propios -->
+    <!-- Scripts -->
     <script src="@Url.Content("~/Scripts/nomina/nomina.mock.api.js")"></script>
     <script src="@Url.Content("~/Scripts/nomina/nomina.validation.js")"></script>
 
-
     <script>
         (function () {
-            const wrap = document.querySelector('.nav-sub');
-            if (!wrap) return;
+            // Lógica para submenús desplegables
+            document.querySelectorAll('.nav-sub').forEach(sub => {
+                const btn = sub.querySelector('.nav-sub-toggle');
+                const menu = sub.querySelector('.nav-sub-menu');
 
-            const btn = wrap.querySelector('.nav-sub-toggle');
-            const menu = wrap.querySelector('#subNomina');
+                function toggle(open) {
+                    menu.classList.toggle('show', open);
+                    sub.classList.toggle('open', open);
+                    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                }
 
-            function toggle(open) {
-                menu.classList.toggle('show', open);
-                wrap.classList.toggle('open', open);
-                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-            }
-
-            btn.addEventListener('click', () => toggle(!menu.classList.contains('show')));
-
-            btn.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(!menu.classList.contains('show')); }
-                if (e.key === 'Escape') toggle(false);
+                btn.addEventListener('click', () => toggle(!menu.classList.contains('show')));
+                btn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(!menu.classList.contains('show')); }
+                    if (e.key === 'Escape') toggle(false);
+                });
+                document.addEventListener('click', (e) => { if (!sub.contains(e.target)) toggle(false); });
+                menu.addEventListener('click', (e) => { if (e.target.closest('a')) toggle(false); });
             });
-
-            document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) toggle(false); });
-            menu.addEventListener('click', (e) => { if (e.target.closest('a')) toggle(false); });
-
-            const p = location.pathname.toLowerCase();
-            if (p.includes('/nomina/index') || p.includes('/nomina/historial')) toggle(true);
         })();
     </script>
 
     @RenderSection("Scripts", required: false)
-
 </body>
 </html>

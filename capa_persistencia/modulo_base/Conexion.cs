@@ -12,7 +12,9 @@ namespace capa_persistencia.modulo_base
 
         // Configuración de conexión para Azure SQL
         private readonly string servidor = "nominas02calidad.database.windows.net";
-        private readonly string baseDatos = "bdProcesarNomina";
+        private readonly string baseDatos = "nominas02_calidad";
+        //private readonly string baseDatos = "bdProcesarNomina";
+
 
         private readonly string usuario = "nominas02@nominas02calidad";
         private readonly string contrasena = "Grupo02_2025";

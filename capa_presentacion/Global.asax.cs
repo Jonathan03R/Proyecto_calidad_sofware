@@ -12,12 +12,12 @@ namespace capa_presentacion
     {
         protected void Application_Start()
         {
-            //AreaRegistration.RegisterAllAreas();
-            //FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            //RouteConfig.RegisterRoutes(RouteTable.Routes);
-            //BundleConfig.RegisterBundles(BundleTable.Bundles);
             AreaRegistration.RegisterAllAreas();
-            RouteConfig.RegisterRoutes(System.Web.Routing.RouteTable.Routes);
+            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
+            //AreaRegistration.RegisterAllAreas();
+            //RouteConfig.RegisterRoutes(System.Web.Routing.RouteTable.Routes);
         }
     }
 }

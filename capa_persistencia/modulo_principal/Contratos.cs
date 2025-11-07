@@ -15,10 +15,6 @@ namespace capa_persistencia.modulo_principal
             _accesoSQL = accesoSQL;
         }
 
-        public Contratos(AccesoSQLServer acceso)
-        {
-            _accesoSQL = acceso;
-        }
         // CREAR CONTRATO
 
         public int CrearContratoEmpleado(ContratoDTO contrato)

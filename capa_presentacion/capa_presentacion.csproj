@@ -460,7 +460,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\ContratosController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\NominaController.cs" />
     <Compile Include="Controllers\GenerarReporteController.cs" />
     <Compile Include="Global.asax.cs">
@@ -468,6 +468,7 @@
     </Compile>
     <Compile Include="Models\Mock\DemoBuilders.cs" />
     <Compile Include="Models\Mock\DemoData.cs" />
+    <Compile Include="Models\Mock\MenuItem.cs" />
     <Compile Include="Models\ViewModels\EmpleadoResultadoVM.cs" />
     <Compile Include="Models\ViewModels\NominaPeriodoVM.cs" />
     <Compile Include="Models\ViewModels\ParametrosOficialesVM.cs" />
@@ -559,10 +560,12 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\GenerarReporte\GenerarReporte.cshtml" />
+    <Content Include="Views\Shared\_Navbar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\img\placeholders\" />
+    <Folder Include="Views\Menu\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
