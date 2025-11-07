@@ -1,0 +1,215 @@
+﻿/* ==== CONTENIDO ==== */
+.main-content {
+    margin-left: 250px;
+    /*max-width: calc(100% - 250px);
+    min-height: 100vh;*/ /* asegura que ocupe toda la pantalla */
+    /*padding: 0;*/ /* opcional: elimina espacio superior */
+    background: #f6f7fb;
+}
+
+
+/* ===== Page header compacto (sin marca) ===== */
+.page-header {
+/*    position: sticky;*/
+    top: 0;
+    z-index: 900;
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+
+.ph-left h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.ph-left .subtitle {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #6B7280;
+}
+
+.ph-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #F3F4F6;
+    border: 1px solid #E5E7EB;
+    color: #374151;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+}
+
+.avatar img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #E5E7EB;
+}
+/* Botón primario para acciones del header (opcional) */
+.btn-primary {
+    border: none;
+    cursor: pointer;
+    background: #2563EB;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 600;
+    transition: filter .15s;
+}
+
+    .btn-primary:hover {
+        filter: brightness(.95);
+    }
+
+
+/* ==== RESET BOTÓN EN SIDEBAR ==== */
+.nav-sub-toggle {
+    border: none;
+    background: none;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #111827;
+    font-size: 0.95rem;
+    border-radius: 5px;
+    transition: background .3s, color .3s;
+}
+
+    .nav-sub-toggle .chev {
+        margin-left: auto;
+        transition: transform .2s ease;
+    }
+
+.nav-sub.open .nav-sub-toggle .chev {
+    transform: rotate(180deg);
+}
+
+.navbar-links a:hover,
+.navbar-links .active,
+.nav-sub.open .nav-sub-toggle:hover,
+.nav-sub.open .nav-sub-toggle {
+    color: #2563EB;
+    background: #EFF6FF;
+}
+
+.nav-sub {
+    position: relative;
+    display: block;
+}
+
+
+.nav-sub-menu {
+    display: none;
+    padding: 4px 0 8px 0;
+}
+
+.nav-sub.open .nav-sub-menu {
+    display: block;
+}
+
+.nav-sub-item {
+    display: block;
+    padding: 8px 10px 8px 34px;
+    color: #111827;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.93rem;
+    transition: background .3s, color .3s;
+}
+
+    .nav-sub-item:hover,
+    .nav-sub-item.current {
+        color: #2563EB;
+        background: #EFF6FF;
+    }
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f6f7fb;
+    color: #222;
+    margin: 0;
+    padding: 0;
+}
+
+/* ==== NAVBAR LATERAL ==== */
+.navbar {
+    position: fixed;
+    width: 250px;
+    height: 100vh;
+    background-color: #FFFFFF;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+}
+
+.navbar-container {
+    padding: 20px;
+}
+
+.navbar-cabecera {
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid #E5E7EB;
+    padding-bottom: 25px;
+}
+
+.texto-cabecera {
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    text-decoration: none;
+    color: #1F2937;
+    font-size: 1.2rem;
+}
+
+.navbar-brand2 {
+    font-size: 1rem;
+    text-decoration: none;
+    color: #6B7280;
+}
+
+.navbar-links, .nav-sub {
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+    .navbar-links a {
+        color: #111827;
+        text-decoration: none;
+        font-size: 0.95rem;
+        border-radius: 5px;
+        transition: background .3s, color .3s;
+        padding: 10px;
+    }
+
+        .navbar-links a:hover,
+        .navbar-links .active {
+            color: #2563EB;
+            background: #EFF6FF;
+        }

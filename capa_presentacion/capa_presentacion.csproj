@@ -461,10 +461,17 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\ContratosController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\NominaController.cs" />
     <Compile Include="Controllers\GenerarReporteController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Mock\DemoBuilders.cs" />
+    <Compile Include="Models\Mock\DemoData.cs" />
+    <Compile Include="Models\ViewModels\EmpleadoResultadoVM.cs" />
+    <Compile Include="Models\ViewModels\NominaPeriodoVM.cs" />
+    <Compile Include="Models\ViewModels\ParametrosOficialesVM.cs" />
+    <Compile Include="Models\ViewModels\ProcesarNominaResultadoVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -484,6 +491,23 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\css\empleados.css" />
+    <Content Include="Content\css\historial.css" />
+    <Content Include="Content\css\layout.css" />
+    <Content Include="Content\css\nomina.css" />
+    <Content Include="Content\css\parametros.css" />
+    <Content Include="Content\css\procesar.css" />
+    <Content Include="Content\img\icons\Dashboard.svg" />
+    <Content Include="Content\img\icons\Empleados.svg" />
+    <Content Include="Content\img\icons\empleadosInactivos.svg" />
+    <Content Include="Content\img\icons\LogoPrincipal.svg" />
+    <Content Include="Content\img\icons\Nomina.svg" />
+    <Content Include="Content\img\icons\nominasPendientes.svg" />
+    <Content Include="Content\img\icons\nominasProcesadas.svg" />
+    <Content Include="Content\img\icons\Parametros.svg" />
+    <Content Include="Content\img\icons\Reportes.svg" />
+    <Content Include="Content\img\icons\TotalNomina.svg" />
+    <Content Include="Content\util.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -504,6 +528,9 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\nomina\nomina.mock.api.js" />
+    <Content Include="Scripts\nomina\nomina.ui.js" />
+    <Content Include="Scripts\nomina\nomina.validation.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -515,7 +542,18 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-
+    <Content Include="Views\Nomina\Index.cshtml" />
+    <Content Include="Views\Nomina\Procesar.cshtml" />
+    <Content Include="Views\Nomina\Historial.cshtml" />
+    <Content Include="Views\Nomina\_TablaVigentes.cshtml" />
+    <Content Include="Views\Nomina\_TablaErrores.cshtml" />
+    <Content Include="Views\Nomina\_TablaResumen.cshtml" />
+    <Content Include="Views\Nomina\_CardPeriodo.cshtml" />
+    <Content Include="Views\Nomina\_ModalParametros.cshtml" />
+    <Content Include="Views\Nomina\_ModalConfirmarProcesamiento.cshtml" />
+    <Content Include="Views\Nomina\_Toast.cshtml" />
+    <Content Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <Content Include="Views\Shared\_PageHeader.cshtml" />
     <Content Include="Views\Contratos\Index.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
@@ -524,7 +562,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
+    <Folder Include="Content\img\placeholders\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

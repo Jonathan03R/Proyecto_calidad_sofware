@@ -16,7 +16,11 @@ namespace capa_presentacion
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Contratos", action = "Index", id = UrlParameter.Optional }
+
+                //defaults: new { controller = "Nomina", action = "Index", id = UrlParameter.Optional }
+
+               defaults: new { controller = "Contratos", action = "Index", id = UrlParameter.Optional }
+
             );
 
         }

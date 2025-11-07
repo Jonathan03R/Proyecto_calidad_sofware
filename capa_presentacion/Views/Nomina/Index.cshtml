@@ -1,0 +1,96 @@
+﻿@model capa_presentacion.Models.ViewModels.NominaPeriodoVM
+
+@{
+    ViewBag.Title = "Procesar Nómina";
+    ViewBag.PageTitle = "Procesar Nómina Vigentes";
+    ViewBag.PageSubtitle = "Gestión de nómina - " + DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
+    ViewBag.PagePeriodo = DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/Content/css/nomina.css" />
+}
+
+<div class="procesar-nomina">
+    @* ===== KPIs (cards) ===== *@
+    <section class="kpis">
+        <!-- Nóminas Pendientes -->
+        <article class="kpi-card">
+            <div class="kpi-meta">
+                <div class="kpi-label">Nóminas Pendientes</div>
+                <div class="kpi-value" id="kpiPendientes">—</div>
+            </div>
+            <div class="kpi-icon kpi-warn">
+                <img src="~/Content/img/icons/nominasPendientes.svg" alt="Nóminas Pendientes" />
+            </div>
+        </article>
+
+        <!-- Nóminas Procesadas -->
+        <article class="kpi-card">
+            <div class="kpi-meta">
+                <div class="kpi-label">Nóminas Procesadas</div>
+                <div class="kpi-value" id="kpiProcesadas">—</div>
+            </div>
+            <div class="kpi-icon kpi-ok">
+                <img src="~/Content/img/icons/nominasProcesadas.svg" alt="Nóminas Procesadas" />
+            </div>
+        </article>
+
+        <!-- Empleados Inactivos -->
+        <article class="kpi-card">
+            <div class="kpi-meta">
+                <div class="kpi-label">Empleados Inactivos</div>
+                <div class="kpi-value" id="kpiInactivos">—</div>
+            </div>
+            <div class="kpi-icon kpi-danger">
+                <img src="~/Content/img/icons/empleadosInactivos.svg" alt="Empleados Inactivos" />
+            </div>
+        </article>
+
+        <!-- Total Nómina -->
+        <article class="kpi-card kpi-right">
+            <div class="kpi-meta">
+                <div class="kpi-label">Total Nómina</div>
+                <div class="kpi-value money" id="kpiTotalNomina">—</div>
+            </div>
+            <div class="kpi-icon kpi-primary">
+                <img src="~/Content/img/icons/TotalNomina.svg" alt="Total Nómina" />
+            </div>
+        </article>
+    </section>
+
+    <form id="frmNomina" class="form-nomina">
+        <div class="form-group">
+            <label for="ddlPeriodo">Período</label>
+            <select id="ddlPeriodo">
+                <option value="">-- Cargando períodos... --</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button id="btnProcesar" type="button" class="btn-primary">▶ Procesar Nómina</button>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col-lg-8">
+            @Html.Partial("_TablaVigentes")
+        </div>
+        <div class="col-lg-4">
+            @Html.Partial("_TablaResumen")
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            @Html.Partial("_TablaErrores")
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_ModalConfirmarProcesamiento")
+@section Scripts {
+    <script src="~/Scripts/nomina/nomina.mock.api.js"></script>
+    <script src="~/Scripts/nomina/nomina.validation.js"></script>
+    <script src="~/Scripts/nomina/nomina.ui.js"></script>
+}
