@@ -2,28 +2,32 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewBag.Title - Sistema de Nómina</title>
-
-    <!-- Estilos propios -->
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/layout.css")?v=@DateTime.Now.Ticks" />
-
-    @RenderSection("Head", required: false)
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Sistema de Gestión de Contratos</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    @{
-        var action = (string)ViewContext.RouteData.Values["action"];
-        var controller = (string)ViewContext.RouteData.Values["controller"];
-    }
-    <header class="navbar">
-        <div class="navbar-container">
-            <div class="navbar-cabecera">
-                <img src="@Url.Content("~/Content/img/icons/LogoPrincipal.svg")" alt="LogoPrincipal" class="icon" />
-                <div class="texto-cabecera">
-                    <a href="@Url.Action("Index","Nomina")" class="navbar-brand">GRUPO-02</a>
-                    <a href="@Url.Action("Index","Nomina")" class="navbar-brand2">Sistema de Nómina</a>
-                </div>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+        <div class="container">
+            @Html.ActionLink("Gestión de Contratos", "Index", "Contratos", new { area = "" }, new { @class = "navbar-brand" })
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                    title="Alternar navegación" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    <li>@Html.ActionLink("Inicio", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Trabajadores", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Áreas", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Cargos", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Tipos de Pensión", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
+                </ul>
             </div>
 
             <nav class="navbar-links">
@@ -118,5 +122,6 @@
     </script>
 
     @RenderSection("Scripts", required: false)
+
 </body>
 </html>

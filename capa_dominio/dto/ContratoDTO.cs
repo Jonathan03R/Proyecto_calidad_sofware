@@ -8,6 +8,7 @@ namespace capa_dominio.dto
 {
     public class ContratoDTO
     {
+        public int? ContratoId { get; set; }   // <-- nueva propiedad
         private int? trabajadorId;
         private int? cargoId;
         private int? areaId;

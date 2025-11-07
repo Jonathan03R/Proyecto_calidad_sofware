@@ -1,7 +1,8 @@
 using System;
-using capa_persistencia.modulo_base;
-using capa_dominio;
+using System.Collections.Generic;
+using System.Data.SqlClient;
 using capa_dominio.dto;
+using capa_persistencia.modulo_base;
 
 namespace capa_persistencia.modulo_principal
 {
@@ -14,6 +15,11 @@ namespace capa_persistencia.modulo_principal
             _accesoSQL = accesoSQL;
         }
 
+        public Contratos(AccesoSQLServer acceso)
+        {
+            _accesoSQL = acceso;
+        }
+        // CREAR CONTRATO
 
         public int CrearContratoEmpleado(ContratoDTO contrato)
         {
@@ -40,16 +46,13 @@ namespace capa_persistencia.modulo_principal
                 var result = comando.ExecuteScalar();
                 return Convert.ToInt32(result);
             }
-            catch (Exception)
-            {
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CREACION);
-            }
             finally
             {
                 _accesoSQL.CerrarConexion();
             }
         }
 
+        // FINALIZAR CONTRATO
         public (int contratoActualizado, int cambioRegistrado) FinalizarContrato(int contratoId, string observaciones = null)
         {
             try
@@ -69,11 +72,8 @@ namespace capa_persistencia.modulo_principal
                         return (contratoActualizado, cambioRegistrado);
                     }
                 }
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_ACTUALIZACION);
-            }
-            catch (Exception)
-            {
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_ACTUALIZACION);
+
+                throw new Exception("Error al finalizar contrato: no se devolvieron resultados.");
             }
             finally
             {
@@ -81,6 +81,7 @@ namespace capa_persistencia.modulo_principal
             }
         }
 
+        // ACTUALIZAR CONTRATO
         public void ActualizarContrato(int contratoId, string usuario, string motivo, ContratoDTO contrato)
         {
             try
@@ -99,15 +100,152 @@ namespace capa_persistencia.modulo_principal
 
                 comando.ExecuteNonQuery();
             }
-            catch (Exception)
-            {
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_ACTUALIZACION);
-            }
             finally
             {
                 _accesoSQL.CerrarConexion();
             }
         }
 
+        // CONSULTAR CONTRATOS POR TRABAJADOR
+        public List<ContratoDTO> ObtenerContratosPorTrabajador(int trabajadorId)
+        {
+            List<ContratoDTO> contratos = new List<ContratoDTO>();
+
+            try
+            {
+                _accesoSQL.AbrirConexion();
+                var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_contratos_por_trabajador");
+                comando.Parameters.AddWithValue("@trabajador_id", trabajadorId);
+
+                using (var reader = comando.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        ContratoDTO contrato = new ContratoDTO
+                        {
+                            ContratoId = reader["ContratoId"] as int?,
+                            TrabajadorId = reader["TrabajadorId"] as int?,
+                            CargoId = reader["CargoId"] as int?,
+                            AreaId = reader["AreaId"] as int?,
+                            TipoPensionId = reader["TipoPensionId"] as int?,
+                            TipoSalarioId = reader["TipoSalarioId"] as int?,
+                            TipoJornadaId = reader["TipoJornadaId"] as int?,
+                            FechaInicio = reader.GetDateTime(reader.GetOrdinal("FechaInicio")),
+                            FechaFin = reader["FechaFin"] as DateTime?,
+                            Salario = reader["Salario"] as decimal?,
+                            TarifaHora = reader["TarifaHora"] as decimal?,
+                            ModoPago = reader["ModoPago"]?.ToString(),
+                            DocumentoUrl = reader["DocumentoUrl"]?.ToString(),
+                            DescripcionFunciones = reader["DescripcionFunciones"]?.ToString(),
+                            Observaciones = reader["Observaciones"]?.ToString()
+                        };
+
+                        contratos.Add(contrato);
+                    }
+                }
+            }
+            finally
+            {
+                _accesoSQL.CerrarConexion();
+            }
+
+            return contratos;
+        }
+
+        // ============================================================
+        // NUEVOS M�TODOS PARA LOS LISTADOS DE REFERENCIA
+        // ============================================================
+
+        // Listar trabajadores
+        public List<TrabajadorDTO> ObtenerTrabajadores()
+        {
+            List<TrabajadorDTO> trabajadores = new List<TrabajadorDTO>();
+            var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_empleados");
+
+            using (var reader = comando.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    trabajadores.Add(new TrabajadorDTO
+                    {
+                        TrabajadorId = Convert.ToInt32(reader["TrabajadorId"]),
+                        NombreCompleto = reader["NombreCompleto"].ToString()
+                    });
+                }
+            }
+            return trabajadores;
+        }
+
+        // Listar �reas
+        public List<AreaDTO> ObtenerAreas()
+        {
+            List<AreaDTO> areas = new List<AreaDTO>();
+            var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_areas_trabajo");
+
+            using (var reader = comando.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    areas.Add(new AreaDTO
+                    {
+                        AreaId = Convert.ToInt32(reader["AreaId"]),
+                        NombreArea = reader["NombreArea"].ToString()
+                    });
+                }
+            }
+            return areas;
+        }
+
+        // Listar cargos
+        public List<CargoDTO> ObtenerCargos()
+        {
+            List<CargoDTO> cargos = new List<CargoDTO>();
+            var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_cargos");
+
+            using (var reader = comando.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    cargos.Add(new CargoDTO
+                    {
+                        CargoId = Convert.ToInt32(reader["CargoId"]),
+                        NombreCargo = reader["NombreCargo"].ToString()
+                    });
+                }
+            }
+            return cargos;
+        }
+
+        // Listar tipos de pensi�n
+        public List<TipoPensionDTO> ObtenerTiposPension()
+        {
+            List<TipoPensionDTO> pensiones = new List<TipoPensionDTO>();
+            var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_sistema_pensiones");
+
+            using (var reader = comando.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    pensiones.Add(new TipoPensionDTO
+                    {
+                        TipoPensionId = Convert.ToInt32(reader["TipoPensionId"]),
+                        NombreTipo = reader["NombreTipo"].ToString()
+                    });
+                }
+            }
+            return pensiones;
+        }
+
+        // Listar estados de contrato
+        public List<EstadoContratoDTO> ObtenerEstadosContrato()
+        {
+            return new List<EstadoContratoDTO>
+            {
+                new EstadoContratoDTO { EstadoId = 1, NombreEstado = "Activo" },
+                new EstadoContratoDTO { EstadoId = 2, NombreEstado = "Finalizado" },
+                new EstadoContratoDTO { EstadoId = 3, NombreEstado = "Suspendido" },
+                new EstadoContratoDTO { EstadoId = 4, NombreEstado = "Inactivo" }
+            };
+        }
     }
 }
