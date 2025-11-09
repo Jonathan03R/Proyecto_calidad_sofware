@@ -36,29 +36,23 @@ namespace capa_presentacion.Controllers
                         new MenuItem { Titulo = "Historial", Controlador = "Nomina", Accion = "Historial" }
                     }
                 },
-                
+
                 new MenuItem
                 {
                     Titulo = "Reportes",
                     Icono = "~/Content/img/icons/Reportes.svg",
-                    Controlador = "Nomina",
-                    Accion = "Reportes"
+                    Controlador = "GenerarReporte",
+                    Accion = "GenerarReporte"
                 },
+
                 new MenuItem
                 {
                     Titulo = "Parámetros",
                     Icono = "~/Content/img/icons/Parametros.svg",
                     Controlador = "Nomina",
                     Accion = "Parametros"
-                },
+                }     
                 
-                new MenuItem
-                {
-                    Titulo = "Generar Reportes",
-                    Icono = "~/Content/img/icons/GenerarReportes.svg",
-                    Controlador = "GenerarReporte",
-                    Accion = "GenerarReporte"
-                }
             };
 
             return PartialView("_Navbar", menu);

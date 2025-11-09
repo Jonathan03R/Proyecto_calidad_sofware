@@ -459,6 +459,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\CargoController.cs" />
     <Compile Include="Controllers\ContratosController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\NominaController.cs" />
