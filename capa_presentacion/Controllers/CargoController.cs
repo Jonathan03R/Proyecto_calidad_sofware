@@ -42,6 +42,9 @@ namespace capa_presentacion.Controllers
                 listaCargo = null;
                 accionExitosa = false;
                 mensajeRetorno = e.Message;
+
+                // ✅ Debug adicional
+                System.Diagnostics.Debug.WriteLine("Error completo: " + e.ToString());
             }
 
             return Json(new { data = listaCargo, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);

@@ -30,8 +30,8 @@ namespace capa_persistencia.modulo_principal
                     {
                         var cargo = new Cargo
                         {
-                            CargoId = reader.GetInt32(reader.GetOrdinal("cargo_id")),
-                            CargoNombre = reader.GetString(reader.GetOrdinal("cargo_nombre"))
+                            CargoId = reader.GetInt32(reader.GetOrdinal("CargoId")),
+                            CargoNombre = reader.GetString(reader.GetOrdinal("NombreCargo"))
                         };
                         listaCargos.Add(cargo);
                     }
@@ -39,6 +39,7 @@ namespace capa_persistencia.modulo_principal
             }
             catch (Exception)
             {
+
                 throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CONSULTA);
             }
             finally

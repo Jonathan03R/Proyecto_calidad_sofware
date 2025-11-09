@@ -42,7 +42,7 @@ namespace capa_presentacion.Controllers
                     Titulo = "Reportes",
                     Icono = "~/Content/img/icons/Reportes.svg",
                     Controlador = "GenerarReporte",
-                    Accion = "GenerarReporte"
+                    Accion = "Index"
                 },
 
                 new MenuItem

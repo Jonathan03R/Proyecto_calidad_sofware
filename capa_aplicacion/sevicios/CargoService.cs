@@ -27,7 +27,6 @@ namespace capa_aplicacion.sevicios
             List<Cargo> listaCargo;
             try
             {
-
                 listaCargo = cargosDAO.ObtenerCargos();
 
                 if (cargoId.HasValue)
@@ -42,7 +41,9 @@ namespace capa_aplicacion.sevicios
             }
             catch (Exception ex)
             {
-                throw ex;
+                // ✅ NO vuelvas a lanzar la excepción sin mostrar el error real
+                System.Diagnostics.Debug.WriteLine("Error en CargoService: " + ex.ToString());
+                throw;  // ← Cambia "throw ex;" por solo "throw" para mantener el stack trace
             }
             return listaCargo;
         }
