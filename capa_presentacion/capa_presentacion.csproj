@@ -459,6 +459,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\CargoController.cs" />
     <Compile Include="Controllers\ContratosController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\NominaController.cs" />
@@ -496,6 +497,7 @@
     <Content Include="Content\css\historial.css" />
     <Content Include="Content\css\layout.css" />
     <Content Include="Content\css\nomina.css" />
+    <Content Include="Content\css\reporte.css" />
     <Content Include="Content\css\parametros.css" />
     <Content Include="Content\css\procesar.css" />
     <Content Include="Content\img\icons\Dashboard.svg" />
@@ -532,6 +534,8 @@
     <Content Include="Scripts\nomina\nomina.mock.api.js" />
     <Content Include="Scripts\nomina\nomina.ui.js" />
     <Content Include="Scripts\nomina\nomina.validation.js" />
+    <Content Include="Scripts\reporte\generarReporte.js" />
+    <Content Include="Scripts\reporte\reporte.alerta.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -559,8 +563,11 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\GenerarReporte\GenerarReporte.cshtml" />
+    <Content Include="Views\GenerarReporte\Index.cshtml" />
     <Content Include="Views\Shared\_Navbar.cshtml" />
+    <Content Include="Views\GenerarReporte\_Alertas.cshtml" />
+    <Content Include="Views\GenerarReporte\_EstadoVacio.cshtml" />
+    <Content Include="Views\GenerarReporte\_DetallesTrabajador.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

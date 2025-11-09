@@ -53,13 +53,12 @@
       <Project>{1074a41c-3310-4b11-b5a2-64a8f8a02308}</Project>
       <Name>capa_persistencia</Name>
     </ProjectReference>
-
     <Compile Include="mapeadores\DetalleNominaMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="sevicios\CargoService.cs" />
     <Compile Include="sevicios\ReporteService.cs" />
     <Compile Include="sevicios\ListarPeriodoServicio.cs" />
     <Compile Include="sevicios\NominasServicios.cs" />
-
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\capa_dominio\capa_dominio.csproj">
