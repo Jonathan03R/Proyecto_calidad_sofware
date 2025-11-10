@@ -6,27 +6,9 @@
     max-width: 1400px;
     margin: 0 auto;
     padding: 30px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
+    background: #f5f7fa;
+    min-height: calc(100vh - 200px);
 }
-
-.page-header {
-    text-align: center;
-    margin-bottom: 50px;
-    color: white;
-    animation: fadeInDown 0.6s ease;
-}
-
-    .page-header h1 {
-        font-size: 3rem;
-        margin-bottom: 10px;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .page-header .subtitle {
-        font-size: 1.2rem;
-        opacity: 0.9;
-    }
 
 /* Grid de tarjetas */
 .cards-grid {

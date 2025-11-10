@@ -5,9 +5,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewBag.Title - Sistema de Nómina</title>
-
     <!-- Estilos -->
     <link rel="stylesheet" href="@Url.Content("~/Content/css/layout.css")?v=@DateTime.Now.Ticks" />
+
+    @* ✅ CSS específico para Contratos *@
+    @if (ViewContext.RouteData.Values["controller"]?.ToString() == "Contratos")
+    {
+        <link rel="stylesheet" href="@Url.Content("~/Content/css/contratos.css")?v=@DateTime.Now.Ticks" />
+    }
 
     @RenderSection("Head", required: false)
 </head>
@@ -16,7 +21,6 @@
         var action = (string)ViewContext.RouteData.Values["action"];
         var controller = (string)ViewContext.RouteData.Values["controller"];
     }
-
     <header class="navbar">
         <div class="navbar-container">
             <div class="navbar-cabecera">
@@ -26,26 +30,27 @@
                     <a href="@Url.Action("Index","Nomina")" class="navbar-brand2">Sistema de Nómina</a>
                 </div>
             </div>
-
             @Html.Action("Navbar", "Menu")
         </div>
     </header>
-
     @RenderSection("PageActions", required: false)
-
     <!-- Contenido principal -->
     <main class="main-content">
         @Html.Partial("~/Views/Shared/_PageHeader.cshtml")
         @RenderBody()
     </main>
-
     <footer class="footer">
         @*<p>© @DateTime.Now.Year - Sistema de Nómina | Desarrollado por el equipo número 2</p>*@
     </footer>
-
     <!-- Scripts -->
     <script src="@Url.Content("~/Scripts/nomina/nomina.mock.api.js")"></script>
     <script src="@Url.Content("~/Scripts/nomina/nomina.validation.js")"></script>
+
+    @* ✅ JavaScript específico para Contratos *@
+    @if (ViewContext.RouteData.Values["controller"]?.ToString() == "Contratos")
+    {
+        <script src="@Url.Content("~/Scripts/contratos.js")?v=@DateTime.Now.Ticks"></script>
+    }
 
     <script>
         (function () {
@@ -53,13 +58,11 @@
             document.querySelectorAll('.nav-sub').forEach(sub => {
                 const btn = sub.querySelector('.nav-sub-toggle');
                 const menu = sub.querySelector('.nav-sub-menu');
-
                 function toggle(open) {
                     menu.classList.toggle('show', open);
                     sub.classList.toggle('open', open);
                     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
                 }
-
                 btn.addEventListener('click', () => toggle(!menu.classList.contains('show')));
                 btn.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(!menu.classList.contains('show')); }
@@ -70,7 +73,6 @@
             });
         })();
     </script>
-
     @RenderSection("Scripts", required: false)
 </body>
 </html>
