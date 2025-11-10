@@ -1,5 +1,4 @@
-﻿
-const ReporteNomina = (function () {
+﻿const ReporteNomina = (function () {
     'use strict';
 
     // ===== ESTADO PRIVADO =====
@@ -10,7 +9,6 @@ const ReporteNomina = (function () {
     const elements = {
         periodoSelect: null,
         cargoSelect: null,
-        btnConsultar: null,
         btnGenerar: null,
         tableBody: null,
         recordsCount: null,
@@ -27,7 +25,6 @@ const ReporteNomina = (function () {
     function cacheElements() {
         elements.periodoSelect = $('#periodoId');
         elements.cargoSelect = $('#cargoId');
-        elements.btnConsultar = $('#btnConsultar');
         elements.btnGenerar = $('#btnGenerarReporte');
         elements.tableBody = $('#tableBody');
         elements.recordsCount = $('#recordsCount');
@@ -36,7 +33,16 @@ const ReporteNomina = (function () {
     }
 
     function bindEvents() {
-        elements.btnConsultar.on('click', consultarReporte);
+        // ✅ Consulta automática al cambiar el periodo
+        elements.periodoSelect.on('change', consultarReporte);
+
+        // ✅ Reconsulta al cambiar el tipo de trabajador (si ya hay un periodo seleccionado)
+        elements.cargoSelect.on('change', function () {
+            if (elements.periodoSelect.val()) {
+                consultarReporte();
+            }
+        });
+
         elements.btnGenerar.on('click', generarReporte);
 
         // Eventos del modal
@@ -79,9 +85,6 @@ const ReporteNomina = (function () {
         });
     }
 
-    /**
-     * Carga la lista de períodos desde el servidor
-     */
     function cargarPeriodos() {
         $.ajax({
             url: window.AppConfig.urls.listarPeriodos,
@@ -102,25 +105,17 @@ const ReporteNomina = (function () {
     }
 
     // ===== RENDERIZADO =====
-    /**
-     * Renderiza las opciones del select de cargos
-     * @param {Array} cargos - Lista de cargos
-     */
     function renderizarSelectCargos(cargos) {
         elements.cargoSelect.empty();
         elements.cargoSelect.append('<option value="">Todos los tipos</option>');
 
         cargos.forEach(function (cargo) {
             elements.cargoSelect.append(
-                `<option value="${cargo.cargoId}">${escapeHtml(cargo.CargoNombre)}</option>`
+                `<option value="${cargo.CargoId}">${escapeHtml(cargo.CargoNombre)}</option>`
             );
         });
     }
 
-    /**
-     * Renderiza las opciones del select de períodos
-     * @param {Array} periodos - Lista de períodos
-     */
     function renderizarSelectPeriodos(periodos) {
         elements.periodoSelect.empty();
         elements.periodoSelect.append('<option value="">Seleccione Mes/Año</option>');
@@ -132,10 +127,6 @@ const ReporteNomina = (function () {
         });
     }
 
-    /**
-     * Renderiza la tabla de trabajadores
-     * @param {Array} data - Datos de nómina
-     */
     function renderizarTabla(data) {
         datosNomina = data;
         elements.tableBody.empty();
@@ -151,12 +142,6 @@ const ReporteNomina = (function () {
         });
     }
 
-    /**
-     * Crea una fila de la tabla para un trabajador
-     * @param {Object} item - Datos del trabajador
-     * @param {number} index - Índice en el array
-     * @returns {string} HTML de la fila
-     */
     function crearFilaTrabajador(item, index) {
         return `
             <tr>
@@ -174,16 +159,14 @@ const ReporteNomina = (function () {
     }
 
     // ===== CONSULTA DE REPORTES =====
-    /**
-     * Consulta el reporte de nómina según los filtros seleccionados
-     */
     function consultarReporte() {
         const periodoId = elements.periodoSelect.val();
         const cargoId = elements.cargoSelect.val();
 
-        // Validar que se haya seleccionado un período
+        // Si no hay periodo seleccionado, limpiar tabla
         if (!periodoId) {
-            Alertas.validacion('Debe seleccionar un período');
+            mostrarEstadoVacio();
+            elements.btnGenerar.prop('disabled', true);
             return;
         }
 
@@ -200,7 +183,12 @@ const ReporteNomina = (function () {
                     renderizarTabla(response.data);
                     actualizarContador(response.data.length);
                     elements.btnGenerar.prop('disabled', false);
-                    Alertas.exito(`Se encontraron ${response.data.length} registros`);
+
+                    if (response.data.length > 0) {
+                        Alertas.exito(`Se encontraron ${response.data.length} registros`);
+                    } else {
+                        Alertas.info('No se encontraron registros para el periodo seleccionado');
+                    }
                 } else {
                     Alertas.error('Error al consultar: ' + response.mensaje);
                     mostrarEstadoVacio();
@@ -216,12 +204,6 @@ const ReporteNomina = (function () {
         });
     }
 
-    /**
-     * Construye la URL de consulta con parámetros
-     * @param {string} periodoId - ID del período
-     * @param {string} cargoId - ID del cargo (opcional)
-     * @returns {string} URL completa
-     */
     function construirUrlConsulta(periodoId, cargoId) {
         let url = window.AppConfig.urls.listarNomina + '?periodoId=' + periodoId;
         if (cargoId) {
@@ -231,10 +213,6 @@ const ReporteNomina = (function () {
     }
 
     // ===== MODAL DE DETALLES =====
-    /**
-     * Muestra el modal con los detalles de un trabajador
-     * @param {number} index - Índice del trabajador en el array
-     */
     function verDetalles(index) {
         const item = datosNomina[index];
         if (!item) {
@@ -247,11 +225,6 @@ const ReporteNomina = (function () {
         elements.modal.addClass('show');
     }
 
-    /**
-     * Construye el HTML completo de los detalles
-     * @param {Object} item - Datos del trabajador
-     * @returns {string} HTML del modal
-     */
     function construirHtmlDetalles(item) {
         return `
             <div class="details-grid">
@@ -266,9 +239,6 @@ const ReporteNomina = (function () {
         `;
     }
 
-    /**
-     * Crea la sección de información personal
-     */
     function crearSeccionPersonal(item) {
         return `
             <div class="detail-section">
@@ -283,9 +253,6 @@ const ReporteNomina = (function () {
         `;
     }
 
-    /**
-     * Crea la sección de información laboral
-     */
     function crearSeccionLaboral(item) {
         return `
             <div class="detail-section">
@@ -300,9 +267,6 @@ const ReporteNomina = (function () {
         `;
     }
 
-    /**
-     * Crea la sección de horas trabajadas
-     */
     function crearSeccionHoras(item) {
         return `
             <div class="detail-section">
@@ -314,9 +278,6 @@ const ReporteNomina = (function () {
         `;
     }
 
-    /**
-     * Crea la sección de ingresos
-     */
     function crearSeccionIngresos(item) {
         return `
             <div class="detail-section">
@@ -331,9 +292,6 @@ const ReporteNomina = (function () {
         `;
     }
 
-    /**
-     * Crea la sección de descuentos y aportes
-     */
     function crearSeccionDescuentos(item) {
         return `
             <div class="detail-section">
@@ -348,9 +306,6 @@ const ReporteNomina = (function () {
         `;
     }
 
-    /**
-     * Crea la sección de otros descuentos
-     */
     function crearSeccionOtrosDescuentos(item) {
         return `
             <div class="detail-section">
@@ -363,9 +318,6 @@ const ReporteNomina = (function () {
         `;
     }
 
-    /**
-     * Crea la sección de resumen final (neto a pagar)
-     */
     function crearSeccionResumen(item) {
         return `
             <div class="detail-section" style="grid-column: 1 / -1; background: linear-gradient(135deg, #e6f7ff 0%, #f0fff4 100%); border-left-color: #38a169;">
@@ -378,13 +330,6 @@ const ReporteNomina = (function () {
         `;
     }
 
-    /**
-     * Crea un item de detalle individual
-     * @param {string} label - Etiqueta del campo
-     * @param {*} value - Valor del campo
-     * @param {string} clase - Clase CSS adicional
-     * @returns {string} HTML del item
-     */
     function crearItemDetalle(label, value, clase = '') {
         const valorFormateado = value || 'N/A';
         const claseExtra = clase ? ` ${clase}` : '';
@@ -396,20 +341,14 @@ const ReporteNomina = (function () {
         `;
     }
 
-    /**
-     * Cierra el modal de detalles
-     */
     function cerrarModal() {
         elements.modal.removeClass('show');
     }
 
     // ===== GENERACIÓN DE REPORTES =====
-    /**
-     * Genera y descarga el reporte en formato Excel/PDF
-     */
     function generarReporte() {
         if (!datosNomina || datosNomina.length === 0) {
-            Alertas.validacion('No hay datos para generar el reporte. Consulte primero un período');
+            Alertas.validacion('No hay datos para generar el reporte. Seleccione un período primero');
             return;
         }
 
@@ -431,9 +370,6 @@ const ReporteNomina = (function () {
     }
 
     // ===== UTILIDADES UI =====
-    /**
-     * Muestra el indicador de carga en la tabla
-     */
     function mostrarCargando() {
         elements.tableBody.html(`
             <tr>
@@ -448,16 +384,13 @@ const ReporteNomina = (function () {
         actualizarContador(0);
     }
 
-    /**
-     * Muestra el estado vacío cuando no hay datos
-     */
     function mostrarEstadoVacio() {
         elements.tableBody.html(`
             <tr>
                 <td colspan="5">
                     <div class="empty-state">
                         <div class="empty-state-icon">📋</div>
-                        <p>No se encontraron registros para el período seleccionado.</p>
+                        <p>Seleccione un período para ver los registros.</p>
                     </div>
                 </td>
             </tr>
@@ -465,41 +398,22 @@ const ReporteNomina = (function () {
         actualizarContador(0);
     }
 
-    /**
-     * Actualiza el contador de registros
-     * @param {number} count - Número de registros
-     */
     function actualizarContador(count) {
         const texto = count === 1 ? 'registro' : 'registros';
         elements.recordsCount.text(`${count} ${texto}`);
     }
 
     // ===== UTILIDADES DE FORMATO =====
-    /**
-     * Formatea un valor como moneda (2 decimales)
-     * @param {number} valor - Valor a formatear
-     * @returns {string} Valor formateado
-     */
     function formatearMoneda(valor) {
         if (valor == null || isNaN(valor)) return '0.00';
         return parseFloat(valor).toFixed(2);
     }
 
-    /**
-     * Formatea un número con 2 decimales
-     * @param {number} valor - Valor a formatear
-     * @returns {string} Valor formateado o 'N/A'
-     */
     function formatearNumero(valor) {
         if (valor == null || isNaN(valor)) return 'N/A';
         return parseFloat(valor).toFixed(2);
     }
 
-    /**
-     * Formatea una fecha en formato local
-     * @param {string} fecha - Fecha en formato ISO
-     * @returns {string} Fecha formateada o 'N/A'
-     */
     function formatearFecha(fecha) {
         if (!fecha) return 'N/A';
         try {
@@ -513,11 +427,6 @@ const ReporteNomina = (function () {
         }
     }
 
-    /**
-     * Escapa caracteres HTML para prevenir XSS
-     * @param {*} text - Texto a escapar
-     * @returns {string} Texto seguro
-     */
     function escapeHtml(text) {
         if (text == null) return '';
         const map = {
