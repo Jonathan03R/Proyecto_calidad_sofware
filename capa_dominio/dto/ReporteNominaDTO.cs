@@ -18,8 +18,8 @@ namespace capa_dominio.dto
         public string NumeroIdentificacion { get; set; }
         public string SistemaPension { get; set; }
         public string TipoTrabajador { get; set; }
-        public DateTime FechaInicioContrato { get; set; }
-        public DateTime? FechaFinContrato { get; set; } // Mapea a C.contrato_fecha_fin
+        public string FechaInicioContrato { get; set; }
+        public string FechaFinContrato { get; set; } 
 
         // ----------------------------------------------------
         //        2. Jornada Laboral (RN-08)
