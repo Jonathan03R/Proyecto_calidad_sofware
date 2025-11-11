@@ -533,7 +533,6 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
-    <Content Include="Scripts\nomina\nomina.mock.api.js" />
     <Content Include="Scripts\nomina\nomina.ui.js" />
     <Content Include="Scripts\nomina\nomina.validation.js" />
     <Content Include="Scripts\reporte\generarReporte.js" />
