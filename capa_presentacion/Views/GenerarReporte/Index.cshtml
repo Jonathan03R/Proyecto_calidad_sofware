@@ -1,0 +1,83 @@
+﻿@{
+    ViewBag.Title = "Gestión de Reportes de Nómina";
+}
+
+@section Head {
+    <link href="~/Content/css/reporte.css" rel="stylesheet" />
+}
+<main class="main-content">
+    <div class="header-section">
+        <div>
+            <h1>Gestión de Reportes de Nómina</h1>
+            <p>Genera todos los reportes de los trabajadores por periodo</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div class="user-section">
+                <div class="user-avatar">A</div>
+                <span class="user-name">Admin RH</span>
+            </div>
+            <button class="btn-generar" id="btnGenerarReporte" disabled>
+                <span>📥</span> Generar Reporte (PDF/Excel)
+            </button>
+        </div>
+    </div>
+    @Html.Partial("_Alertas")
+    <div class="filtros-section">
+        <div class="filtros-row">
+            <div class="form-group">
+                <label for="periodoId">Periodo <span style="color: #e53e3e;">*</span></label>
+                <select id="periodoId" class="form-control">
+                    <option value="">Seleccione Mes/Año</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="cargoId">Tipo de Trabajador</label>
+                <select id="cargoId" class="form-control">
+                    <option value="">Todos los tipos</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="table-section">
+        <div class="table-header">
+            <h3>📋 Lista de Trabajadores</h3>
+            <span class="records-count" id="recordsCount">0 registros</span>
+        </div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombres</th>
+                        <th>Apellidos</th>
+                        <th>Tipo de Trabajador</th>
+                        <th>Neto a Pagar</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    @Html.Partial("_EstadoVacio")
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+@Html.Partial("_DetallesTrabajador")
+@section Scripts {
+    <script>
+        // Configuración de URLs del servidor
+        window.AppConfig = {
+            urls: {
+                obtenerCargos: '@Url.Action("ObtenerCargos", "Cargo")',
+                listarPeriodos: '@Url.Action("ListarPeriodos", "GenerarReporte")',
+                listarNomina: '@Url.Action("ListarNominaPorPeriodo", "GenerarReporte")',
+                generarExcel: '@Url.Action("GenerarExcel", "GenerarReporte")'
+            }
+        };
+        console.log('✅ AppConfig cargado:', window.AppConfig);
+    </script>
+    <!-- jQuery (REQUERIDO - debe cargarse primero) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Tus scripts -->
+    <script src="~/Scripts/reporte/reporte.alerta.js"></script>
+    <script src="~/Scripts/reporte/generarReporte.js"></script>
+}

@@ -3,68 +3,94 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <h2 class="text-center mb-4">Gestión de Contratos</h2>
+<!-- CSS específico para esta página -->
+<link href="~/Content/css/contratos.css" rel="stylesheet" />
 
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-primary text-white">
-                    Trabajadores
-                </div>
-                <div class="card-body">
-                    <p>Listado de trabajadores registrados en el sistema.</p>
-                    <button class="btn btn-outline-primary btn-sm">Ver lista</button>
-                </div>
+<div class="contratos-container">
+    <div class="page-header">
+        <h1>📋 Gestión de Contratos</h1>
+        <p class="subtitle">Administra contratos, trabajadores y configuraciones del sistema</p>
+    </div>
+
+    <div class="cards-grid">
+        <!-- Card: Trabajadores -->
+        <div class="info-card">
+            <div class="card-icon">👥</div>
+            <div class="card-content">
+                <h3>Trabajadores</h3>
+                <p>Listado de trabajadores registrados en el sistema.</p>
+                <button class="btn-primary" onclick="verListaTrabajadores()">
+                    <span class="btn-icon">👁️</span> Ver lista
+                </button>
             </div>
         </div>
 
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-success text-white">
-                    Áreas
-                </div>
-                <div class="card-body">
-                    <p>Consulta de áreas disponibles en la empresa.</p>
-                    <button class="btn btn-outline-success btn-sm">Ver lista</button>
-                </div>
+        <!-- Card: Áreas -->
+        <div class="info-card">
+            <div class="card-icon">🏢</div>
+            <div class="card-content">
+                <h3>Áreas</h3>
+                <p>Consulta de áreas disponibles en la empresa.</p>
+                <button class="btn-primary" onclick="verListaAreas()">
+                    <span class="btn-icon">👁️</span> Ver lista
+                </button>
             </div>
         </div>
 
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-warning text-white">
-                    Cargos
-                </div>
-                <div class="card-body">
-                    <p>Consulta de cargos o puestos disponibles.</p>
-                    <button class="btn btn-outline-warning btn-sm">Ver lista</button>
-                </div>
+        <!-- Card: Cargos -->
+        <div class="info-card">
+            <div class="card-icon">💼</div>
+            <div class="card-content">
+                <h3>Cargos</h3>
+                <p>Consulta de cargos o puestos disponibles.</p>
+                <button class="btn-primary" onclick="verListaCargos()">
+                    <span class="btn-icon">👁️</span> Ver lista
+                </button>
             </div>
         </div>
 
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-info text-white">
-                    Tipos de Pensión
-                </div>
-                <div class="card-body">
-                    <p>Listado de tipos de pensión configurados.</p>
-                    <button class="btn btn-outline-info btn-sm">Ver lista</button>
-                </div>
+        <!-- Card: Tipos de Pensión -->
+        <div class="info-card">
+            <div class="card-icon">💰</div>
+            <div class="card-content">
+                <h3>Tipos de Pensión</h3>
+                <p>Listado de tipos de pensión configurados.</p>
+                <button class="btn-primary" onclick="verListaPensiones()">
+                    <span class="btn-icon">👁️</span> Ver lista
+                </button>
             </div>
         </div>
 
-        <div class="col-md-12 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-secondary text-white">
-                    Estados de Contrato
-                </div>
-                <div class="card-body">
-                    <p>Consulta de los estados posibles de un contrato (activo, inactivo, finalizado, etc.).</p>
-                    <button class="btn btn-outline-secondary btn-sm">Ver lista</button>
-                </div>
+        <!-- Card: Estados de Contrato -->
+        <div class="info-card">
+            <div class="card-icon">📊</div>
+            <div class="card-content">
+                <h3>Estados de Contrato</h3>
+                <p>Consulta de los estados posibles de un contrato (activo, inactivo, finalizado, etc.).</p>
+                <button class="btn-primary" onclick="verListaEstados()">
+                    <span class="btn-icon">👁️</span> Ver lista
+                </button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal para mostrar las listas -->
+<div id="modalLista" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitulo"></h2>
+            <span class="close" onclick="cerrarModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div id="loadingSpinner" class="loading">
+                <div class="spinner"></div>
+                <p>Cargando datos...</p>
+            </div>
+            <div id="modalContenido"></div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript específico -->
+<script src="~/Scripts/contratos.js"></script>

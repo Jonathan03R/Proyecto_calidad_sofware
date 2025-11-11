@@ -44,9 +44,11 @@ namespace capa_persistencia.modulo_principal
                             NumeroIdentificacion = dr["NumeroIdentificacion"].ToString(),
                             SistemaPension = dr["SistemaPension"].ToString(),
                             TipoTrabajador = dr["TipoTrabajador"].ToString(),
-                            FechaInicioContrato = Convert.ToDateTime(dr["FechaInicioContrato"]),
+                            FechaInicioContrato = dr["FechaInicioContrato"] != DBNull.Value
+                                ? DateTime.Parse(dr["FechaInicioContrato"].ToString()).ToString("yyyy-MM-dd")
+                                : null,
                             FechaFinContrato = dr["FechaFinContrato"] != DBNull.Value
-                                ? (DateTime?)Convert.ToDateTime(dr["FechaFinContrato"])
+                                ? DateTime.Parse(dr["FechaFinContrato"].ToString()).ToString("yyyy-MM-dd")
                                 : null,
 
                             // Jornada Laboral

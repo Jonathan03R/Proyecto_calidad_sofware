@@ -8,11 +8,11 @@ namespace capa_persistencia.modulo_principal
 
     public class Cargos
     {
-        private readonly AccesoSQLServer _accesoSQL;
+        private readonly AccesoSQLServer conexion;
 
-        public Cargos()
+        public Cargos(AccesoSQLServer accesoSQLServer)
         {
-            _accesoSQL = new AccesoSQLServer();
+            this.conexion = accesoSQLServer;
         }
 
         public List<Cargo> ObtenerCargos()
@@ -21,8 +21,8 @@ namespace capa_persistencia.modulo_principal
 
             try
             {
-                _accesoSQL.AbrirConexion();
-                var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_cargos");
+                conexion.AbrirConexion();
+                var comando = conexion.ObtenerComandoDeProcedimiento("proc_obtener_cargos");
 
                 using (var reader = comando.ExecuteReader())
                 {
@@ -30,8 +30,8 @@ namespace capa_persistencia.modulo_principal
                     {
                         var cargo = new Cargo
                         {
-                            CargoId = reader.GetInt32(reader.GetOrdinal("cargo_id")),
-                            CargoNombre = reader.GetString(reader.GetOrdinal("cargo_nombre"))
+                            CargoId = reader.GetInt32(reader.GetOrdinal("CargoId")),
+                            CargoNombre = reader.GetString(reader.GetOrdinal("NombreCargo"))
                         };
                         listaCargos.Add(cargo);
                     }
@@ -39,11 +39,12 @@ namespace capa_persistencia.modulo_principal
             }
             catch (Exception)
             {
+
                 throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CONSULTA);
             }
             finally
             {
-                _accesoSQL.CerrarConexion();
+                conexion.CerrarConexion();
             }
 
             return listaCargos;
