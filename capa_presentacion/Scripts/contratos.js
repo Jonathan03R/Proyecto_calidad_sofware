@@ -2,6 +2,59 @@
 // GESTIÓN DE CONTRATOS - JAVASCRIPT
 // ============================================
 
+// ✅ INICIALIZACIÓN AL CARGAR LA PÁGINA
+document.addEventListener('DOMContentLoaded', function () {
+    inicializarEventos();
+});
+
+// Función para inicializar todos los event listeners
+function inicializarEventos() {
+    // Event listeners para los botones "Ver lista"
+    document.querySelectorAll('.btn-primary[data-action]').forEach(button => {
+        button.addEventListener('click', function () {
+            const action = this.getAttribute('data-action');
+            manejarAccion(action);
+        });
+    });
+
+    // Event listener para cerrar modal
+    const closeButton = document.querySelector('.close[data-action="cerrar"]');
+    if (closeButton) {
+        closeButton.addEventListener('click', cerrarModal);
+    }
+
+    // Cerrar modal al hacer clic fuera de él
+    window.addEventListener('click', function (event) {
+        const modal = document.getElementById('modalLista');
+        if (event.target == modal) {
+            cerrarModal();
+        }
+    });
+}
+
+// Manejador central de acciones
+function manejarAccion(accion) {
+    switch (accion) {
+        case 'trabajadores':
+            verListaTrabajadores();
+            break;
+        case 'areas':
+            verListaAreas();
+            break;
+        case 'cargos':
+            verListaCargos();
+            break;
+        case 'pensiones':
+            verListaPensiones();
+            break;
+        case 'estados':
+            verListaEstados();
+            break;
+        default:
+            console.error('Acción no reconocida:', accion);
+    }
+}
+
 // Función para abrir el modal
 function abrirModal(titulo) {
     document.getElementById('modalTitulo').innerHTML = titulo;
@@ -31,10 +84,12 @@ function ocultarLoading() {
 // Función para mostrar error
 function mostrarError(mensaje) {
     ocultarLoading();
+    console.error('Error detallado:', mensaje); // Para debugging
     document.getElementById('modalContenido').innerHTML = `
         <div style="text-align: center; padding: 40px; color: #d9534f;">
             <h3>❌ Error</h3>
             <p>${mensaje}</p>
+            <button onclick="cerrarModal()" style="margin-top: 20px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar</button>
         </div>
     `;
 }
@@ -45,9 +100,18 @@ function mostrarError(mensaje) {
 function verListaTrabajadores() {
     abrirModal('👥 Listado de Trabajadores');
 
+    console.log('Solicitando trabajadores...'); // Debug
+
     fetch('/Contratos/ObtenerTrabajadores')
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status); // Debug
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Datos recibidos:', data); // Debug
             ocultarLoading();
             if (data.success) {
                 if (data.data.length === 0) {

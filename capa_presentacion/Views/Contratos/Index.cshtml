@@ -16,7 +16,7 @@
             <div class="card-content">
                 <h3>Trabajadores</h3>
                 <p>Listado de trabajadores registrados en el sistema.</p>
-                <button class="btn-primary" onclick="verListaTrabajadores()">
+                <button class="btn-primary" data-action="trabajadores">
                     <span class="btn-icon">👁️</span> Ver lista
                 </button>
             </div>
@@ -28,7 +28,7 @@
             <div class="card-content">
                 <h3>Áreas</h3>
                 <p>Consulta de áreas disponibles en la empresa.</p>
-                <button class="btn-primary" onclick="verListaAreas()">
+                <button class="btn-primary" data-action="areas">
                     <span class="btn-icon">👁️</span> Ver lista
                 </button>
             </div>
@@ -40,7 +40,7 @@
             <div class="card-content">
                 <h3>Cargos</h3>
                 <p>Consulta de cargos o puestos disponibles.</p>
-                <button class="btn-primary" onclick="verListaCargos()">
+                <button class="btn-primary" data-action="cargos">
                     <span class="btn-icon">👁️</span> Ver lista
                 </button>
             </div>
@@ -52,7 +52,7 @@
             <div class="card-content">
                 <h3>Tipos de Pensión</h3>
                 <p>Listado de tipos de pensión configurados.</p>
-                <button class="btn-primary" onclick="verListaPensiones()">
+                <button class="btn-primary" data-action="pensiones">
                     <span class="btn-icon">👁️</span> Ver lista
                 </button>
             </div>
@@ -64,7 +64,7 @@
             <div class="card-content">
                 <h3>Estados de Contrato</h3>
                 <p>Consulta de los estados posibles de un contrato (activo, inactivo, finalizado, etc.).</p>
-                <button class="btn-primary" onclick="verListaEstados()">
+                <button class="btn-primary" data-action="estados">
                     <span class="btn-icon">👁️</span> Ver lista
                 </button>
             </div>
@@ -89,5 +89,6 @@
     </div>
 </div>
 
-<!-- JavaScript específico -->
-<script src="~/Scripts/contratos.js"></script>
+@section Scripts {
+    <script src="@Url.Content("~/Scripts/contratos.js")"></script>
+}

@@ -46,12 +46,6 @@
     <script src="@Url.Content("~/Scripts/nomina/nomina.mock.api.js")"></script>
     <script src="@Url.Content("~/Scripts/nomina/nomina.validation.js")"></script>
 
-    @* ✅ JavaScript específico para Contratos *@
-    @if (ViewContext.RouteData.Values["controller"]?.ToString() == "Contratos")
-    {
-        <script src="@Url.Content("~/Scripts/contratos.js")?v=@DateTime.Now.Ticks"></script>
-    }
-
     <script>
         (function () {
             // Lógica para submenús desplegables
