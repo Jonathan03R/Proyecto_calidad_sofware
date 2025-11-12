@@ -1,201 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using capa_dominio;
-using capa_dominio.dto;
-using capa_persistencia.modulo_base;
-using capa_persistencia.modulo_principal;
+﻿using capa_dominio;using capa_dominio.dto;using capa_persistencia.modulo_base;using capa_persistencia.modulo_principal;using System;using System.Collections.Generic;using System.Linq;namespace capa_aplicacion.servicios{    public class NominasServicios    {        private readonly AccesoSQLServer _conexion;        private readonly NominasRepositorio _nominas;        private readonly DetallesNominaRepositorio _detalleNomina;        private readonly TrabajadoresRepositorio _trabajadores;        private readonly HijosRepositorio _hijos;        private readonly ContratosRepositorio _contratos;        private readonly HorasTrabajadasRepositorio _horasTrabajadas;
+        private readonly TiposHorasExtrasRepositorio _tiposHorasExtras;
 
-
-namespace capa_aplicacion.servicios
-{
-    public class NominasServicios
-    {
-        private readonly AccesoSQLServer _conexion;
-        private readonly NominasRepositorio _nominas;
-        private readonly DetallesNominaRepositorio _detalleNomina;
-        private readonly TrabajadoresRepositorio _trabajadores;
-        private readonly HijosRepositorio _hijos;
-
-        public NominasServicios()
-        {
-            _conexion = new AccesoSQLServer();
-            _nominas = new NominasRepositorio(_conexion);
-            _detalleNomina = new DetallesNominaRepositorio(_conexion);
-            _trabajadores = new TrabajadoresRepositorio(_conexion);
-            _hijos = new HijosRepositorio(_conexion);
+        public NominasServicios()        {            _conexion = new AccesoSQLServer();            _nominas = new NominasRepositorio(_conexion);            _detalleNomina = new DetallesNominaRepositorio(_conexion);            _trabajadores = new TrabajadoresRepositorio(_conexion);            _hijos = new HijosRepositorio(_conexion);            _contratos = new ContratosRepositorio(_conexion);            _horasTrabajadas = new HorasTrabajadasRepositorio(_conexion);
+            _tiposHorasExtras = new TiposHorasExtrasRepositorio(_conexion);
         }
 
-        public void ProcesarNominaPorPeriodo(
-    int periodoId,
-    List<ImpuestoRentaTramo> tramos,
-    Parametro parametroEssalud,
-    decimal valorUIT)
-        {
-            Console.WriteLine($"🔄 Iniciando ProcesarNominaPorPeriodo para período: {periodoId}");
+        /// <summary>        /// Procesa la nómina completa para un período específico, incluyendo la validación de existencia previa,        /// obtención de trabajadores con contratos activos, cálculo de detalles individuales y finalización de totales.        /// Este método es invocado por la capa de presentación para ejecutar el procesamiento automático de nóminas.        /// </summary>        /// <param name="periodoId">Identificador único del período para el cual se procesará la nómina. No puede ser nulo.</param>        /// <param name="tramos">Lista de tramos de impuesto a la renta vigentes, utilizados para calcular el impuesto correspondiente.</param>        /// <param name="parametroEssalud">Parámetro que contiene la configuración para el cálculo del aporte a Essalud.</param>        /// <param name="valorUIT">Valor actual de la Unidad Impositiva Tributaria (UIT), expresado en soles, utilizado en cálculos fiscales.</param>        /// <exception cref="ArgumentException">Se lanza si <paramref name="periodoId"/> es nulo.</exception>        /// <exception cref="InvalidOperationException">Se lanza si ya existe una nómina exitosa o en proceso para el período especificado.</exception>        /// <remarks>        /// El método opera dentro de una transacción de base de datos para asegurar la integridad de los datos.        /// En caso de error, la transacción se revierte y el estado de la nómina se actualiza a "Con Errores".        /// </remarks>                public void ProcesarNominaPorPeriodo(int? periodoId, List<ImpuestoRentaTramo> tramos, Parametro parametroEssalud, decimal valorUIT)        {            if (periodoId == null)                throw new ArgumentException("Selecciona un periodo.");            var nomina = new Nomina            {                Periodo = new Periodo { PeriodoId = periodoId.Value },                Detalles = new List<DetalleNomina>()            };            try            {                _conexion.IniciarTransaccion();                ValidarExistenciaNomina(periodoId.Value);                var trabajadores = ObtenerTrabajadoresConContratoActivo();                var tiposHorasExtras = _tiposHorasExtras.ObtenerTiposHorasExtrasActivos();                var nominaId = CrearCabeceraNomina(periodoId.Value);                nomina.NominaId = nominaId;                nomina.NominaEstado = "Procesando";                var huboErrores = ProcesarDetallesNomina(nomina, trabajadores, tramos, parametroEssalud, valorUIT);                FinalizarNomina(nomina, huboErrores);                _conexion.TerminarTransaccion();            }            catch (Exception ex)            {                _conexion.CancelarTransaccion();                if (nomina.NominaId > 0)                    _nominas.ActualizarEstado(nomina.NominaId, "Con Errores");                throw;            }            finally            {                _conexion.CerrarConexion();            }        }
 
-            try
-            {
-                // 1. Obtener trabajadores
-                Console.WriteLine("🔍 Obteniendo trabajadores...");
-                var trabajadores = _trabajadores.ObtenerEmpleados();
-                Console.WriteLine($"📊 Trabajadores obtenidos: {trabajadores?.Count ?? 0}");
+        // --- VALIDAR SI YA EXISTE NÓMINA EN EL PERIODO ---
+        private void ValidarExistenciaNomina(int periodoId)        {            var nominas = _nominas.ObtenerNominasEnPeriodo(periodoId);            if (!nominas.Any()) return;            var nomina = nominas.First();            if (nomina.EsExitosa())                throw new InvalidOperationException($"La nómina ya fue procesada exitosamente para el periodo {periodoId}.");            if (nomina.EstaProcesando())                throw new InvalidOperationException($"Ya existe una nómina en proceso para el periodo {periodoId}.");                    }        private List<Trabajador> ObtenerTrabajadoresConContratoActivo()        {            var trabajadores = _trabajadores.ObtenerEmpleados(1, int.MaxValue);            var resultado = new List<Trabajador>();            foreach (var trabajador in trabajadores)            {                var contratos = _contratos.ObtenerContratosPorTrabajador(trabajador.TrabajadorId);                var contratoActivo = contratos.FirstOrDefault(c => c.EsActivo());                if (contratoActivo != null)                {                    trabajador.Contrato = contratoActivo;                    resultado.Add(trabajador);                }            }            return resultado;        }        private int CrearCabeceraNomina(int periodoId)        {            return _nominas.IniciarProcesoPorPeriodo(periodoId, "Nómina generada automáticamente");        }        private bool ProcesarDetallesNomina(            Nomina nomina,            List<Trabajador> trabajadores,            List<ImpuestoRentaTramo> tramos,            Parametro parametroEssalud,            decimal valorUIT)        {            bool algunError = false;            var tiposHorasExtras = _tiposHorasExtras.ObtenerTiposHorasExtrasActivos();            foreach (var trabajador in trabajadores)            {                try                {                    trabajador.Hijos = _hijos.ObtenerHijosPorTrabajador(trabajador.TrabajadorId);                    var contrato = trabajador.Contrato;                    if (contrato == null)                        continue;
 
-                if (trabajadores == null || !trabajadores.Any())
-                {
-                    throw new Exception("No se encontraron trabajadores en la base de datos");
-                }
-
-                // 2. Verificar contratos
-                int trabajadoresConContrato = 0;
-                int trabajadoresSinContrato = 0;
-
-                foreach (var trabajador in trabajadores)
-                {
-                    if (trabajador.Contrato != null)
-                        trabajadoresConContrato++;
-                    else
-                        trabajadoresSinContrato++;
-                }
-
-                Console.WriteLine($"📝 Trabajadores con contrato: {trabajadoresConContrato}");
-                Console.WriteLine($"⚠️ Trabajadores sin contrato: {trabajadoresSinContrato}");
-
-                if (trabajadoresConContrato == 0)
-                {
-                    throw new Exception("No se encontraron trabajadores con contratos activos");
-                }
-
-                var nomina = new Nomina { Periodo = new Periodo { PeriodoId = periodoId } };
-
-                _conexion.AbrirConexion();
-                _conexion.IniciarTransaccion();
-
-                try
-                {
-                    var nominaId = _nominas.IniciarProcesoPorPeriodo(periodoId, "Nómina generada automáticamente");
-                    nomina.NominaId = nominaId;
-                    nomina.NominaEstado = "Procesando";
-                    nomina.Detalles = new List<DetalleNomina>();
-
-                    Console.WriteLine($"🆕 Nómina creada con ID: {nominaId}");
-
-                    int procesados = 0;
-                    int omitidos = 0;
-
-                    foreach (var trabajador in trabajadores)
+                    var detalle = new DetalleNomina
                     {
-                        try
-                        {
-                            Console.WriteLine($"👤 Procesando trabajador {trabajador.TrabajadorId}: {trabajador.Nombres}");
-
-                            trabajador.Hijos = _hijos.ObtenerHijosPorTrabajador(trabajador.TrabajadorId);
-                            Console.WriteLine($"👶 Hijos del trabajador: {trabajador.Hijos?.Count ?? 0}");
-
-                            var contrato = trabajador.Contrato;
-                            if (contrato == null)
-                            {
-                                Console.WriteLine($"⚠️ Trabajador {trabajador.TrabajadorId} sin contrato - omitiendo");
-                                omitidos++;
-                                continue;
-                            }
-
-                            Console.WriteLine($"💰 Contrato encontrado - Salario: {contrato.ContratoSalario}");
-
-                            var detalle = new DetalleNomina
-                            {
-                                Contrato = contrato,
-                                SueldoBasico = contrato.ContratoSalario
-                            };
-
-                            // Procesar cálculos
-                            bool tieneAsignacion = trabajador.TieneDerechoAsignacionFamiliar();
-                            Console.WriteLine($"🏠 Derecho a asignación familiar: {tieneAsignacion}");
-
-                            detalle.CalculoAsignacionFamiliar(tieneAsignacion);
-                            detalle.CalcularHorasExtras();
-                            detalle.CalcularRemuneracionBruta();
-                            detalle.CalcularSistemaPensiones();
-                            detalle.CalcularAporteEssalud(parametroEssalud);
-                            detalle.CalcularImpuestoRentaQuinta(tramos, valorUIT);
-                            detalle.CalcularTotales();
-
-                            var dto = new DetalleNominaDTO
-                            {
-                                NominaId = nominaId,
-                                TrabajadorId = trabajador.TrabajadorId,
-                                RemuneracionBruta = detalle.RemuneracionBruta,
-                                SueldoBasico = detalle.SueldoBasico,
-                                AsignacionFamiliar = detalle.AsignacionFamiliar,
-                                HorasExtras = detalle.HorasExtras,
-                                BonosRegulares = detalle.BonosRegulares,
-                                OtrosIngresos = detalle.OtrosIngresos,
-                                AporteEssalud = detalle.AporteEssalud,
-                                AporteOnp = detalle.AporteONP,
-                                DescuentoAfp = detalle.DescuentoAFP,
-                                ImpuestoRentaMensual = detalle.ImpuestoRentaMensual,
-                                TotalIngresos = detalle.TotalIngresos,
-                                TotalDescuentos = detalle.TotalDescuentos,
-                                NetoPagar = detalle.NetoPagar
-                            };
-
-                            _detalleNomina.InsertarDetalleNomina(dto);
-                            nomina.Detalles.Add(detalle);
-                            procesados++;
-
-                            Console.WriteLine($"✅ Trabajador {trabajador.TrabajadorId} procesado - Neto: {detalle.NetoPagar}");
-
-                        }
-                        catch (Exception exTrabajador)
-                        {
-                            Console.WriteLine($"❌ Error procesando trabajador {trabajador.TrabajadorId}: {exTrabajador.Message}");
-                            omitidos++;
-                        }
-                    }
-
-                    Console.WriteLine($"📊 Resumen: {procesados} procesados, {omitidos} omitidos");
-
-                    if (procesados == 0)
-                    {
-                        throw new Exception("No se pudo procesar ningún trabajador");
-                    }
-
-                    nomina.CalcularTotales();
-
-                    _nominas.ActualizarTotales(
+                        Contrato = contrato,
+                        SueldoBasico = contrato.ContratoSalario,
+                    };
+                    detalle.CalculoAsignacionFamiliar(trabajador.TieneDerechoAsignacionFamiliar());                    detalle.CalcularPagoTotalHorasExtras();                    detalle.CalcularRemuneracionBruta();                    detalle.CalcularSistemaPensiones();                    detalle.CalcularAporteEssalud(parametroEssalud);                    detalle.CalcularImpuestoRentaQuinta(tramos, valorUIT);                    detalle.CalcularTotales();                    var dto = new DetalleNominaDTO(
                         nomina.NominaId,
-                        nomina.NominaTotalEmpleados,
-                        nomina.NominaTotalBruto,
-                        nomina.NominaTotalDescuentos,
-                        nomina.NominaTotalNeto,
-                        "Exitoso"
-                    );
-
-                    _conexion.TerminarTransaccion();
-                    Console.WriteLine("✅ Nómina procesada exitosamente");
-                }
-                catch (Exception exProceso)
-                {
-                    _conexion.CancelarTransaccion();
-                    if (nomina?.NominaId > 0)
-                    {
-                        _nominas.ActualizarEstado(nomina.NominaId, "Con Errores");
-                    }
-                    Console.WriteLine($"❌ Error en proceso de nómina: {exProceso.Message}");
-                    throw;
-                }
-                finally
-                {
-                    _conexion.CerrarConexion();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"💥 Error general en ProcesarNominaPorPeriodo: {ex.Message}");
-                Console.WriteLine($"📝 StackTrace: {ex.StackTrace}");
-                throw new Exception($"No se pudo consultar el(los) trabajador(es), intente nuevamente o consulte con el administrador. Detalle: {ex.Message}", ex);
-            }
-
-        }
-    }
-}
+                        trabajador.TrabajadorId,
+                        detalle.RemuneracionBruta,
+                        detalle.SueldoBasico,
+                        detalle.AsignacionFamiliar,
+                        detalle.HorasExtras,
+                        detalle.BonosRegulares,
+                        detalle.OtrosIngresos,
+                        detalle.SistemasPensionAplicado ?? "No definido",
+                        detalle.AporteEssalud,
+                        detalle.AporteONP,
+                        detalle.DescuentoAFP,
+                        0, // RemuneraciónAcumuladaAnual (pendiente de acumulado real)
+                        0, // BaseImponibleAnual
+                        0, // ImpuestoRentaAnual
+                        detalle.ImpuestoRentaMensual,
+                        valorUIT,
+                        0, // Deducción7Uit
+                        0, // DescuentoTardanzas
+                        0, // DescuentoFaltas
+                        0, // DescuentoAdelantos
+                        0, // OtrosDescuentos
+                        detalle.TotalIngresos,
+                        detalle.TotalDescuentos,
+                        detalle.NetoPagar,
+                        false,
+                        string.Empty
+                    );                    _detalleNomina.InsertarDetalleNomina(dto);                    nomina.Detalles.Add(detalle);                }                catch (Exception ex)                {                    algunError = true;                    System.Diagnostics.Trace.WriteLine(                        $"Error procesando trabajador {trabajador.TrabajadorId}: {ex.Message}"                    );                    throw ex;                }            }            return algunError;        }        private void FinalizarNomina(Nomina nomina, bool huboErrores)        {            nomina.CalcularTotales();            var estado = huboErrores ? "Incompleto" : "Exitoso";            _nominas.ActualizarTotales(                nomina.NominaId,                nomina.NominaTotalEmpleados,                nomina.NominaTotalBruto,                nomina.NominaTotalDescuentos,                nomina.NominaTotalNeto,                estado            );        }    }}

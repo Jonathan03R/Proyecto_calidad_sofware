@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace capa_dominio.dto
 {
+
+    /// <summary>
+    /// / esto sirve para trasferencia de datos no para geter
+    /// </summary>
     public class ContratoDTO
     {
         public int? ContratoId { get; set; }   // <-- nueva propiedad

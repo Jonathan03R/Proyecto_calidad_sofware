@@ -14,9 +14,9 @@ namespace capa_dominio
         private Nomina nomina;
         private Contrato contrato;
         private DetalleParametro detalleParametro;
-        private Tardanza tardanza;
         private AdelantoSueldo adelantoSueldo;
-        private Falta falta;
+        private List<HoraTrabajada> horaTrabajadas;
+
         private decimal sueldoBasico;
         private decimal remuneracionBruta;
         private decimal asignacionFamiliar;
@@ -27,6 +27,7 @@ namespace capa_dominio
         private decimal aporteONP;
         private decimal descuentoAFP;
         private decimal impuestoRentaMensual;
+        private string sistemasPensionAplicado;
         //private decimal descuentoTardanzas;
         private decimal descuentoFaltas;
         private decimal descuentoAdelantos;
@@ -35,8 +36,8 @@ namespace capa_dominio
         private decimal totalDescuentos;
         private decimal netoPagar;
 
-        private bool tieneErrores;
-        private string mensajeError;
+        //private bool tieneErrores;
+        //private string mensajeError;
 
         public int DetalleNominaId { get => detalleNominaId; set => detalleNominaId = value; }
         public Nomina Nomina { get => nomina; set => nomina = value; }
@@ -44,9 +45,7 @@ namespace capa_dominio
 
 
         public Contrato Contrato { get => contrato; set => contrato = value; }
-        public Falta Falta { get => falta; set => falta = value; }
         public AdelantoSueldo AdelantoSueldo { get => adelantoSueldo; set => adelantoSueldo = value; }
-        public Tardanza Tardanzas { get => tardanza; set => tardanza = value; }
         public DetalleParametro DetalleParametro { get => detalleParametro; set => detalleParametro = value; }
         public decimal SueldoBasico { get => sueldoBasico; set => sueldoBasico = value; }
         public decimal AsignacionFamiliar { get => asignacionFamiliar; set => asignacionFamiliar = value; }
@@ -58,22 +57,41 @@ namespace capa_dominio
         public decimal AporteONP { get => aporteONP; set => aporteONP = value; }
         public decimal DescuentoAFP { get => descuentoAFP; set => descuentoAFP = value; }
         public decimal ImpuestoRentaMensual { get => impuestoRentaMensual; set => impuestoRentaMensual = value; }
-        //public decimal DescuentoTardanzas { get => descuentoTardanzas; set => descuentoTardanzas = value; }
+        public string SistemasPensionAplicado { get => sistemasPensionAplicado; set => sistemasPensionAplicado = value; }
         public decimal DescuentoFaltas { get => descuentoFaltas; set => descuentoFaltas = value; }
         public decimal DescuentoAdelantos { get => descuentoAdelantos; set => descuentoAdelantos = value; }
         public decimal TotalIngresos { get => totalIngresos; set => totalIngresos = value; }
         public decimal TotalDescuentos { get => totalDescuentos; set => totalDescuentos = value; }
         public decimal NetoPagar { get => netoPagar; set => netoPagar = value; }
-        public bool TieneErrores { get => tieneErrores; set => tieneErrores = value; }
-        public string MensajeError { get => mensajeError; set => mensajeError = value; }
+        //public bool TieneErrores { get => tieneErrores; set => tieneErrores = value; }
+        //public string MensajeError { get => mensajeError; set => mensajeError = value; }
 
 
-        public void CalcularHorasExtras()
+
+        public void CalcularPagoTotalHorasExtras()
         {
-            horasExtras = contrato.Trabajador.HorasTrabajadas.Sum(h => h.HorasExtra);
-        }
+            if (contrato == null)
+                throw new InvalidOperationException("El contrato no puede ser nulo en el detalle de nómina.");
 
-        // La remuneración bruta incluye: RB = Sueldo Básico + Asignación Familiar + Horas Extras + Bonos Regulares
+            if (horaTrabajadas == null || horaTrabajadas.Count == 0)
+            {
+                horasExtras = 0;
+                return;
+            }
+
+            if (horaTrabajadas == null || horaTrabajadas.Count == 0)
+                throw new InvalidOperationException("No se cargaron los tipos de horas extras desde la base de datos.");
+
+            decimal total = 0;
+
+            foreach (var h in horaTrabajadas)
+            {
+                h.Contrato = contrato; 
+                total += h.CalcularPagoDia();
+            }
+
+            horasExtras = total; 
+        }
 
         public void CalcularRemuneracionBruta()
         {
@@ -94,22 +112,41 @@ namespace capa_dominio
         }
 
 
-            //El aporte a AFP comprende: 10% para fondo de pensiones, comisión administrativa variable y seguro de invalidez(SIS).
-            // El aporte a ONP corresponde al 13% de la remuneración bruta.
-            //Aporte ONP = Remuneración Bruta × 0.13.
+        //El aporte a AFP comprende: 10% para fondo de pensiones, comisión administrativa variable y seguro de invalidez(SIS).
+        // El aporte a ONP corresponde al 13% de la remuneración bruta.
+        //Aporte ONP = Remuneración Bruta × 0.13.
 
 
         public void CalcularSistemaPensiones()
         {
-            var tp = Contrato.TipoPension;
+            if (Contrato == null || Contrato.TipoPension == null)
+                throw new InvalidOperationException("El contrato o el tipo de pensión no están definidos.");
 
-            if (string.Equals(tp.Entidad, "ONP", StringComparison.OrdinalIgnoreCase))
+            var tipoPensionId = Contrato.TipoPension.TipoPensionId;
+
+            switch (tipoPensionId)
             {
-                aporteONP = remuneracionBruta * 0.13m;
-            }
-            else
-            {
-                descuentoAFP = remuneracionBruta * 0.10m;
+                case 1: // ONP
+                    aporteONP = remuneracionBruta * 0.13m;
+                    SistemasPensionAplicado = contrato.TipoPension.Nombre;
+                    break;
+
+                case 2: // AFP Integra
+                case 3: // AFP Prima
+                case 4: // AFP Habitat
+                case 5: // AFP Profuturo
+                    descuentoAFP = remuneracionBruta * 0.10m;
+                    SistemasPensionAplicado = contrato.TipoPension.Nombre;
+                    break;
+
+                case 6: // Sin afiliación
+                    aporteONP = 0;
+                    descuentoAFP = 0;
+                    SistemasPensionAplicado = contrato.TipoPension.Nombre;
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"Tipo de pensión con ID {tipoPensionId} no reconocido.");
             }
         }
         //El aporte a Essalud corresponde al 9% de la remuneración bruta y es costo del empleador.
@@ -169,17 +206,21 @@ namespace capa_dominio
 
         public void CalcularTotales()
         {
+           
             totalIngresos = remuneracionBruta + otrosIngresos;
-            totalDescuentos = aporteONP + descuentoAFP + impuestoRentaMensual +
-                              tardanza.TardanzaValorDescuento + descuentoAdelantos;
+            totalDescuentos = aporteONP + descuentoAFP + impuestoRentaMensual  + descuentoAdelantos;
             netoPagar = totalIngresos - totalDescuentos;
-            
-            
-            Trabajador trabajadorDeTardanza = tardanza.Trabajador;
-            Trabajador trabajadorDeFalta = falta.Trabajador;    
 
-            Console.WriteLine($"El descuento por tardanza pertenece al trabajador: {trabajadorDeTardanza.TrabajadorId}");
-            Console.WriteLine($"El descuento por falta pertenece al trabajador: {trabajadorDeFalta.TrabajadorId}");
+
+            System.Diagnostics.Trace.WriteLine(
+                      $"DATOS NUMERICOS TOTAL INGRESOS {totalIngresos} NETO A PAGAR: {netoPagar}  "
+                  );
+
+            //Trabajador trabajadorDeTardanza = tardanza.Trabajador;
+            //Trabajador trabajadorDeFalta = falta.Trabajador;    
+
+            //Console.WriteLine($"El descuento por tardanza pertenece al trabajador: {trabajadorDeTardanza.TrabajadorId}");
+            //Console.WriteLine($"El descuento por falta pertenece al trabajador: {trabajadorDeFalta.TrabajadorId}");
         }
     }
 }

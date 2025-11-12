@@ -20,7 +20,7 @@ namespace capa_persistencia.modulo_principal
         public List<Hijo> ObtenerHijosPorTrabajador(int trabajadorId)
         {
             var hijos = new List<Hijo>();
-
+            System.Diagnostics.Debug.WriteLine($"Obteniendo hijos para trabajador ID: {trabajadorId}");
             try
             {
                 var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("personal.proc_obtener_hijos_por_trabajador");
@@ -48,6 +48,7 @@ namespace capa_persistencia.modulo_principal
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Mensaje: {ex.Message}");
                 throw new Exception("Error al obtener los hijos del trabajador", ex);
             }
 

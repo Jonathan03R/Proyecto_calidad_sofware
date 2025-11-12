@@ -18,6 +18,9 @@ namespace capa_persistencia.modulo_principal
 
         public int InsertarDetalleNomina(DetalleNominaDTO detalle)
         {
+
+            System.Diagnostics.Debug.WriteLine(
+                $"Insertando detalle de nómina para trabajador ID: {detalle.TrabajadorId} en nómina ID: {detalle.NominaId}");
             try
             {
 
@@ -32,7 +35,7 @@ namespace capa_persistencia.modulo_principal
                 cmd.Parameters.AddWithValue("@horas_extras", detalle.HorasExtras);
                 cmd.Parameters.AddWithValue("@bonos_regulares", detalle.BonosRegulares);
                 cmd.Parameters.AddWithValue("@otros_ingresos", detalle.OtrosIngresos);
-                cmd.Parameters.AddWithValue("@sistema_pension_aplicado", (object)detalle.SistemaPensionAplicado ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@sistema_pension_aplicado", (object)detalle.SistemaPensionAplicado);
                 cmd.Parameters.AddWithValue("@aporte_essalud", detalle.AporteEssalud);
                 cmd.Parameters.AddWithValue("@aporte_onp", detalle.AporteOnp);
                 cmd.Parameters.AddWithValue("@descuento_afp", detalle.DescuentoAfp);
@@ -46,9 +49,9 @@ namespace capa_persistencia.modulo_principal
                 cmd.Parameters.AddWithValue("@descuento_faltas", detalle.DescuentoFaltas);
                 cmd.Parameters.AddWithValue("@descuento_adelantos", detalle.DescuentoAdelantos);
                 cmd.Parameters.AddWithValue("@otros_descuentos", detalle.OtrosDescuentos);
-                cmd.Parameters.AddWithValue("@total_ingresos", detalle.TotalIngresos);
+                cmd.Parameters.AddWithValue("@total_ingresos", detalle.TotalIngresos); ///
                 cmd.Parameters.AddWithValue("@total_descuentos", detalle.TotalDescuentos);
-                cmd.Parameters.AddWithValue("@neto_pagar", detalle.NetoPagar);
+                cmd.Parameters.AddWithValue("@neto_pagar", detalle.NetoPagar); ////
                 cmd.Parameters.AddWithValue("@tiene_errores", detalle.TieneErrores);
                 cmd.Parameters.AddWithValue("@mensaje_error", (object)detalle.MensajeError ?? DBNull.Value);
 
@@ -61,8 +64,9 @@ namespace capa_persistencia.modulo_principal
                 cmd.ExecuteNonQuery();
                 return (int)pOut.Value;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Mensaje: {ex.Message}");
                 throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CREACION);
             }
         }

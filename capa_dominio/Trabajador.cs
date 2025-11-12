@@ -45,19 +45,12 @@ namespace capa_dominio
 
         public List<Hijo> Hijos { get => hijos; set => hijos = value; } 
         public string TrabajadorNombreCompleto { get; internal set; }
-       
-        public void calculaHorasTrabajadas() { 
-            decimal totalHoras = 0;
-            foreach (var hora in horasTrabajadas)
-            {
-                totalHoras += hora.HorasTrabajadas;
-            }
-        }
 
         // Según la ley peruana, tiene derecho si tiene al menos un hijo menor de 18
         // o mayor de edad con discapacidad o estudiante dependiente
         public bool TieneDerechoAsignacionFamiliar()
         {
+            System.Diagnostics.Debug.WriteLine($"Verificando derecho a asignación familiar para trabajador ID: {trabajadorId}");
             return hijos.Any(h =>
                 h.Estado == 'a' &&
                 (h.FechaNacimiento > DateTime.Now.AddYears(-18) ||
