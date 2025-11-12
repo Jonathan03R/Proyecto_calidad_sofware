@@ -1,9 +1,6 @@
 ﻿/* ==== CONTENIDO ==== */
 .main-content {
     margin-left: 250px;
-    /*max-width: calc(100% - 250px);
-    min-height: 100vh;*/ /* asegura que ocupe toda la pantalla */
-    /*padding: 0;*/ /* opcional: elimina espacio superior */
     background: #f6f7fb;
 }
 
@@ -191,12 +188,15 @@ body {
     text-decoration: none;
     color: #6B7280;
 }
+.navbar-links {
+     padding-top: 20px;
 
+
+}
 .navbar-links, .nav-sub {
-    padding-top: 20px;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
 }
 
     .navbar-links a {
@@ -213,3 +213,107 @@ body {
             color: #2563EB;
             background: #EFF6FF;
         }
+
+    .navbar-links img{
+     
+        padding-right:10px;
+    }
+/* --- Hamburguesa --- */
+.hamburger {
+    display: none; /* oculta en desktop */
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    padding: 8px;
+    margin-left: auto; /* empuja a la derecha */
+}
+
+.hamburger-box {
+    width: 28px;
+    height: 20px;
+    display: inline-block;
+    position: relative;
+}
+
+.hamburger-inner,
+.hamburger-inner::before,
+.hamburger-inner::after {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    content: "";
+    background: #111827;
+    transition: transform .2s ease, top .2s ease, opacity .2s ease;
+}
+
+.hamburger-inner {
+    top: 9px;
+}
+
+    .hamburger-inner::before {
+        top: -8px;
+    }
+
+    .hamburger-inner::after {
+        top: 8px;
+    }
+
+body.nav-open .hamburger-inner {
+    transform: rotate(45deg);
+}
+
+    body.nav-open .hamburger-inner::before {
+        top: 0;
+        opacity: 0;
+    }
+
+    body.nav-open .hamburger-inner::after {
+        top: 0;
+        transform: rotate(-90deg);
+    }
+
+/* --- Backdrop --- */
+.backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.35);
+    z-index: 998;
+}
+
+body:not(.nav-open) .backdrop {
+    display: none;
+}
+
+/* --- Sidebar off-canvas en móviles/tablets --- */
+@media (max-width: 1024px) {
+    .hamburger {
+        display: inline-block;
+    }
+
+    /* tu sidebar existente .navbar es fijo a la izquierda; lo desplazamos fuera */
+    .navbar {
+        transform: translateX(-100%);
+        transition: transform .25s ease;
+        z-index: 999; /* sobre el contenido */
+    }
+
+    body.nav-open .navbar {
+        transform: translateX(0);
+    }
+
+    /* el contenido ya no deja margen cuando el menú está oculto */
+    .main-content {
+        margin-left: 0;
+    }
+    /* si quieres que el contenido se mueva un poquito cuando el menú abre, quita este comentario:
+  body.nav-open .main-content { transform: translateX(8px); transition: transform .25s ease; }
+  */
+}
+
+/* Desktop se queda igual (tu diseño actual) */
+@media (min-width: 1025px) {
+    .main-content {
+        margin-left: 250px;
+    }
+}
