@@ -1,15 +1,10 @@
+using capa_dominio;
+using capa_persistencia.modulo_base;
 using System;
 using System.Collections.Generic;
-using capa_persistencia.modulo_base;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class SistemaPension
-    {
-        public int TipoPensionId { get; set; }
-        public string TipoPensionNombre { get; set; }
-        public string TipoPensionEntidad { get; set; }
-    }
 
     public class SistemasPensionesRepositorio
     {
@@ -20,9 +15,9 @@ namespace capa_persistencia.modulo_principal
             _accesoSQL = accesoSQL ?? throw new ArgumentNullException(nameof(accesoSQL));
         }
 
-        public List<SistemaPension> ObtenerSistemasPensiones()
+        public List<TipoPension> ObtenerSistemasPensiones()
         {
-            var pensiones = new List<SistemaPension>();
+            var pensiones = new List<TipoPension>();
 
             try
             {
@@ -36,11 +31,11 @@ namespace capa_persistencia.modulo_principal
 
                     while (reader.Read())
                     {
-                        pensiones.Add(new SistemaPension
+                        pensiones.Add(new TipoPension
                         {
                             TipoPensionId = reader.GetInt32(ordId),
-                            TipoPensionNombre = reader.IsDBNull(ordNombre) ? null : reader.GetString(ordNombre),
-                            TipoPensionEntidad = reader.IsDBNull(ordEntidad) ? null : reader.GetString(ordEntidad)
+                            Nombre = reader.IsDBNull(ordNombre) ? null : reader.GetString(ordNombre),
+                            Entidad = reader.IsDBNull(ordEntidad) ? null : reader.GetString(ordEntidad)
                         });
                     }
                 }

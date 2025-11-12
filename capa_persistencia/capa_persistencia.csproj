@@ -167,9 +167,10 @@
     <Compile Include="modulo_base\ExcepcionTrabajadoresValido.cs" />
     <Compile Include="modulo_principal\Adelantos.cs" />
     <Compile Include="modulo_principal\Adelanto_sueldo.cs" />
+    <Compile Include="modulo_principal\AreasRepositorio.cs" />
     <Compile Include="modulo_principal\AsignacionFamiliar.cs" />
     <Compile Include="modulo_principal\Bonos.cs" />
-    <Compile Include="modulo_principal\Cargos.cs" />
+    <Compile Include="modulo_principal\CargosRepositorio.cs" />
     <Compile Include="modulo_principal\ContratosRepositorio.cs" />
     <Compile Include="modulo_principal\DetallesNominaRepositorio.cs" />
     <Compile Include="modulo_principal\Faltas.cs" />
@@ -183,8 +184,8 @@
     <Compile Include="modulo_principal\SistemasPensiones.cs" />
     <Compile Include="modulo_principal\Tardanzas.cs" />
     <Compile Include="modulo_principal\TiposHorasExtrasRepositorio.cs" />
-    <Compile Include="modulo_principal\TiposJornadas.cs" />
-    <Compile Include="modulo_principal\TiposSalarios.cs" />
+    <Compile Include="modulo_principal\TiposJornadasRepositorio.cs" />
+    <Compile Include="modulo_principal\TiposSalariosRepositorio.cs" />
     <Compile Include="modulo_principal\TrabajadoresRepositorio.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

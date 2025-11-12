@@ -1,21 +1,16 @@
+using capa_dominio;
+using capa_persistencia.modulo_base;
 using System;
 using System.Collections.Generic;
-using capa_persistencia.modulo_base;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class TipoJornada
-    {
-        public int TipoJornadaId { get; set; }
-        public string TipoJornadaNombre { get; set; }
-        public string TipoJornadaDescripcion { get; set; }
-    }
 
-    public class TiposJornadas
+    public class TiposJornadasRepositorio
     {
         private readonly AccesoSQLServer _accesoSQL;
 
-        public TiposJornadas()
+        public TiposJornadasRepositorio()
         {
             _accesoSQL = new AccesoSQLServer();
         }

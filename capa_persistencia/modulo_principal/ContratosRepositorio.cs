@@ -164,96 +164,96 @@ namespace capa_persistencia.modulo_principal
         //// NUEVOS M�TODOS PARA LOS LISTADOS DE REFERENCIA
         //// ============================================================
 
-        //// Listar trabajadores
-        public List<TrabajadorDTO> ObtenerTrabajadores()
-        {
-            List<TrabajadorDTO> trabajadores = new List<TrabajadorDTO>();
-            var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_empleados");
+        ////// Listar trabajadores
+        //public List<TrabajadorDTO> ObtenerTrabajadores()
+        //{
+        //    List<TrabajadorDTO> trabajadores = new List<TrabajadorDTO>();
+        //    var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_empleados");
 
-            using (var reader = comando.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    trabajadores.Add(new TrabajadorDTO
-                    {
-                        TrabajadorId = Convert.ToInt32(reader["TrabajadorId"]),
-                        NombreCompleto = reader["NombreCompleto"].ToString()
-                    });
-                }
-            }
-            return trabajadores;
-        }
+        //    using (var reader = comando.ExecuteReader())
+        //    {
+        //        while (reader.Read())
+        //        {
+        //            trabajadores.Add(new TrabajadorDTO
+        //            {
+        //                TrabajadorId = Convert.ToInt32(reader["TrabajadorId"]),
+        //                NombreCompleto = reader["NombreCompleto"].ToString()
+        //            });
+        //        }
+        //    }
+        //    return trabajadores;
+        //}
 
-        // Listar �reas
-        public List<AreaDTO> ObtenerAreas()
-        {
-            List<AreaDTO> areas = new List<AreaDTO>();
-            var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_areas_trabajo");
+        //// Listar �reas
+        //public List<AreaDTO> ObtenerAreas()
+        //{
+        //    List<AreaDTO> areas = new List<AreaDTO>();
+        //    var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_areas_trabajo");
 
-            using (var reader = comando.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    areas.Add(new AreaDTO
-                    {
-                        AreaId = Convert.ToInt32(reader["AreaId"]),
-                        NombreArea = reader["NombreArea"].ToString()
-                    });
-                }
-            }
-            return areas;
-        }
+        //    using (var reader = comando.ExecuteReader())
+        //    {
+        //        while (reader.Read())
+        //        {
+        //            areas.Add(new AreaDTO
+        //            {
+        //                AreaId = Convert.ToInt32(reader["AreaId"]),
+        //                NombreArea = reader["NombreArea"].ToString()
+        //            });
+        //        }
+        //    }
+        //    return areas;
+        //}
 
-        // Listar cargos
-        public List<CargoDTO> ObtenerCargos()
-        {
-            List<CargoDTO> cargos = new List<CargoDTO>();
-            var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_cargos");
+        //// Listar cargos
+        //public List<CargoDTO> ObtenerCargos()
+        //{
+        //    List<CargoDTO> cargos = new List<CargoDTO>();
+        //    var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_cargos");
 
-            using (var reader = comando.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    cargos.Add(new CargoDTO
-                    {
-                        CargoId = Convert.ToInt32(reader["CargoId"]),
-                        NombreCargo = reader["NombreCargo"].ToString()
-                    });
-                }
-            }
-            return cargos;
-        }
+        //    using (var reader = comando.ExecuteReader())
+        //    {
+        //        while (reader.Read())
+        //        {
+        //            cargos.Add(new CargoDTO
+        //            {
+        //                CargoId = Convert.ToInt32(reader["CargoId"]),
+        //                NombreCargo = reader["NombreCargo"].ToString()
+        //            });
+        //        }
+        //    }
+        //    return cargos;
+        //}
 
-        // Listar tipos de pensi�n
-        public List<TipoPensionDTO> ObtenerTiposPension()
-        {
-            List<TipoPensionDTO> pensiones = new List<TipoPensionDTO>();
-            var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_sistema_pensiones");
+        //// Listar tipos de pensi�n
+        //public List<TipoPensionDTO> ObtenerTiposPension()
+        //{
+        //    List<TipoPensionDTO> pensiones = new List<TipoPensionDTO>();
+        //    var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_sistema_pensiones");
 
-            using (var reader = comando.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    pensiones.Add(new TipoPensionDTO
-                    {
-                        TipoPensionId = Convert.ToInt32(reader["TipoPensionId"]),
-                        NombreTipo = reader["NombreTipo"].ToString()
-                    });
-                }
-            }
-            return pensiones;
-        }
+        //    using (var reader = comando.ExecuteReader())
+        //    {
+        //        while (reader.Read())
+        //        {
+        //            pensiones.Add(new TipoPensionDTO
+        //            {
+        //                TipoPensionId = Convert.ToInt32(reader["TipoPensionId"]),
+        //                NombreTipo = reader["NombreTipo"].ToString()
+        //            });
+        //        }
+        //    }
+        //    return pensiones;
+        //}
 
-        // Listar estados de contrato
-        public List<EstadoContratoDTO> ObtenerEstadosContrato()
-        {
-            return new List<EstadoContratoDTO>
-            {
-                new EstadoContratoDTO { EstadoId = 1, NombreEstado = "Activo" },
-                new EstadoContratoDTO { EstadoId = 2, NombreEstado = "Finalizado" },
-                new EstadoContratoDTO { EstadoId = 3, NombreEstado = "Suspendido" },
-                new EstadoContratoDTO { EstadoId = 4, NombreEstado = "Inactivo" }
-            };
-        }
+        //// Listar estados de contrato
+        //public List<EstadoContratoDTO> ObtenerEstadosContrato()
+        //{
+        //    return new List<EstadoContratoDTO>
+        //    {
+        //        new EstadoContratoDTO { EstadoId = 1, NombreEstado = "Activo" },
+        //        new EstadoContratoDTO { EstadoId = 2, NombreEstado = "Finalizado" },
+        //        new EstadoContratoDTO { EstadoId = 3, NombreEstado = "Suspendido" },
+        //        new EstadoContratoDTO { EstadoId = 4, NombreEstado = "Inactivo" }
+        //    };
+        //}
     }
 }
