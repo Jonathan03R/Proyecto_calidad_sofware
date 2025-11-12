@@ -11,15 +11,19 @@
 
     @RenderSection("Head", required: false)
 </head>
+
 <body>
     @{
         var action = (string)ViewContext.RouteData.Values["action"];
         var controller = (string)ViewContext.RouteData.Values["controller"];
     }
 
-    <header class="navbar">
+    <header class="navbar" >
         <div class="navbar-container">
             <div class="navbar-cabecera">
+                <button id="btn-toggle-nav" class="btn-hamburger" aria-label="Alternar navegación" aria-expanded="true" aria-controls="sidebar">
+                    <span></span><span></span><span></span>
+                </button>
                 <img src="@Url.Content("~/Content/img/icons/LogoPrincipal.svg")" alt="LogoPrincipal" class="icon" />
                 <div class="texto-cabecera">
                     <a href="@Url.Action("Index","Nomina")" class="navbar-brand">GRUPO-02</a>

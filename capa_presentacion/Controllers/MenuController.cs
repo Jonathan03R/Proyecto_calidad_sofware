@@ -15,17 +15,11 @@ namespace capa_presentacion.Controllers
                 new MenuItem
                 {
                     Titulo = "Contratos",
-                    Icono = "~/Content/img/icons/Contratos.svg",
+                    Icono = "~/Content/img/icons/Contrato.svg",
                     Controlador = "Contratos",
                     Accion = "Index"
                 },
-                new MenuItem
-                {
-                    Titulo = "Dashboard",
-                    Icono = "~/Content/img/icons/Dashboard.svg",
-                    Controlador = "Nomina",
-                    Accion = "Dashboard"
-                },
+
                 new MenuItem
                 {
                     Titulo = "Procesar Nómina",

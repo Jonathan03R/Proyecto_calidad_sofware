@@ -26,6 +26,18 @@ namespace capa_presentacion.Controllers
             var model = new NominaPeriodoVM(); // aunque esté vacío, debe existir
             return View(model);
         }
+        public ActionResult Historial()
+        {
+            var historial = DemoData.ObtenerHistorialNominas();
+            return View(historial);
+        }
+
+        public ActionResult Parametros()
+        {
+            var parametros = DemoData.ObtenerParametrosOficiales();
+            return PartialView("_ModalParametros", parametros);
+        }
+
         public NominaController()
         {
             _servicio = new NominasServicios();
