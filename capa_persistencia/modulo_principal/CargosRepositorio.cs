@@ -6,11 +6,11 @@ using capa_dominio;
 namespace capa_persistencia.modulo_principal
 {
 
-    public class Cargos
+    public class CargosRepositorio
     {
         private readonly AccesoSQLServer conexion;
 
-        public Cargos(AccesoSQLServer accesoSQLServer)
+        public CargosRepositorio(AccesoSQLServer accesoSQLServer)
         {
             this.conexion = accesoSQLServer;
         }

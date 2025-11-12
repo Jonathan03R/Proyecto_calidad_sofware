@@ -1,20 +1,16 @@
+using capa_dominio;
+using capa_persistencia.modulo_base;
 using System;
 using System.Collections.Generic;
-using capa_persistencia.modulo_base;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class TipoSalario
-    {
-        public int TipoSalarioId { get; set; }
-        public string TipoSalarioNombre { get; set; }
-    }
 
-    public class TiposSalarios
+    public class TiposSalariosRepositorio
     {
         private readonly AccesoSQLServer _accesoSQL;
 
-        public TiposSalarios()
+        public TiposSalariosRepositorio()
         {
             _accesoSQL = new AccesoSQLServer();
         }

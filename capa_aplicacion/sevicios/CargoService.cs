@@ -11,13 +11,13 @@ namespace capa_aplicacion.sevicios
 {
     public class CargoService
     {
-        private readonly Cargos cargosDAO;
+        private readonly CargosRepositorio cargosDAO;
         private readonly AccesoSQLServer conexion;
 
         public CargoService()
         {
             conexion = new AccesoSQLServer();
-            cargosDAO = new Cargos(conexion);
+            cargosDAO = new CargosRepositorio(conexion);
 
 
         }
