@@ -170,11 +170,11 @@
     <Compile Include="modulo_principal\AsignacionFamiliar.cs" />
     <Compile Include="modulo_principal\Bonos.cs" />
     <Compile Include="modulo_principal\Cargos.cs" />
-    <Compile Include="modulo_principal\Contratos.cs" />
+    <Compile Include="modulo_principal\ContratosRepositorio.cs" />
     <Compile Include="modulo_principal\DetallesNominaRepositorio.cs" />
     <Compile Include="modulo_principal\Faltas.cs" />
     <Compile Include="modulo_principal\HijosRepositorios.cs" />
-    <Compile Include="modulo_principal\HorasExtras.cs" />
+    <Compile Include="modulo_principal\HorasTrabajadasRepositorio.cs" />
     <Compile Include="modulo_principal\ImpuestoRenta.cs" />
     <Compile Include="modulo_principal\NominasRepositorio.cs" />
     <Compile Include="modulo_principal\Parametros.cs" />
@@ -182,6 +182,7 @@
     <Compile Include="modulo_principal\Sedes.cs" />
     <Compile Include="modulo_principal\SistemasPensiones.cs" />
     <Compile Include="modulo_principal\Tardanzas.cs" />
+    <Compile Include="modulo_principal\TiposHorasExtrasRepositorio.cs" />
     <Compile Include="modulo_principal\TiposJornadas.cs" />
     <Compile Include="modulo_principal\TiposSalarios.cs" />
     <Compile Include="modulo_principal\TrabajadoresRepositorio.cs" />

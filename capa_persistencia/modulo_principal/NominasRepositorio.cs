@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using capa_dominio;
 using capa_dominio.dto;
 using capa_persistencia.modulo_base;
+using System;
+using System.Collections.Generic;
 
 namespace capa_persistencia.modulo_principal
 {
@@ -16,6 +17,7 @@ namespace capa_persistencia.modulo_principal
 
         public int IniciarProcesoPorPeriodo(int periodoId, string observaciones = null)
         {
+            System.Diagnostics.Debug.WriteLine($"Iniciando proceso de nómina para el período ID: {periodoId}");
             try
             {
                 var cmd = _accesoSQL.ObtenerComandoDeProcedimiento(
@@ -29,8 +31,10 @@ namespace capa_persistencia.modulo_principal
                 var result = cmd.ExecuteScalar();
                 return Convert.ToInt32(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+
+                System.Diagnostics.Debug.WriteLine($"Mensaje: {ex.Message}");
                 throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CREACION);
             }
         }
@@ -45,6 +49,7 @@ namespace capa_persistencia.modulo_principal
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"Actualizando totales de nómina ID: {nominaId}");
                 var cmd = _accesoSQL.ObtenerComandoDeProcedimiento(
                     "nomina.proc_actualizar_nomina_totales_por_id");
 
@@ -57,8 +62,9 @@ namespace capa_persistencia.modulo_principal
 
                 cmd.ExecuteNonQuery();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Mensaje: {ex.Message}");
                 throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_ACTUALIZACION);
             }
         }
@@ -79,6 +85,63 @@ namespace capa_persistencia.modulo_principal
             {
                 throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_ACTUALIZACION);
             }
+        }
+
+        public List<Nomina> ObtenerNominasEnPeriodo(int periodoId)
+        {
+            var nominas = new List<Nomina>();
+
+            try
+            {
+                var comando = _accesoSQL.ObtenerComandoSQL(@"
+                    select 
+                        nomina_id,
+                        periodo_id,
+                        nomina_fecha,
+                        nomina_fecha_procesamiento,
+                        nomina_estado,
+                        nomina_total_empleados,
+                        nomina_total_bruto,
+                        nomina_total_descuentos,
+                        nomina_total_neto,
+                        nomina_observaciones
+                    from nomina.nominas
+                    where periodo_id = @periodo_id
+                    order by nomina_fecha desc"
+                );
+                comando.Parameters.AddWithValue("@periodo_id", periodoId);
+                using (var reader = comando.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var nomina = new Nomina
+                        {
+                            NominaId = reader.GetInt32(reader.GetOrdinal("nomina_id")),
+                            Periodo = new Periodo { PeriodoId = reader.GetInt32(reader.GetOrdinal("periodo_id")) },
+                            NominaFecha = reader.GetDateTime(reader.GetOrdinal("nomina_fecha")),
+                            NominaFechaProcesamiento = reader.IsDBNull(reader.GetOrdinal("nomina_fecha_procesamiento"))
+                                ? DateTime.MinValue
+                                : reader.GetDateTime(reader.GetOrdinal("nomina_fecha_procesamiento")),
+                            NominaEstado = reader.GetString(reader.GetOrdinal("nomina_estado")),
+                            NominaTotalEmpleados = reader.GetInt32(reader.GetOrdinal("nomina_total_empleados")),
+                            NominaTotalBruto = reader.GetDecimal(reader.GetOrdinal("nomina_total_bruto")),
+                            NominaTotalDescuentos = reader.GetDecimal(reader.GetOrdinal("nomina_total_descuentos")),
+                            NominaTotalNeto = reader.GetDecimal(reader.GetOrdinal("nomina_total_neto")),
+                            NominaObservaciones = reader.IsDBNull(reader.GetOrdinal("nomina_observaciones"))
+                                ? null
+                                : reader.GetString(reader.GetOrdinal("nomina_observaciones"))
+                        };
+
+                        nominas.Add(nomina);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error obteniendo nóminas del periodo {periodoId}: {ex.Message}");
+            }
+
+            return nominas;
         }
 
     }

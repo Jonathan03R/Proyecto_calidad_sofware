@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using capa_dominio;
 using capa_dominio.dto;
 using capa_persistencia.modulo_base;
 using capa_persistencia.modulo_principal;
@@ -9,12 +10,12 @@ namespace capa_aplicacion.Servicios
     public class ServicioContratos
     {
         private readonly AccesoSQLServer accesoSQLServer;
-        private readonly Contratos contratosRepo;
+        private readonly ContratosRepositorio contratosRepo;
 
         public ServicioContratos()
         {
             accesoSQLServer = new AccesoSQLServer();
-            contratosRepo = new Contratos(accesoSQLServer);
+            contratosRepo = new ContratosRepositorio(accesoSQLServer);
         }
 
         // ✅ CREAR CONTRATO
@@ -84,7 +85,7 @@ namespace capa_aplicacion.Servicios
         }
 
         // ✅ CONSULTAR CONTRATOS POR TRABAJADOR
-        public List<ContratoDTO> ConsultarContratosPorTrabajador(int trabajadorId)
+        public List<Contrato> ConsultarContratosPorTrabajador(int trabajadorId)
         {
             accesoSQLServer.AbrirConexion();
             try
@@ -114,7 +115,7 @@ namespace capa_aplicacion.Servicios
             }
         }
 
-        // ✅ LISTAR TRABAJADORES
+        //// ✅ LISTAR TRABAJADORES
         public List<TrabajadorDTO> ObtenerTrabajadores()
         {
             accesoSQLServer.AbrirConexion();

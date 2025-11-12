@@ -1,16 +1,17 @@
+using capa_dominio;
+using capa_dominio.dto;
+using capa_persistencia.modulo_base;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using capa_dominio.dto;
-using capa_persistencia.modulo_base;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class Contratos
+    public class ContratosRepositorio
     {
         private readonly AccesoSQLServer _accesoSQL;
 
-        public Contratos(AccesoSQLServer accesoSQL)
+        public ContratosRepositorio(AccesoSQLServer accesoSQL)
         {
             _accesoSQL = accesoSQL;
         }
@@ -103,13 +104,12 @@ namespace capa_persistencia.modulo_principal
         }
 
         // CONSULTAR CONTRATOS POR TRABAJADOR
-        public List<ContratoDTO> ObtenerContratosPorTrabajador(int trabajadorId)
+        public List<Contrato> ObtenerContratosPorTrabajador(int trabajadorId)
         {
-            List<ContratoDTO> contratos = new List<ContratoDTO>();
+            var contratos = new List<Contrato>();
 
             try
             {
-                _accesoSQL.AbrirConexion();
                 var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_contratos_por_trabajador");
                 comando.Parameters.AddWithValue("@trabajador_id", trabajadorId);
 
@@ -117,42 +117,54 @@ namespace capa_persistencia.modulo_principal
                 {
                     while (reader.Read())
                     {
-                        ContratoDTO contrato = new ContratoDTO
+                        var contrato = new Contrato
                         {
-                            ContratoId = reader["ContratoId"] as int?,
-                            TrabajadorId = reader["TrabajadorId"] as int?,
-                            CargoId = reader["CargoId"] as int?,
-                            AreaId = reader["AreaId"] as int?,
-                            TipoPensionId = reader["TipoPensionId"] as int?,
-                            TipoSalarioId = reader["TipoSalarioId"] as int?,
-                            TipoJornadaId = reader["TipoJornadaId"] as int?,
-                            FechaInicio = reader.GetDateTime(reader.GetOrdinal("FechaInicio")),
-                            FechaFin = reader["FechaFin"] as DateTime?,
-                            Salario = reader["Salario"] as decimal?,
-                            TarifaHora = reader["TarifaHora"] as decimal?,
-                            ModoPago = reader["ModoPago"]?.ToString(),
-                            DocumentoUrl = reader["DocumentoUrl"]?.ToString(),
-                            DescripcionFunciones = reader["DescripcionFunciones"]?.ToString(),
-                            Observaciones = reader["Observaciones"]?.ToString()
+                            ContratoId = reader.GetInt32(reader.GetOrdinal("contrato_id")),
+                            ContratoFechaInicio = reader.GetDateTime(reader.GetOrdinal("contrato_fecha_inicio")),
+                            ContratoFechaFin = reader.IsDBNull(reader.GetOrdinal("contrato_fecha_fin"))
+                                ? (DateTime?)null
+                                : reader.GetDateTime(reader.GetOrdinal("contrato_fecha_fin")),
+                            ContratoSalario = reader.IsDBNull(reader.GetOrdinal("contrato_salario"))
+                                ? 0
+                                : reader.GetDecimal(reader.GetOrdinal("contrato_salario")),
+                            ContratoTarifaHora = reader.IsDBNull(reader.GetOrdinal("contrato_tarifa_hora"))
+                                ? 0
+                                : reader.GetDecimal(reader.GetOrdinal("contrato_tarifa_hora")),
+                            ContratoModoPago = reader["contrato_modo_pago"]?.ToString(),
+                            ContratoDocumentoUrl = reader["contrato_documento_url"]?.ToString(),
+                            ContratoDescripcionFunciones = reader["contrato_descripcion_funciones"]?.ToString(),
+                            ContratoObservaciones = reader["contrato_observaciones"]?.ToString(),
+                            EstadoiId = reader.GetInt32(reader.GetOrdinal("estado_contrato_id")),
                         };
+
+                        // ✅ Mapea solo el ID del tipo de pensión
+                        if (!reader.IsDBNull(reader.GetOrdinal("tipo_pension_id")))
+                        {
+                            contrato.TipoPension = new TipoPension
+                            {
+                                TipoPensionId = reader.GetInt32(reader.GetOrdinal("tipo_pension_id")),
+                                Nombre = reader["tipo_pension_nombre"]?.ToString(),
+                                Entidad = reader["tipo_pension_entidad"]?.ToString()    
+                            };
+                        }
 
                         contratos.Add(contrato);
                     }
                 }
             }
-            finally
+            catch (Exception ex)
             {
-                _accesoSQL.CerrarConexion();
+                System.Diagnostics.Debug.WriteLine($"Error al obtener contratos: {ex.Message}");
+                throw;
             }
 
             return contratos;
         }
+        //// ============================================================
+        //// NUEVOS M�TODOS PARA LOS LISTADOS DE REFERENCIA
+        //// ============================================================
 
-        // ============================================================
-        // NUEVOS M�TODOS PARA LOS LISTADOS DE REFERENCIA
-        // ============================================================
-
-        // Listar trabajadores
+        //// Listar trabajadores
         public List<TrabajadorDTO> ObtenerTrabajadores()
         {
             List<TrabajadorDTO> trabajadores = new List<TrabajadorDTO>();

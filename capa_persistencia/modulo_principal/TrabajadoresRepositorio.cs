@@ -34,11 +34,13 @@ namespace capa_persistencia.modulo_principal
                         var trabajador = new Trabajador
                         {
                             TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id")),
-                            Codigo = reader.GetString(reader.GetOrdinal("codigo_trabajador")),
-                            Nombres = reader.GetString(reader.GetOrdinal("nombres")),
-                            Apellidos = reader.GetString(reader.GetOrdinal("apellidos")),
-                            TipoIdentificacion = reader.GetString(reader.GetOrdinal("tipo_identificacion")),
-                            Identificacion = reader.GetString(reader.GetOrdinal("identificacion")),
+                            //Codigo = reader.GetString(reader.GetOrdinal("codigo_trabajador")),
+                            //Nombres = reader.GetString(reader.GetOrdinal("nombres")),
+                            Nombres = reader.GetString(reader.GetOrdinal("nombre_completo")),
+
+                            //Apellidos = reader.GetString(reader.GetOrdinal("apellidos")),
+                            //TipoIdentificacion = reader.GetString(reader.GetOrdinal("tipo_identificacion")),
+                            //Identificacion = reader.GetString(reader.GetOrdinal("identificacion")),
                             Estado = 'A', // por defecto activo
                         };
 
@@ -46,8 +48,9 @@ namespace capa_persistencia.modulo_principal
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Mensaje: {ex.Message}");
                 throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CONSULTA);
             }
 
