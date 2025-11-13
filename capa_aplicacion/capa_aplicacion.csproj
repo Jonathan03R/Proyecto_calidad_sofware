@@ -45,6 +45,7 @@
     <Compile Include="sevicios\AreaService.cs" />
     <Compile Include="sevicios\PensionService.cs" />
     <Compile Include="sevicios\ServicioContratos.cs" />
+    <Compile Include="sevicios\Tipos salarios\TipoSalarioServicio.cs" />
     <Compile Include="sevicios\TrabajadorService.cs" />
   </ItemGroup>
   <ItemGroup>
