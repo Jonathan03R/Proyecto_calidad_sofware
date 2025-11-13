@@ -33,16 +33,12 @@ namespace capa_presentacion.Controllers
 
         // ✅ Nuevo método para listar los contratos de trabajadores
         [HttpGet]
-        public JsonResult ListarContratoTrabajador()
+        public JsonResult ListarActivos()
         {
             try
             {
-                // Llamamos al servicio que consulta el procedimiento almacenado
-                var data = servicio.ListarContratoTrabajador();
-
-                // Formateamos fechas para que se envíen limpias al JS
-                var resultado = data.Select(x => new
-                {
+                var data = servicio.ListarContratosActivos(); // <- ahora existe
+                var resultado = data.Select(x => new {
                     EmpleadoNombre = x.EmpleadoNombre,
                     Documento = x.Documento,
                     CargoNombre = x.CargoNombre,
@@ -50,21 +46,15 @@ namespace capa_presentacion.Controllers
                     FechaInicio = x.FechaInicio == DateTime.MinValue ? "" : x.FechaInicio.ToString("yyyy-MM-dd"),
                     FechaFin = x.FechaFin.HasValue ? x.FechaFin.Value.ToString("yyyy-MM-dd") : ""
                 });
-
-                return Json(new
-                {
-                    consultaExitosa = true,
-                    data = resultado
-                }, JsonRequestBehavior.AllowGet);
+                return Json(new { consultaExitosa = true, data = resultado }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                return Json(new
-                {
-                    consultaExitosa = false,
-                    mensaje = "Error al obtener contratos: " + ex.Message
-                }, JsonRequestBehavior.AllowGet);
+                return Json(new { consultaExitosa = false, mensaje = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
+
+
+
     }
 }

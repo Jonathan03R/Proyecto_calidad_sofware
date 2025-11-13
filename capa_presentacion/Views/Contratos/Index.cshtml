@@ -6,160 +6,100 @@
 }
 
 <section class="page-contratos">
-
     @Html.Partial("_CardResumenContratos")
+    @Html.Partial("_FiltrosContratos")  <!-- AQUI están los tabs -->
+    @* Paneles debajo *@
+    <div id="tab-activos" class="tab-panel is-active">
+        <table class="tabla-contratos">
+            <thead>
+                <tr>
+                    <th>Empleado</th>
+                    <th>Documento</th>
+                    <th>Cargo</th>
+                    <th>Tipo</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>
+                </tr>
+            </thead>
+            <tbody id="tbody-contratos"></tbody>
+        </table>
+        <div class="tabla-paginacion">
+            <p class="tabla-total" id="txt-total"></p>
+            <div class="tabla-paginas" id="paginador"></div>
+        </div>
+    </div>
 
-    @Html.Partial("_FiltrosContratos")
-
-    @Html.Partial("_TablaContratos")
+    <div id="tab-sin" class="tab-panel">
+        <table class="tabla-contratos">
+            <thead>
+                <tr><th>Empleado</th><th>Documento</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="tbody-sin-contrato"></tbody>
+        </table>
+        <div class="tabla-footer"><span id="txt-total-sin"></span></div>
+    </div>
 
     @Html.Partial("_ModalNuevoContrato")
 </section>
 
+<!-- CSS: asegúrate que _FiltrosContratos.css va DESPUÉS de Bootstrap/site.css -->
 <link rel="stylesheet" href="~/Content/css/_CardResumenContratos.css" />
-<link rel="stylesheet" href="~/Content/css/_FiltrosContratos.css" />
+<link rel="stylesheet" href="~/Content/css/_FiltrosContratos.css?v=4" />
 <link rel="stylesheet" href="~/Content/css/_TablaContratos.css" />
 <link rel="stylesheet" href="~/Content/css/_ModalNuevoContrato.css" />
 <link rel="stylesheet" href="~/Content/css/contratos.css" />
 
-@section Scripts{
+@section Scripts {
+
     <script>
-    window.ContratosConfig = {
-      urls: {
-        listar: '@Url.Action("ListarContratoTrabajador","Contratos")'
-      }
-    };
+  window.ContratosConfig = {
+    urls: { listarActivos: '@Url.Action("ListarActivos","Contratos")' }
+  };
     </script>
 
     <script>
-        (function () {
-            'use strict';
+        function fmtFecha(val) { if (!val) return ''; const d = new Date(val); if (isNaN(d)) return val; return d.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
+        function esc(t) { if (t == null) return ''; const m = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }; return String(t).replace(/[&<>"']/g, s => m[s]); }
+        function emptyRow(c, t) { return `<tr><td colspan="${c}"><div class="empty-state"><div class="empty-state-icon">📋</div><p>${esc(t)}</p></div></td></tr>`; }
+        function loadingRow(c) { return `<tr><td colspan="${c}"><div class="loading"><div class="spinner"></div><p>Cargando...</p></div></td></tr>`; }
 
-            $(function () { cargar(); });
+        function cargarActivos() {
+            const $tb = $('#tbody-contratos');
+            $tb.html(loadingRow(6));
+            $('#txt-total').text(''); $('#paginador').empty();
 
-            function cargar() {
-                const $tb = $('#tbody-contratos');
-                $tb.html(loadingRow(7));
-
-                $.get(window.ContratosConfig.urls.listar, function (resp) {
-                    if (!resp || !resp.consultaExitosa || !resp.data) {
-                        $tb.html(emptyRow(7, 'No se pudieron obtener los contratos'));
-                        $('#txt-total').text('');
-                        $('#paginador').empty();
-                        return;
-                    }
-
-                    renderRows(resp.data);
-                    $('#txt-total').text(`${resp.data.length} registro(s)`);
-                    $('#paginador').empty(); // sin paginación por ahora
-                })
-                    .fail(function () {
-                        $tb.html(emptyRow(7, 'Error de conexión'));
-                    });
-            }
-
-            function renderRows(items) {
-                const $tb = $('#tbody-contratos');
-                if (!items.length) {
-                    $tb.html(emptyRow(7, 'Sin registros'));
+            $.get(window.ContratosConfig.urls.listarActivos, function (resp) {
+                if (!resp || !resp.consultaExitosa) {
+                    const msg = (resp && resp.mensaje) ? resp.mensaje : 'No se pudieron obtener los contratos activos';
+                    $tb.html(emptyRow(6, msg));
                     return;
                 }
-
-                const rows = items.map(it => `
-                <tr>
-                  <td class="empleado-info">
-                    <div class="empleado-datos">
-                      <p class="empleado-nombre">${esc(it.EmpleadoNombre)}</p>
-                    </div>
-                  </td>
-                  <td>${esc(it.Documento)}</td>
-                  <td>${esc(it.CargoNombre)}</td>
-                  <td>${esc(it.EstadoContratoNombre)/* si luego tienes "Tipo", cámbialo aquí */}</td>
-                  <td>${fmtFecha(it.FechaInicio) || '-'}</td>
-                  <td>${fmtFecha(it.FechaFin) || '-'}</td>
-                </tr>
-              `).join('');
-
-                $tb.html(rows);
-            }
-
-            // Helpers
-            function fmtFecha(val) {
-                if (!val) return '';
-                // el controller está enviando DateTime/strings del repo;
-                // soporta "yyyy-MM-dd" o ISO. Si llega "dd/MM", ajusta aquí.
-                const d = new Date(val);
-                if (isNaN(d)) return esc(val);
-                return d.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            }
-
-            function esc(t) {
-                if (t == null) return '';
-                const m = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-                return String(t).replace(/[&<>"']/g, s => m[s]);
-            }
-
-            function emptyRow(colspan, text) {
-                return `
-                <tr>
-                  <td colspan="${colspan}">
-                    <div class="empty-state">
-                      <div class="empty-state-icon">📋</div>
-                      <p>${esc(text)}</p>
-                    </div>
-                  </td>
-                </tr>`;
-            }
-
-            function loadingRow(colspan) {
-                return `
-                <tr>
-                  <td colspan="${colspan}">
-                    <div class="loading">
-                      <div class="spinner"></div>
-                      <p>Cargando contratos...</p>
-                    </div>
-                  </td>
-                </tr>`;
-            }
-        })();
-    </script>
-    <script>
-        (function () {
-            'use strict';
-
-            const MODAL = '#modal-nuevo-contrato';
-            const OPEN_BTN = '#fc_crear';
-            const CLOSE_SEL = '[data-modal-close="modal-nuevo-contrato"], #modal-nuevo-contrato .modal-backdrop';
-            const FIRST_FOCUS = '#nc_nombre';
-
-            // Validaciones defensivas para evitar “no hace nada”
-            if (typeof $ === 'undefined') { console.error('jQuery no está cargado.'); return; }
-            if (!document.querySelector(MODAL)) { console.error('No existe el modal en el DOM.'); return; }
-            if (!document.querySelector(OPEN_BTN)) { console.error('No existe el botón #fc_crear.'); }
-
-            function openModal(e) {
-                if (e) e.preventDefault();
-                const $m = $(MODAL);
-                $m.addClass('is-open').attr('aria-hidden', 'false');
-                $('body').addClass('no-scroll');
-                setTimeout(() => $(FIRST_FOCUS).trigger('focus'), 0);
-            }
-
-            function closeModal(e) {
-                if (e) e.preventDefault();
-                const $m = $(MODAL);
-                $m.removeClass('is-open').attr('aria-hidden', 'true');
-                $('body').removeClass('no-scroll');
-            }
-
-            // Delegados: funcionan aunque el DOM cambie
-            $(document).on('click', OPEN_BTN, openModal);
-            $(document).on('click', CLOSE_SEL, closeModal);
-            $(document).on('keydown', e => {
-                if (e.key === 'Escape' && $(MODAL).hasClass('is-open')) closeModal();
+                renderActivos(resp.data || []);
+            }).fail(function (xhr) {
+                console.error('ListarActivos error:', xhr.status, xhr.responseText);
+                $('#tbody-contratos').html(emptyRow(6, 'Error de conexión'));
             });
-        })();
-    </script>
+        }
 
+        function renderActivos(items) {
+            const $tb = $('#tbody-contratos');
+            if (!items.length) { $tb.html(emptyRow(6, 'Sin contratos activos')); $('#txt-total').text('0'); return; }
+
+            const rows = items.map(it => `
+          <tr>
+            <td><p class="empleado-nombre">${esc(it.EmpleadoNombre)}</p></td>
+            <td>${esc(it.Documento)}</td>
+            <td>${esc(it.CargoNombre || '')}</td>
+            <td>${esc(it.EstadoContratoNombre || '')}</td>
+            <td>${fmtFecha(it.FechaInicio) || '-'}</td>
+            <td>${fmtFecha(it.FechaFin) || '-'}</td>
+          </tr>`).join('');
+
+            $tb.html(rows);
+            $('#txt-total').text(`${items.length} registro(s)`);
+        }
+
+        $(function () { cargarActivos(); });
+    </script>
 }
+
