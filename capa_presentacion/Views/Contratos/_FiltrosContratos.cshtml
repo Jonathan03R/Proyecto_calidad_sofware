@@ -1,9 +1,17 @@
 ﻿@* ======================================
     PARCIAL: _FiltrosContratos.cshtml
-    Descripción: Barra de búsqueda y filtros para contratos
+    Descripción: Barra de búsqueda y división de contratos
     ====================================== *@
 
 <div class="filtros-contratos-container">
+
+    <!-- 🔹 Tabs de Contratos -->
+    <div class="tabs-contratos">
+        <button type="button" class="tab-btn is-active" data-tab="activos">Contratos Activos</button>
+        <button type="button" class="tab-btn" data-tab="sin">Sin Contratos</button>
+    </div>
+
+    <!-- 🔹 Formulario de Filtros -->
     <form id="form-filtros-contratos" class="filtros-contratos" role="search">
         <!-- Buscar -->
         <div class="filtro-item filtro-busqueda">
@@ -15,32 +23,6 @@
                    autocomplete="off" />
         </div>
 
-        <!-- Estado del contrato -->
-        <div class="filtro-item">
-            <label for="fc_estado" class="filtro-label">Estado del Contrato</label>
-            <select id="fc_estado" name="estado">
-                <option value="">Todos</option>
-                <option value="Activo">Activo</option>
-                <option value="Pendiente">Pendiente</option>
-                <option value="PorVencer">Por vencer</option>
-                <option value="Finalizado">Finalizado</option>
-                <option value="Anulado">Anulado</option>
-            </select>
-        </div>
-
-        <!-- Tipo de contrato -->
-        <div class="filtro-item">
-            <label for="fc_tipo" class="filtro-label">Tipo de Contrato</label>
-            <select id="fc_tipo" name="tipo">
-                <option value="">Todos</option>
-                <option value="Indefinido">Indefinido</option>
-                <option value="Temporal">Temporal</option>
-                <option value="PorObra">Por obra</option>
-                <option value="Practicante">Practicante</option>
-                <option value="Locacion">Locación de servicios</option>
-            </select>
-        </div>
-
         <!-- Acciones -->
         <div class="filtro-acciones">
             <button type="button" id="fc_filtrar" class="btn btn-primary" data-action="filtrar-contratos">
@@ -49,13 +31,10 @@
             <button type="reset" id="fc_limpiar" class="btn btn-light" data-action="limpiar-filtros">
                 Limpiar
             </button>
-            <button type="button" id="fc_crear" class="btn-nuevo-contrato" data-action="crear-contrato">
-                + Nuevo Contrato
-            </button>
         </div>
     </form>
 
-    <!-- Sección avanzada opcional (mostrar/ocultar con JS si la usas) -->
+    <!-- Sección avanzada opcional -->
     <div id="filtros-avanzados" class="filtros-avanzados" hidden>
         <div class="filtro-item">
             <label for="fc_fecha_inicio">Inicio desde</label>

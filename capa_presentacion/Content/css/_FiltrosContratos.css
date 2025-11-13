@@ -1,6 +1,4 @@
-﻿/* ===============================
-   FILTROS CONTRATOS
-   =============================== */
+﻿
 .filtros-contratos-container {
     background: #fff;
     padding: 1rem 1.5rem;
@@ -81,4 +79,44 @@
     .btn-outline:hover {
         background: #2563eb;
         color: #fff;
+    }
+
+
+
+
+.tabs-contratos {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #d1d5db; /* ← línea más gruesa */
+}
+
+.tab-btn {
+    border: 1px solid #ffff;
+    background: #fff;
+    color: #374151;
+    padding: 0.45rem 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+    .tab-btn:hover {
+        background: #ffff;
+        border-bottom: 1px solid #2563eb; /* ← línea más gruesa */
+
+        color: #2563eb;
+    }
+
+    .tab-btn.is-active {
+        background: #ffff;
+        color: #2563EB;
+    }
+
+.tab-panel {
+    display: none;
+}
+
+    .tab-panel.is-active {
+        display: block;
     }

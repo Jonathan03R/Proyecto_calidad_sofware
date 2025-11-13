@@ -161,15 +161,13 @@ namespace capa_persistencia.modulo_principal
 
             return contratos;
         }
-        public List<ContratoDTO> ListarContratoTrabajador()
+        public List<ContratoDTO> ListarConContratoActivo()
         {
             var lista = new List<ContratoDTO>();
-
             try
             {
                 _accesoSQL.AbrirConexion();
-
-                var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("Personal.proc_obtener_contrato_trabajador");
+                var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("Personal.proc_contratos_activos_listar");
 
                 using (var dr = cmd.ExecuteReader())
                 {
@@ -182,30 +180,24 @@ namespace capa_persistencia.modulo_principal
 
                     while (dr.Read())
                     {
-                        var dto = new ContratoDTO
+                        lista.Add(new ContratoDTO
                         {
-                            // Campos del contrato (los que sí obtenemos del SP)
-                            FechaInicio = dr.IsDBNull(iFechaInicio) ? DateTime.MinValue : dr.GetDateTime(iFechaInicio),
-                            FechaFin = dr.IsDBNull(iFechaFin) ? (DateTime?)null : dr.GetDateTime(iFechaFin),
-
-                            // Campos extra para mostrar en la grilla
                             EmpleadoNombre = dr.IsDBNull(iPersonaNombre) ? "" : dr.GetString(iPersonaNombre),
                             Documento = dr.IsDBNull(iDocumento) ? "" : dr.GetString(iDocumento),
                             CargoNombre = dr.IsDBNull(iCargoNombre) ? "" : dr.GetString(iCargoNombre),
-                            EstadoContratoNombre = dr.IsDBNull(iEstadoContratoNombre) ? "" : dr.GetString(iEstadoContratoNombre)
-                        };
-
-                        lista.Add(dto);
+                            EstadoContratoNombre = dr.IsDBNull(iEstadoContratoNombre) ? "" : dr.GetString(iEstadoContratoNombre),
+                            FechaInicio = dr.IsDBNull(iFechaInicio) ? DateTime.MinValue : dr.GetDateTime(iFechaInicio),
+                            FechaFin = dr.IsDBNull(iFechaFin) ? (DateTime?)null : dr.GetDateTime(iFechaFin),
+                        });
                     }
                 }
             }
-            finally
-            {
-                _accesoSQL.CerrarConexion();
-            }
+            finally { _accesoSQL.CerrarConexion(); }
 
             return lista;
         }
+
+
 
 
 

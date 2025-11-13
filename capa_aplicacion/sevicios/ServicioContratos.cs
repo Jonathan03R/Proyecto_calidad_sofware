@@ -100,18 +100,14 @@ namespace capa_aplicacion.Servicios
                 accesoSQLServer.CerrarConexion();
             }
         }
-        public List<ContratoDTO> ListarContratoTrabajador()
+        // capa_aplicacion/Servicios/ServicioContratos.cs
+        public List<ContratoDTO> ListarContratosActivos()
         {
-            accesoSQLServer.AbrirConexion();
-            try
-            {
-                return contratosRepo.ListarContratoTrabajador();
-            }
-            finally
-            {
-                accesoSQLServer.CerrarConexion();
-            }
+            // Deja la conexión al repo (ya la abres/cerras allí)
+            return contratosRepo.ListarConContratoActivo();
         }
+
+
 
 
     }

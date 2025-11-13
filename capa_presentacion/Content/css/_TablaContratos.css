@@ -91,3 +91,39 @@
         color: white;
         border-color: #2563EB;
     }
+
+/*
+.tabs-contratos {
+    display: flex;
+    gap: .5rem;
+    margin: .5rem 0 1rem;
+}
+
+.tab-btn {
+    border: 1px solid #d1d5db;
+    background: #fff;
+    padding: .5rem .9rem;
+    border-radius: .5rem;
+    cursor: pointer;
+}
+
+    .tab-btn.is-active {
+        background: #2563eb;
+        color: #fff;
+        border-color: #2563eb;
+    }
+
+.tab-panel {
+    display: none;
+}
+
+    .tab-panel.is-active {
+        display: block;
+    }
+
+.tabla-footer {
+    margin-top: .5rem;
+    color: #6b7280;
+    font-size: .9rem;
+}
+*/
