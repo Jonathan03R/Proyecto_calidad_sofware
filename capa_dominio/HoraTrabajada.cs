@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace capa_dominio
 {
-    //public int BonoId { get => bonoId; set => bonoId = value; }
     public class HoraTrabajada
     {
         private DateTime fecha;
@@ -13,7 +12,7 @@ namespace capa_dominio
         private decimal horasDescanso;
         private decimal totalDiaTrabajado;
         private Contrato contrato;
-        private List<TipoHoraExtra> TiposHorasExtras;
+        private List<TipoHoraExtra> tiposHorasExtras;
 
         public DateTime Fecha { get => fecha; set => fecha = value; }
         public decimal HorasNormales { get => horasNormales; set => horasNormales = value; }
@@ -21,8 +20,7 @@ namespace capa_dominio
         public decimal HorasDescanso { get => horasDescanso; set => horasDescanso = value; }
         public decimal TotalDiaTrabajado { get => totalDiaTrabajado; set => totalDiaTrabajado = value; }
         public Contrato Contrato { get => contrato; set => contrato = value; }
-        public List<TipoHoraExtra> TiposHorasExtras1 { get => TiposHorasExtras; set => TiposHorasExtras = value; }
-
+        public List<TipoHoraExtra> TiposHorasExtras { get => tiposHorasExtras; set => tiposHorasExtras = value; }
 
         public decimal CalcularPagoDia()
         {
@@ -67,12 +65,53 @@ namespace capa_dominio
         {
             var tipo = TiposHorasExtras.FirstOrDefault(t =>
                 t.TiposHorasExtrasCodigo.Equals(codigo, StringComparison.OrdinalIgnoreCase)
-                && (t.TiposHorasExtrasEstado == 'A' || t.TiposHorasExtrasEstado.ToString() == "A"));
+                && t.TiposHorasExtrasEstado == 'A');
 
             if (tipo == null)
                 throw new InvalidOperationException($"Falta el tipo de hora extra '{codigo}' (o está inactivo).");
 
             return tipo.TiposHorasExtrasMultiplicador;
+        }
+
+        public decimal CalcularDescuentoTardanza()
+        {
+            if (Contrato == null)
+                throw new InvalidOperationException("El contrato no puede ser nulo para calcular descuentos.");
+
+            if (!Contrato.ContratoHorasSemanales.HasValue || Contrato.ContratoHorasSemanales.Value <= 0)
+                throw new InvalidOperationException("El contrato no tiene configuradas las horas semanales.");
+
+            decimal jornadaDiaria = Contrato.ContratoHorasSemanales.Value / 6m;
+
+            if (HorasNormales >= jornadaDiaria)
+                return 0;
+
+            decimal horasTardanza = jornadaDiaria - HorasNormales;
+
+            decimal sueldoBasico = Contrato.ContratoSalario;
+            decimal descuentoPorHora = sueldoBasico / (30 * jornadaDiaria);
+
+            return Math.Round(horasTardanza * descuentoPorHora, 2);
+        }
+
+        public bool EsDiaLaborado()
+        {
+            return HorasNormales > 0 || HorasExtras > 0;
+        }
+
+        public bool EsFalta()
+        {
+            return HorasNormales == 0 && HorasExtras == 0 && HorasDescanso == 0;
+        }
+
+        public bool TieneTardanza(decimal jornadaEsperada = 8)
+        {
+            return HorasNormales > 0 && HorasNormales < jornadaEsperada;
+        }
+
+        public bool TieneHorasExtras()
+        {
+            return HorasExtras > 0;
         }
     }
 }

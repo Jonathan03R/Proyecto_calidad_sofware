@@ -10,12 +10,12 @@ namespace capa_aplicacion.Servicios
     public class ServicioContratos
     {
         private readonly AccesoSQLServer accesoSQLServer;
-        private readonly ContratosRepositorio contratosRepo;
+        private readonly ContratoRepositorio contratosRepo;
 
         public ServicioContratos()
         {
             accesoSQLServer = new AccesoSQLServer();
-            contratosRepo = new ContratosRepositorio(accesoSQLServer);
+            contratosRepo = new ContratoRepositorio(accesoSQLServer);
         }
 
         // ✅ CREAR CONTRATO
