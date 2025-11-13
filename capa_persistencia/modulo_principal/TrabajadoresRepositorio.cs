@@ -34,11 +34,11 @@ namespace capa_persistencia.modulo_principal
                         var trabajador = new Trabajador
                         {
                             TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id")),
-                            Codigo = reader.GetString(reader.GetOrdinal("codigo_trabajador")),
-                            Nombres = reader.GetString(reader.GetOrdinal("nombres")),
-                            Apellidos = reader.GetString(reader.GetOrdinal("apellidos")),
-                            TipoIdentificacion = reader.GetString(reader.GetOrdinal("tipo_identificacion")),
-                            Identificacion = reader.GetString(reader.GetOrdinal("identificacion")),
+                            Codigo = reader.GetString(reader.GetOrdinal("trabajador_codigo")),
+                            Nombres = reader.GetString(reader.GetOrdinal("persona_nombre")),
+                            Apellidos = reader.GetString(reader.GetOrdinal("persona_apellido")),
+                            TipoIdentificacion = reader.GetString(reader.GetOrdinal("tipo_identificacion_nombre")),
+                            Identificacion = reader.GetString(reader.GetOrdinal("persona_identificacion")),
                             Estado = 'A', // por defecto activo
                         };
 
