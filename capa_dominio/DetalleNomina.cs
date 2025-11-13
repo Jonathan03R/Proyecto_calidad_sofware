@@ -132,10 +132,9 @@ namespace capa_dominio
 
         public void CalcularPagoTotalHorasExtras()
         {
-
             System.Diagnostics.Trace.WriteLine("CALCULANDO HORAS EXTRAS...");
-            if (contrato == null)
 
+            if (contrato == null)
                 throw new InvalidOperationException("El contrato no puede ser nulo en el detalle de nómina.");
 
             if (HorasTrabajadas == null || HorasTrabajadas.Count == 0)
@@ -157,6 +156,16 @@ namespace capa_dominio
                 decimal pagoDia = h.CalcularPagoDia();
                 decimal pagoNormalDia = h.HorasNormales * Contrato.ContratoTarifaHora;
                 decimal extraDia = pagoDia - pagoNormalDia;
+
+                if (extraDia > 0)
+                    totalExtras += extraDia;
+            }
+
+            horasExtras = Math.Round(totalExtras, 2);
+
+            System.Diagnostics.Trace.WriteLine($"HORAS_EXTRAS -> Total: {horasExtras:F2}");
+        }
+
 
 
         public void CalcularRemuneracionBruta()
@@ -184,8 +193,6 @@ namespace capa_dominio
         }
 
 
-            horasExtras = Math.Round(totalExtras, 2);
-        }
 
         // =========================
         // ASIGNACIÓN FAMILIAR
@@ -216,19 +223,6 @@ namespace capa_dominio
             return asignacionFamiliar;
         }
 
-        // =========================
-        // REMUNERACIÓN BRUTA
-        // =========================
-
-        public void CalcularRemuneracionBruta()
-        {
-            remuneracionBruta =
-                sueldoBasico +
-                asignacionFamiliar +
-                horasExtras +
-                bonosRegulares +
-                otrosIngresos;
-        }
 
         // =========================
         // SISTEMA DE PENSIONES
