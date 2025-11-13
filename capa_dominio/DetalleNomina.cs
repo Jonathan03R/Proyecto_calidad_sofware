@@ -27,7 +27,7 @@ namespace capa_dominio
         private string sistemasPensionAplicado;
         private decimal descuentoFaltas;
         private decimal descuentoAdelantos;
-
+        private decimal descuentoTardanzas;
         private decimal totalIngresos;
         private decimal totalDescuentos;
         private decimal netoPagar;
@@ -52,6 +52,7 @@ namespace capa_dominio
         public decimal ImpuestoRentaMensual { get => impuestoRentaMensual; set => impuestoRentaMensual = value; }
         public string SistemasPensionAplicado { get => sistemasPensionAplicado; set => sistemasPensionAplicado = value; }
         public decimal DescuentoFaltas { get => descuentoFaltas; set => descuentoFaltas = value; }
+        public decimal DescuentoTardanzas { get => descuentoTardanzas; set => descuentoTardanzas = value; }
         public decimal DescuentoAdelantos { get => descuentoAdelantos; set => descuentoAdelantos = value; }
         public decimal TotalIngresos { get => totalIngresos; set => totalIngresos = value; }
         public decimal TotalDescuentos { get => totalDescuentos; set => totalDescuentos = value; }
@@ -86,6 +87,7 @@ namespace capa_dominio
 
             int diasPagados = 0;
             int diasFalta = 0;
+            decimal descuentoTardanzas = 0m;
 
             foreach (var dia in diasPeriodo)
             {
@@ -109,18 +111,18 @@ namespace capa_dominio
 
                 if (registro.TieneTardanza(jornadaDiariaHoras))
                 {
-                    diasFalta++;
-                    continue;
+                    descuentoTardanzas += registro.CalcularDescuentoTardanza();
                 }
 
                 diasPagados++;
             }
 
-            sueldoBasico = Math.Round(diasPagados * sueldoPorDia, 2);
-            descuentoFaltas = Math.Round(diasFalta * sueldoPorDia, 2);
+            SueldoBasico = Math.Round(diasPagados * sueldoPorDia, 2);
+            DescuentoFaltas = Math.Round(diasFalta * sueldoPorDia, 2);
+            DescuentoTardanzas = Math.Round(descuentoTardanzas, 2);
 
             System.Diagnostics.Trace.WriteLine(
-                $"ASISTENCIA -> DiasPagados: {diasPagados} | DiasFalta: {diasFalta} | SueldoBasico: {sueldoBasico} | DescuentoFaltas: {descuentoFaltas}"
+                $"ASISTENCIA -> DiasPagados: {diasPagados} | DiasFalta: {diasFalta} | DescuentoTardanzas: {DescuentoTardanzas} | SueldoBasico: {SueldoBasico} | DescuentoFaltas: {DescuentoFaltas}"
             );
         }
 
@@ -293,15 +295,17 @@ namespace capa_dominio
 
         public void CalcularTotales()
         {
-            totalIngresos = remuneracionBruta;
+            // Sumar todos los ingresos
+            totalIngresos = SueldoBasico + AsignacionFamiliar + BonosRegulares + OtrosIngresos;
 
-            totalDescuentos =
-                aporteONP +
-                descuentoAFP +
-                impuestoRentaMensual +
-                descuentoFaltas +
-                descuentoAdelantos;
+            // Sumar todos los descuentos
+            totalDescuentos = aporteONP +
+                              descuentoAFP +
+                              impuestoRentaMensual +
+                              descuentoFaltas +
+                              descuentoAdelantos;
 
+            // Calcular neto
             netoPagar = totalIngresos - totalDescuentos;
 
             System.Diagnostics.Trace.WriteLine(
