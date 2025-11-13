@@ -42,5 +42,9 @@ namespace capa_dominio.dto
         public string DocumentoUrl { get => documentoUrl; set => documentoUrl = value; }
         public string DescripcionFunciones { get => descripcionFunciones; set => descripcionFunciones = value; }
         public string Observaciones { get => observaciones; set => observaciones = value; }
+        public string EmpleadoNombre { get; set; }           // persona_nombre
+        public string Documento { get; set; }                // persona_identificacion
+        public string CargoNombre { get; set; }              // cargo_nombre
+        public string EstadoContratoNombre { get; set; }     // estado_contrato_nombre
     }
 }

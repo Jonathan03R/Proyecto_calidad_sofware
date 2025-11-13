@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.Mvc;
-using capa_aplicacion.Servicios;
+﻿using capa_aplicacion.Servicios;
 using capa_dominio.dto;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace capa_presentacion.Controllers
 {
@@ -15,18 +16,54 @@ namespace capa_presentacion.Controllers
             servicio = new ServicioContratos();
         }
 
-        // ✅ Página principal: muestra los listados
+        // ✅ Página principal
         public ActionResult Index()
         {
             try
             {
-                // No necesitamos cargar las listas aquí, se cargarán con AJAX
+                // La data se carga vía AJAX
                 return View();
             }
             catch (Exception ex)
             {
                 ViewBag.Error = "Error al cargar la página: " + ex.Message;
                 return View("Error");
+            }
+        }
+
+        // ✅ Nuevo método para listar los contratos de trabajadores
+        [HttpGet]
+        public JsonResult ListarContratoTrabajador()
+        {
+            try
+            {
+                // Llamamos al servicio que consulta el procedimiento almacenado
+                var data = servicio.ListarContratoTrabajador();
+
+                // Formateamos fechas para que se envíen limpias al JS
+                var resultado = data.Select(x => new
+                {
+                    EmpleadoNombre = x.EmpleadoNombre,
+                    Documento = x.Documento,
+                    CargoNombre = x.CargoNombre,
+                    EstadoContratoNombre = x.EstadoContratoNombre,
+                    FechaInicio = x.FechaInicio == DateTime.MinValue ? "" : x.FechaInicio.ToString("yyyy-MM-dd"),
+                    FechaFin = x.FechaFin.HasValue ? x.FechaFin.Value.ToString("yyyy-MM-dd") : ""
+                });
+
+                return Json(new
+                {
+                    consultaExitosa = true,
+                    data = resultado
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    consultaExitosa = false,
+                    mensaje = "Error al obtener contratos: " + ex.Message
+                }, JsonRequestBehavior.AllowGet);
             }
         }
     }

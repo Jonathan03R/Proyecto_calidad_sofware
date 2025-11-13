@@ -3,9 +3,8 @@ using capa_dominio.dto;
 using capa_persistencia.modulo_base;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
@@ -162,5 +161,223 @@ namespace capa_persistencia.modulo_principal
 
             return contratos;
         }
+        public List<ContratoDTO> ListarContratoTrabajador()
+        {
+            var lista = new List<ContratoDTO>();
+
+            try
+            {
+                _accesoSQL.AbrirConexion();
+
+                var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("Personal.proc_obtener_contrato_trabajador");
+
+                using (var dr = cmd.ExecuteReader())
+                {
+                    int iPersonaNombre = dr.GetOrdinal("persona_nombre");
+                    int iDocumento = dr.GetOrdinal("persona_identificacion");
+                    int iCargoNombre = dr.GetOrdinal("cargo_nombre");
+                    int iEstadoContratoNombre = dr.GetOrdinal("estado_contrato_nombre");
+                    int iFechaInicio = dr.GetOrdinal("contrato_fecha_inicio");
+                    int iFechaFin = dr.GetOrdinal("contrato_fecha_fin");
+
+                    while (dr.Read())
+                    {
+                        var dto = new ContratoDTO
+                        {
+                            // Campos del contrato (los que sí obtenemos del SP)
+                            FechaInicio = dr.IsDBNull(iFechaInicio) ? DateTime.MinValue : dr.GetDateTime(iFechaInicio),
+                            FechaFin = dr.IsDBNull(iFechaFin) ? (DateTime?)null : dr.GetDateTime(iFechaFin),
+
+                            // Campos extra para mostrar en la grilla
+                            EmpleadoNombre = dr.IsDBNull(iPersonaNombre) ? "" : dr.GetString(iPersonaNombre),
+                            Documento = dr.IsDBNull(iDocumento) ? "" : dr.GetString(iDocumento),
+                            CargoNombre = dr.IsDBNull(iCargoNombre) ? "" : dr.GetString(iCargoNombre),
+                            EstadoContratoNombre = dr.IsDBNull(iEstadoContratoNombre) ? "" : dr.GetString(iEstadoContratoNombre)
+                        };
+
+                        lista.Add(dto);
+                    }
+                }
+            }
+            finally
+            {
+                _accesoSQL.CerrarConexion();
+            }
+
+            return lista;
+        }
+
+
+
+
+
+        //    public (List<Contrato> data, int total) ConsultarTodosLosContratos(
+        //int? estadoId, int? tipoContratoId, string query, int page, int pageSize)
+        //    {
+        //        var lista = new List<Contrato>();
+        //        int total = 0;
+
+        //        _accesoSQL.AbrirConexion();
+        //        try
+        //        {
+        //            // Usa tu helper para SP; NO es código en la vista, esto es capa de persistencia ✅
+        //            var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("proc_listar_contratos");
+
+        //            cmd.Parameters.AddWithValue("@estadoId", (object)estadoId ?? DBNull.Value);
+        //            cmd.Parameters.AddWithValue("@tipoContratoId", (object)tipoContratoId ?? DBNull.Value);
+        //            cmd.Parameters.AddWithValue("@query", (object)(query ?? ""));
+        //            cmd.Parameters.AddWithValue("@page", page);
+        //            cmd.Parameters.AddWithValue("@pageSize", pageSize);
+
+        //            // puedes usar output param o un segundo resultset; aquí te dejo ambas formas:
+        //            var pTotal = new SqlParameter("@total", SqlDbType.Int) { Direction = ParameterDirection.Output };
+        //            cmd.Parameters.Add(pTotal);
+
+        //            using (var dr = cmd.ExecuteReader())
+        //            {
+        //                while (dr.Read())
+        //                {
+        //                    var c = new Contrato
+        //                    {
+        //                        ContratoId = dr.GetInt32(dr.GetOrdinal("contrato_id")),
+        //                        ContratoFechaInicio = dr.GetDateTime(dr.GetOrdinal("contrato_fecha_inicio")),
+        //                        ContratoFechaFin = dr.IsDBNull(dr.GetOrdinal("contrato_fecha_fin"))
+        //                            ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("contrato_fecha_fin")),
+        //                        ContratoSalario = dr.IsDBNull(dr.GetOrdinal("contrato_salario"))
+        //                            ? 0 : dr.GetDecimal(dr.GetOrdinal("contrato_salario")),
+        //                        ContratoTarifaHora = dr.IsDBNull(dr.GetOrdinal("contrato_tarifa_hora"))
+        //                            ? 0 : dr.GetDecimal(dr.GetOrdinal("contrato_tarifa_hora")),
+        //                        ContratoModoPago = dr["contrato_modo_pago"]?.ToString(),
+        //                        ContratoDocumentoUrl = dr["contrato_documento_url"]?.ToString(),
+        //                        ContratoDescripcionFunciones = dr["contrato_descripcion_funciones"]?.ToString(),
+        //                        ContratoObservaciones = dr["contrato_observaciones"]?.ToString(),
+        //                        EstadoiId = dr.GetInt32(dr.GetOrdinal("estado_contrato_id")),
+        //                        Trabajador = new Trabajador
+        //                        {
+        //                            // Ajusta nombres a tus columnas reales del SP
+        //                            Nombres = dr["empleado_nombre_completo"]?.ToString(),
+
+        //                            Identificacion = dr["empleado_documento"]?.ToString(),
+        //                        },
+        //                        Cargo = new Cargo { CargoNombre = dr["cargo_nombre"]?.ToString() },
+        //                        TipoSalario = new TipoSalario { TipoSalarioNombre = dr["tipo_salario_nombre"]?.ToString() }
+        //                    };
+
+        //                    lista.Add(c);
+        //                }
+
+        //                // si tu SP devuelve el total en un segundo resultset:
+        //                if (dr.NextResult() && dr.Read())
+        //                {
+        //                    total = dr.GetInt32(dr.GetOrdinal("total"));
+        //                }
+        //            }
+
+        //            // si usaste parámetro de salida:
+        //            if (total == 0 && pTotal.Value != DBNull.Value)
+        //                total = Convert.ToInt32(pTotal.Value);
+
+        //            return (lista, total);
+        //        }
+        //        finally
+        //        {
+        //            _accesoSQL.CerrarConexion();
+        //        }
+
+        //// ============================================================
+        //// NUEVOS M�TODOS PARA LOS LISTADOS DE REFERENCIA
+        //// ============================================================
+
+        ////// Listar trabajadores
+        //public List<TrabajadorDTO> ObtenerTrabajadores()
+        //{
+        //    List<TrabajadorDTO> trabajadores = new List<TrabajadorDTO>();
+        //    var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_empleados");
+
+        //    using (var reader = comando.ExecuteReader())
+        //    {
+        //        while (reader.Read())
+        //        {
+        //            trabajadores.Add(new TrabajadorDTO
+        //            {
+        //                TrabajadorId = Convert.ToInt32(reader["TrabajadorId"]),
+        //                NombreCompleto = reader["NombreCompleto"].ToString()
+        //            });
+        //        }
+        //    }
+        //    return trabajadores;
+        //}
+
+        //// Listar �reas
+        //public List<AreaDTO> ObtenerAreas()
+        //{
+        //    List<AreaDTO> areas = new List<AreaDTO>();
+        //    var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_areas_trabajo");
+
+        //    using (var reader = comando.ExecuteReader())
+        //    {
+        //        while (reader.Read())
+        //        {
+        //            areas.Add(new AreaDTO
+        //            {
+        //                AreaId = Convert.ToInt32(reader["AreaId"]),
+        //                NombreArea = reader["NombreArea"].ToString()
+        //            });
+        //        }
+        //    }
+        //    return areas;
+        //}
+
+        //// Listar cargos
+        //public List<CargoDTO> ObtenerCargos()
+        //{
+        //    List<CargoDTO> cargos = new List<CargoDTO>();
+        //    var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_cargos");
+
+        //    using (var reader = comando.ExecuteReader())
+        //    {
+        //        while (reader.Read())
+        //        {
+        //            cargos.Add(new CargoDTO
+        //            {
+        //                CargoId = Convert.ToInt32(reader["CargoId"]),
+        //                NombreCargo = reader["NombreCargo"].ToString()
+        //            });
+        //        }
+        //    }
+        //    return cargos;
+        //}
+
+        //// Listar tipos de pensi�n
+        //public List<TipoPensionDTO> ObtenerTiposPension()
+        //{
+        //    List<TipoPensionDTO> pensiones = new List<TipoPensionDTO>();
+        //    var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_sistema_pensiones");
+
+        //    using (var reader = comando.ExecuteReader())
+        //    {
+        //        while (reader.Read())
+        //        {
+        //            pensiones.Add(new TipoPensionDTO
+        //            {
+        //                TipoPensionId = Convert.ToInt32(reader["TipoPensionId"]),
+        //                NombreTipo = reader["NombreTipo"].ToString()
+        //            });
+        //        }
+        //    }
+        //    return pensiones;
+        //}
+
+        //// Listar estados de contrato
+        //public List<EstadoContratoDTO> ObtenerEstadosContrato()
+        //{
+        //    return new List<EstadoContratoDTO>
+        //    {
+        //        new EstadoContratoDTO { EstadoId = 1, NombreEstado = "Activo" },
+        //        new EstadoContratoDTO { EstadoId = 2, NombreEstado = "Finalizado" },
+        //        new EstadoContratoDTO { EstadoId = 3, NombreEstado = "Suspendido" },
+        //        new EstadoContratoDTO { EstadoId = 4, NombreEstado = "Inactivo" }
+        //    };
+        //}
     }
 }

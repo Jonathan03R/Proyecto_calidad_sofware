@@ -1,0 +1,90 @@
+﻿@* ======================================
+    PARCIAL: _ModalNuevoContrato.cshtml
+    Descripción: Formulario en modal para crear contrato
+    ====================================== *@
+
+<div id="modal-nuevo-contrato" class="modal-contrato" aria-hidden="true" role="dialog">
+    <div class="modal-backdrop"></div>
+
+    <div class="modal-dialog" role="document" aria-labelledby="modal-nuevo-contrato-title">
+        <div class="modal-header">
+            <div class="modal-title-wrap">                <div>
+                    <h3 id="modal-nuevo-contrato-title" class="modal-title">Nuevo contrato</h3>
+                    <p class="modal-subtitle">Creación de nuevo contrato</p>
+                </div>
+            </div>
+            <button type="button" class="modal-close" data-modal-close="modal-nuevo-contrato" aria-label="Cerrar">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="form-nuevo-contrato" class="form-contrato" autocomplete="off">
+                <!-- Fila 1 -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="nc_nombre">Nombre</label>
+                        <input id="nc_nombre" name="Nombre" type="text" placeholder="Nombre completo" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nc_dni">DNI</label>
+                        <input id="nc_dni" name="Dni" type="text" placeholder="Documento" />
+                    </div>
+                </div>
+
+                <!-- Fila 2 -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="nc_cargo">Cargo</label>
+                        <input id="nc_cargo" name="Cargo" type="text" placeholder="Cargo" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nc_domicilio">Domicilio</label>
+                        <input id="nc_domicilio" name="Domicilio" type="text" placeholder="Dirección" />
+                    </div>
+                </div>
+
+                <hr class="modal-sep" />
+
+                <!-- Fila 3 -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="nc_fecha_inicio">Periodo</label>
+                        <input id="nc_fecha_inicio" name="FechaInicio" type="date" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nc_fecha_fin">&nbsp;</label>
+                        <input id="nc_fecha_fin" name="FechaFin" type="date" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nc_hora_inicio">Horario</label>
+                        <input id="nc_hora_inicio" name="HoraInicio" type="time" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nc_hora_fin">&nbsp;</label>
+                        <input id="nc_hora_fin" name="HoraFin" type="time" />
+                    </div>
+                </div>
+
+                <!-- Fila 4 -->
+                <div class="form-row">
+                    <div class="form-field full">
+                        <label for="nc_remuneracion">Total de remuneración</label>
+                        <input id="nc_remuneracion" name="Remuneracion" type="text" placeholder="S/ 0.00" />
+                    </div>
+                </div>
+
+                <!-- Mensajes/errores opcionales -->
+                <div id="nc_mensaje" class="form-mensaje" aria-live="polite"></div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-modal-close="modal-nuevo-contrato">Cancel</button>
+            <button type="button" class="btn btn-primary" id="nc_confirmar" data-action="confirmar-contrato">Confirm</button>
+        </div>
+    </div>
+</div>

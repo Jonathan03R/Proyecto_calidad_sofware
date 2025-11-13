@@ -1,0 +1,73 @@
+﻿@* ======================================
+    PARCIAL: _FiltrosContratos.cshtml
+    Descripción: Barra de búsqueda y filtros para contratos
+    ====================================== *@
+
+<div class="filtros-contratos-container">
+    <form id="form-filtros-contratos" class="filtros-contratos" role="search">
+        <!-- Buscar -->
+        <div class="filtro-item filtro-busqueda">
+            <label for="fc_query" class="sr-only">Buscar</label>
+            <input id="fc_query"
+                   name="query"
+                   type="text"
+                   placeholder="Buscar por empleado, documento..."
+                   autocomplete="off" />
+        </div>
+
+        <!-- Estado del contrato -->
+        <div class="filtro-item">
+            <label for="fc_estado" class="filtro-label">Estado del Contrato</label>
+            <select id="fc_estado" name="estado">
+                <option value="">Todos</option>
+                <option value="Activo">Activo</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="PorVencer">Por vencer</option>
+                <option value="Finalizado">Finalizado</option>
+                <option value="Anulado">Anulado</option>
+            </select>
+        </div>
+
+        <!-- Tipo de contrato -->
+        <div class="filtro-item">
+            <label for="fc_tipo" class="filtro-label">Tipo de Contrato</label>
+            <select id="fc_tipo" name="tipo">
+                <option value="">Todos</option>
+                <option value="Indefinido">Indefinido</option>
+                <option value="Temporal">Temporal</option>
+                <option value="PorObra">Por obra</option>
+                <option value="Practicante">Practicante</option>
+                <option value="Locacion">Locación de servicios</option>
+            </select>
+        </div>
+
+        <!-- Acciones -->
+        <div class="filtro-acciones">
+            <button type="button" id="fc_filtrar" class="btn btn-primary" data-action="filtrar-contratos">
+                Filtrar
+            </button>
+            <button type="reset" id="fc_limpiar" class="btn btn-light" data-action="limpiar-filtros">
+                Limpiar
+            </button>
+            <button type="button" id="fc_crear" class="btn-nuevo-contrato" data-action="crear-contrato">
+                + Nuevo Contrato
+            </button>
+        </div>
+    </form>
+
+    <!-- Sección avanzada opcional (mostrar/ocultar con JS si la usas) -->
+    <div id="filtros-avanzados" class="filtros-avanzados" hidden>
+        <div class="filtro-item">
+            <label for="fc_fecha_inicio">Inicio desde</label>
+            <input id="fc_fecha_inicio" name="fechaInicioDesde" type="date" />
+        </div>
+        <div class="filtro-item">
+            <label for="fc_fecha_fin">Fin hasta</label>
+            <input id="fc_fecha_fin" name="fechaFinHasta" type="date" />
+        </div>
+        <div class="filtro-item">
+            <label for="fc_cargo">Cargo</label>
+            <input id="fc_cargo" name="cargo" type="text" placeholder="Cargo" />
+        </div>
+    </div>
+</div>
