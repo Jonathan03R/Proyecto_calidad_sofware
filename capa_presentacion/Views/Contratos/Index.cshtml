@@ -1,96 +1,165 @@
 ﻿@{
-    ViewBag.Title = "Gestión de Contratos";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Contratos";
+    ViewBag.PageTitle = "Gestion de Contratos";
+    ViewBag.PageSubtitle = "Crear Contratos - " + DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
+    ViewBag.PagePeriodo = DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
 }
 
-<!-- CSS específico para esta página -->
-<link href="~/Content/css/contratos.css" rel="stylesheet" />
+<section class="page-contratos">
 
-<div class="contratos-container">
-    <div class="page-header">
-        <h1>📋 Gestión de Contratos</h1>
-        <p class="subtitle">Administra contratos, trabajadores y configuraciones del sistema</p>
-    </div>
+    @Html.Partial("_CardResumenContratos")
 
-    <div class="cards-grid">
-        <!-- Card: Trabajadores -->
-        <div class="info-card">
-            <div class="card-icon">👥</div>
-            <div class="card-content">
-                <h3>Trabajadores</h3>
-                <p>Listado de trabajadores registrados en el sistema.</p>
-                <button class="btn-primary" onclick="verListaTrabajadores()">
-                    <span class="btn-icon">👁️</span> Ver lista
-                </button>
-            </div>
-        </div>
+    @Html.Partial("_FiltrosContratos")
 
-        <!-- Card: Áreas -->
-        <div class="info-card">
-            <div class="card-icon">🏢</div>
-            <div class="card-content">
-                <h3>Áreas</h3>
-                <p>Consulta de áreas disponibles en la empresa.</p>
-                <button class="btn-primary" onclick="verListaAreas()">
-                    <span class="btn-icon">👁️</span> Ver lista
-                </button>
-            </div>
-        </div>
+    @Html.Partial("_TablaContratos")
 
-        <!-- Card: Cargos -->
-        <div class="info-card">
-            <div class="card-icon">💼</div>
-            <div class="card-content">
-                <h3>Cargos</h3>
-                <p>Consulta de cargos o puestos disponibles.</p>
-                <button class="btn-primary" onclick="verListaCargos()">
-                    <span class="btn-icon">👁️</span> Ver lista
-                </button>
-            </div>
-        </div>
+    @Html.Partial("_ModalNuevoContrato")
+</section>
 
-        <!-- Card: Tipos de Pensión -->
-        <div class="info-card">
-            <div class="card-icon">💰</div>
-            <div class="card-content">
-                <h3>Tipos de Pensión</h3>
-                <p>Listado de tipos de pensión configurados.</p>
-                <button class="btn-primary" onclick="verListaPensiones()">
-                    <span class="btn-icon">👁️</span> Ver lista
-                </button>
-            </div>
-        </div>
+<link rel="stylesheet" href="~/Content/css/_CardResumenContratos.css" />
+<link rel="stylesheet" href="~/Content/css/_FiltrosContratos.css" />
+<link rel="stylesheet" href="~/Content/css/_TablaContratos.css" />
+<link rel="stylesheet" href="~/Content/css/_ModalNuevoContrato.css" />
+<link rel="stylesheet" href="~/Content/css/contratos.css" />
 
-        <!-- Card: Estados de Contrato -->
-        <div class="info-card">
-            <div class="card-icon">📊</div>
-            <div class="card-content">
-                <h3>Estados de Contrato</h3>
-                <p>Consulta de los estados posibles de un contrato (activo, inactivo, finalizado, etc.).</p>
-                <button class="btn-primary" onclick="verListaEstados()">
-                    <span class="btn-icon">👁️</span> Ver lista
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+@section Scripts{
+    <script>
+    window.ContratosConfig = {
+      urls: {
+        listar: '@Url.Action("ListarContratoTrabajador","Contratos")'
+      }
+    };
+    </script>
 
-<!-- Modal para mostrar las listas -->
-<div id="modalLista" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="modalTitulo"></h2>
-            <span class="close" onclick="cerrarModal()">&times;</span>
-        </div>
-        <div class="modal-body">
-            <div id="loadingSpinner" class="loading">
-                <div class="spinner"></div>
-                <p>Cargando datos...</p>
-            </div>
-            <div id="modalContenido"></div>
-        </div>
-    </div>
-</div>
+    <script>
+        (function () {
+            'use strict';
 
-<!-- JavaScript específico -->
-<script src="~/Scripts/contratos.js"></script>
+            $(function () { cargar(); });
+
+            function cargar() {
+                const $tb = $('#tbody-contratos');
+                $tb.html(loadingRow(7));
+
+                $.get(window.ContratosConfig.urls.listar, function (resp) {
+                    if (!resp || !resp.consultaExitosa || !resp.data) {
+                        $tb.html(emptyRow(7, 'No se pudieron obtener los contratos'));
+                        $('#txt-total').text('');
+                        $('#paginador').empty();
+                        return;
+                    }
+
+                    renderRows(resp.data);
+                    $('#txt-total').text(`${resp.data.length} registro(s)`);
+                    $('#paginador').empty(); // sin paginación por ahora
+                })
+                    .fail(function () {
+                        $tb.html(emptyRow(7, 'Error de conexión'));
+                    });
+            }
+
+            function renderRows(items) {
+                const $tb = $('#tbody-contratos');
+                if (!items.length) {
+                    $tb.html(emptyRow(7, 'Sin registros'));
+                    return;
+                }
+
+                const rows = items.map(it => `
+                <tr>
+                  <td class="empleado-info">
+                    <div class="empleado-datos">
+                      <p class="empleado-nombre">${esc(it.EmpleadoNombre)}</p>
+                    </div>
+                  </td>
+                  <td>${esc(it.Documento)}</td>
+                  <td>${esc(it.CargoNombre)}</td>
+                  <td>${esc(it.EstadoContratoNombre)/* si luego tienes "Tipo", cámbialo aquí */}</td>
+                  <td>${fmtFecha(it.FechaInicio) || '-'}</td>
+                  <td>${fmtFecha(it.FechaFin) || '-'}</td>
+                </tr>
+              `).join('');
+
+                $tb.html(rows);
+            }
+
+            // Helpers
+            function fmtFecha(val) {
+                if (!val) return '';
+                // el controller está enviando DateTime/strings del repo;
+                // soporta "yyyy-MM-dd" o ISO. Si llega "dd/MM", ajusta aquí.
+                const d = new Date(val);
+                if (isNaN(d)) return esc(val);
+                return d.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            }
+
+            function esc(t) {
+                if (t == null) return '';
+                const m = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+                return String(t).replace(/[&<>"']/g, s => m[s]);
+            }
+
+            function emptyRow(colspan, text) {
+                return `
+                <tr>
+                  <td colspan="${colspan}">
+                    <div class="empty-state">
+                      <div class="empty-state-icon">📋</div>
+                      <p>${esc(text)}</p>
+                    </div>
+                  </td>
+                </tr>`;
+            }
+
+            function loadingRow(colspan) {
+                return `
+                <tr>
+                  <td colspan="${colspan}">
+                    <div class="loading">
+                      <div class="spinner"></div>
+                      <p>Cargando contratos...</p>
+                    </div>
+                  </td>
+                </tr>`;
+            }
+        })();
+    </script>
+    <script>
+        (function () {
+            'use strict';
+
+            const MODAL = '#modal-nuevo-contrato';
+            const OPEN_BTN = '#fc_crear';
+            const CLOSE_SEL = '[data-modal-close="modal-nuevo-contrato"], #modal-nuevo-contrato .modal-backdrop';
+            const FIRST_FOCUS = '#nc_nombre';
+
+            // Validaciones defensivas para evitar “no hace nada”
+            if (typeof $ === 'undefined') { console.error('jQuery no está cargado.'); return; }
+            if (!document.querySelector(MODAL)) { console.error('No existe el modal en el DOM.'); return; }
+            if (!document.querySelector(OPEN_BTN)) { console.error('No existe el botón #fc_crear.'); }
+
+            function openModal(e) {
+                if (e) e.preventDefault();
+                const $m = $(MODAL);
+                $m.addClass('is-open').attr('aria-hidden', 'false');
+                $('body').addClass('no-scroll');
+                setTimeout(() => $(FIRST_FOCUS).trigger('focus'), 0);
+            }
+
+            function closeModal(e) {
+                if (e) e.preventDefault();
+                const $m = $(MODAL);
+                $m.removeClass('is-open').attr('aria-hidden', 'true');
+                $('body').removeClass('no-scroll');
+            }
+
+            // Delegados: funcionan aunque el DOM cambie
+            $(document).on('click', OPEN_BTN, openModal);
+            $(document).on('click', CLOSE_SEL, closeModal);
+            $(document).on('keydown', e => {
+                if (e.key === 'Escape' && $(MODAL).hasClass('is-open')) closeModal();
+            });
+        })();
+    </script>
+
+}

@@ -100,14 +100,12 @@ namespace capa_aplicacion.Servicios
                 accesoSQLServer.CerrarConexion();
             }
         }
-
-        // ✅ CONSULTAR TODOS LOS CONTRATOS
-        public List<ContratoDTO> ConsultarTodosLosContratos()
+        public List<ContratoDTO> ListarContratoTrabajador()
         {
             accesoSQLServer.AbrirConexion();
             try
             {
-                throw new NotImplementedException("Implementar consulta general de contratos en la capa de persistencia.");
+                return contratosRepo.ListarContratoTrabajador();
             }
             finally
             {
@@ -115,5 +113,8 @@ namespace capa_aplicacion.Servicios
             }
         }
 
+
     }
+
+
 }

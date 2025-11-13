@@ -1,0 +1,93 @@
+﻿.tabla-contratos-container {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.tabla-contratos-filtros {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.input-busqueda {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+}
+
+.select-filtro {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ccc;
+}
+
+.tabla-contratos {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .tabla-contratos thead {
+        background: #f9fafb;
+        text-align: left;
+    }
+
+    .tabla-contratos th,
+    .tabla-contratos td {
+        padding: 0.8rem;
+        border-bottom: 1px solid #eee;
+    }
+
+.empleado-info {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.empleado-foto {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.empleado-nombre {
+    font-weight: 600;
+}
+
+.empleado-correo {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.btn-nuevo-contrato {
+    background: #2563EB;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.tabla-paginacion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.btn-pagina {
+    border: 1px solid #ccc;
+    background: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 0.3rem;
+    cursor: pointer;
+}
+
+    .btn-pagina.activa {
+        background: #2563EB;
+        color: white;
+        border-color: #2563EB;
+    }
