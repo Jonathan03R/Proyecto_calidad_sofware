@@ -20,19 +20,30 @@ namespace capa_persistencia.modulo_principal
         public List<Area> ObtenerAreas()
         {
             List<Area> areas = new List<Area>();
-            var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_areas_trabajo");
 
-            using (var reader = comando.ExecuteReader())
+            try
             {
-                while (reader.Read())
+                var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_areas_trabajo");
+
+                using (var reader = comando.ExecuteReader())
                 {
-                    areas.Add(new Area
+                    while (reader.Read())
                     {
-                        AreaId = Convert.ToInt32(reader["AreaId"]),
-                        AreaNombre = reader["NombreArea"].ToString()
-                    });
+                        areas.Add(new Area
+                        {
+                            AreaId = Convert.ToInt32(reader["area_id"]),
+                            AreaNombre = reader["area_nombre"].ToString(),
+                            AreaDescripcion = reader["area_descripcion"].ToString(),
+                        });
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener las áreas: {ex.Message}");
+                throw new Exception("Ocurrió un error al obtener las áreas de trabajo.", ex);
+            }
+
             return areas;
         }
     }

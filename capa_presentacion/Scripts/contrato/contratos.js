@@ -1,20 +1,14 @@
-﻿// ============================
-// CONTRATOS.JS - 💙
-// ============================
-(function () {
+﻿(function () {
     'use strict';
 
-    // ---------- Config desde la vista ----------
     const $page = $('#page-contratos');
     const URLS = {
         listarActivos: $page.data('url-listar-activos'),
         listarSin: $page.data('url-listar-sin')
     };
 
-    // ---------- Caché ----------
     const Cache = { activos: [], sin: [] };
 
-    // ---------- Utils ----------
     const norm = s => (s ?? '').toString()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         .toLowerCase().trim();
@@ -27,17 +21,18 @@
         const d = new Date(v);
         return isNaN(d) ? String(v) : d.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' });
     };
+
     const esc = t => {
         if (t == null) return '';
         const m = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
         return String(t).replace(/[&<>"']/g, s => m[s]);
     };
+
     const emptyRow = (c, t) => `<tr><td colspan="${c}"><div class="empty-state"><div class="empty-state-icon">📋</div><p>${esc(t)}</p></div></td></tr>`;
     const loadingRow = (c) => `<tr><td colspan="${c}"><div class="loading"><div class="spinner"></div><p>Cargando...</p></div></td></tr>`;
 
     const tabActiva = () => $('.tab-btn.is-active').data('tab') || 'activos';
 
-    // ---------- Render ----------
     function renderActivos(items) {
         const $tb = $('#tbody-contratos');
         if (!items.length) {
@@ -75,38 +70,33 @@
         $('#txt-total-sin').text(`${items.length} sin contrato`);
     }
 
-    // ---------- Carga desde servidor (guarda en caché) ----------
     function cargarActivos() {
         const $tb = $('#tbody-contratos');
         $tb.html(loadingRow(6));
-        $('#txt-total').text(''); $('#paginador').empty();
-
+        $('#txt-total').text('');
         $.get(URLS.listarActivos, resp => {
             if (!resp || !resp.consultaExitosa) {
                 $tb.html(emptyRow(6, resp?.mensaje || 'No se pudieron obtener los contratos activos'));
                 return;
             }
-            Cache.activos = resp.data || [];        
-            aplicarFiltro();                       
+            Cache.activos = resp.data || [];
+            aplicarFiltro();
         }).fail(() => $tb.html(emptyRow(6, 'Error de conexión')));
     }
 
     function cargarSin() {
         const $tb = $('#tbody-sin-contrato');
         $tb.html(loadingRow(3));
-        $('#txt-total-sin').text('');
-
         $.get(URLS.listarSin, resp => {
             if (!resp || !resp.consultaExitosa) {
                 $tb.html(emptyRow(3, resp?.mensaje || 'No se pudo obtener la lista'));
                 return;
             }
-            Cache.sin = resp.data || [];            
-            aplicarFiltro();                         
+            Cache.sin = resp.data || [];
+            aplicarFiltro();
         }).fail(() => $tb.html(emptyRow(3, 'Error de conexión')));
     }
 
-    // ---------- Filtro ----------
     function aplicarFiltro() {
         const qn = norm($('#fc_query').val());
         if (tabActiva() === 'activos') {
@@ -116,9 +106,8 @@
         }
     }
 
-    // ---------- Eventos ----------
     $(document).on('click', '.tab-btn', function () {
-        const tab = $(this).data('tab');          
+        const tab = $(this).data('tab');
         $('.tab-btn').removeClass('is-active');
         $(this).addClass('is-active');
         $('.tab-panel').removeClass('is-active');
@@ -127,26 +116,23 @@
     });
 
     $(document).on('click', '#fc_filtrar', aplicarFiltro);
-    $(document).on('keydown', '#fc_query', e => { if (e.key === 'Enter') { e.preventDefault(); aplicarFiltro(); } });
 
     let t;
     $(document).on('input', '#fc_query', function () {
-        clearTimeout(t); t = setTimeout(aplicarFiltro, 150);  
+        clearTimeout(t);
+        t = setTimeout(aplicarFiltro, 150);
     });
 
     $(document).on('reset', '#form-filtros-contratos', () => setTimeout(aplicarFiltro, 0));
 
-    // ---------- Primera carga ----------
     $(function () { cargarActivos(); });
 
-    // (Opcional) expone funciones por si luego quieres recargar desde otro script
     window.ContratosUI = { recargarActivos: cargarActivos, recargarSin: cargarSin };
 
-    // ===== Modal helpers =====
     function openModal(id) {
         const $m = $('#' + id);
         $m.attr('aria-hidden', 'false').addClass('is-open');
-        $('body').addClass('modal-open'); // evita scroll del body (si tienes estilos)
+        $('body').addClass('modal-open');
     }
     function closeModal(id) {
         const $m = $('#' + id);
@@ -154,45 +140,39 @@
         $('body').removeClass('modal-open');
     }
 
-    // Cerrar por click en [data-modal-close] o backdrop
     $(document).on('click', '[data-modal-close]', function () {
         closeModal($(this).data('modal-close'));
     });
+
     $(document).on('click', '#modal-nuevo-contrato .modal-backdrop', function () {
         closeModal('modal-nuevo-contrato');
     });
-    // Cerrar con ESC
+
     $(document).on('keydown', function (e) {
         if (e.key === 'Escape') closeModal('modal-nuevo-contrato');
     });
 
-    // ===== Abrir "Nuevo Contrato" desde la lista de SIN contrato =====
-    // Nota: tus filas ya tienen <button class="btn btn-primary" data-trabid="...">
     $(document).on('click', '#tbody-sin-contrato [data-trabid]', function () {
         const id = Number($(this).data('trabid'));
-
-        // Busca al trabajador en cache (Cache.sin lo llenas cuando cargas "sin contrato")
-        const item = (Cache.sin || []).find(x => Number(x.TrabajadorId) === id);
-        if (!item) return;
-
-        // Prellenar campos
-        $('#nc_trabajador_id').val(id);
-        $('#nc_nombre').val(item.EmpleadoNombre || '');
-        $('#nc_dni').val(item.Documento || '');
-
-        // (Opcional) limpia otros campos del modal
-        $('#nc_cargo').val('');
-        $('#nc_domicilio').val('');
-        $('#nc_fecha_inicio').val('');
-        $('#nc_fecha_fin').val('');
-        $('#nc_hora_inicio').val('');
-        $('#nc_hora_fin').val('');
-        $('#nc_remuneracion').val('');
-        $('#nc_mensaje').text('');
-
-        // Abrir modal y enfocar
-        openModal('modal-nuevo-contrato');
-        setTimeout(() => $('#nc_cargo').trigger('focus'), 50);
+        abrirModalNuevoContrato(id);
     });
 
+    function abrirModalNuevoContrato(trabajadorId) {
+        $.getJSON('/Contratos/ObtenerDatosNuevoContrato', { trabajadorId: trabajadorId }, function (r) {
+
+            if (!r.success) {
+                alert("Error: " + r.mensaje);
+                return;
+            }
+
+            let d = r.data;
+
+            $('#nc_trabajador_id').val(d.Trabajador.TrabajadorId);
+            $('#nc_nombre').val(d.Trabajador.NombreCompleto);
+            $('#nc_dni').val(d.Trabajador.Documento);
+            $('#nc_domicilio').val(d.Trabajador.Direccion);
+
+            openModal('modal-nuevo-contrato');
+        });
+    }
 })();
