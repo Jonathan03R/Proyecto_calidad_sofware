@@ -569,10 +569,11 @@
     <Content Include="Views\GenerarReporte\_EstadoVacio.cshtml" />
     <Content Include="Views\GenerarReporte\_DetallesTrabajador.cshtml" />
     <Content Include="Views\Contratos\_CardResumenContratos.cshtml" />
-    <Content Include="Views\Contratos\_TablaContratos.cshtml" />
     <Content Include="Views\Contratos\_ModalNuevoContrato.cshtml" />
     <Content Include="Views\Contratos\_FiltrosContratos.cshtml" />
     <Content Include="Views\Contratos\Index.cshtml" />
+    <Content Include="Views\Contratos\_TablaActivos.cshtml" />
+    <Content Include="Views\Contratos\_TablaSinContrato.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -161,6 +161,8 @@ namespace capa_persistencia.modulo_principal
 
             return contratos;
         }
+
+        // CONSULTAR TRABAJADORES CON CONTRATOS ACTVOS
         public List<ContratoDTO> ListarConContratoActivo()
         {
             var lista = new List<ContratoDTO>();
@@ -196,6 +198,45 @@ namespace capa_persistencia.modulo_principal
 
             return lista;
         }
+
+
+        // CONSULTAR TRABAJADORES SIN CONTRATOS
+        public List<ContratoDTO> ListarSinContratoActivo()
+        {
+            var lista = new List<ContratoDTO>();
+            try
+            {
+                _accesoSQL.AbrirConexion();
+                var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("Personal.proc_obtener_personas_sin_contrato_activo");
+
+                using (var dr = cmd.ExecuteReader())
+                {
+                    int iTrabId = dr.GetOrdinal("trabajador_id");
+                    int iAp = dr.GetOrdinal("persona_apellido");
+                    int iNom = dr.GetOrdinal("persona_nombre");
+                    int iDoc = dr.GetOrdinal("persona_identificacion");
+                    int iEstado = dr.GetOrdinal("EstadoContrato"); 
+
+                    while (dr.Read())
+                    {
+                        string ap = dr.IsDBNull(iAp) ? "" : dr.GetString(iAp);
+                        string no = dr.IsDBNull(iNom) ? "" : dr.GetString(iNom);
+
+                        lista.Add(new ContratoDTO
+                        {
+                            TrabajadorId = dr.IsDBNull(iTrabId) ? (int?)null : dr.GetInt32(iTrabId),
+                            EmpleadoNombre = (ap + " " + no).Trim(),
+                            Documento = dr.IsDBNull(iDoc) ? "" : dr.GetString(iDoc),
+                            EstadoContratoNombre = dr.IsDBNull(iEstado) ? "" : dr.GetString(iEstado)
+                        });
+                    }
+                }
+            }
+            finally { _accesoSQL.CerrarConexion(); }
+
+            return lista;
+        }
+
 
 
 

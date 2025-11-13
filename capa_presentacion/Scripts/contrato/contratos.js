@@ -1,265 +1,198 @@
-﻿// ============================================
-// GESTIÓN DE CONTRATOS - JAVASCRIPT
-// ============================================
+﻿// ============================
+// CONTRATOS.JS - 💙
+// ============================
+(function () {
+    'use strict';
 
-// Función para abrir el modal
-function abrirModal(titulo) {
-    document.getElementById('modalTitulo').innerHTML = titulo;
-    document.getElementById('modalLista').style.display = 'block';
-    document.getElementById('loadingSpinner').style.display = 'block';
-    document.getElementById('modalContenido').innerHTML = '';
-}
+    // ---------- Config desde la vista ----------
+    const $page = $('#page-contratos');
+    const URLS = {
+        listarActivos: $page.data('url-listar-activos'),
+        listarSin: $page.data('url-listar-sin')
+    };
 
-// Función para cerrar el modal
-function cerrarModal() {
-    document.getElementById('modalLista').style.display = 'none';
-}
+    // ---------- Caché ----------
+    const Cache = { activos: [], sin: [] };
 
-// Cerrar modal al hacer clic fuera de él
-window.onclick = function (event) {
-    const modal = document.getElementById('modalLista');
-    if (event.target == modal) {
-        cerrarModal();
+    // ---------- Utils ----------
+    const norm = s => (s ?? '').toString()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase().trim();
+
+    const coincide = (it, qn) => !qn ||
+        norm(it.EmpleadoNombre).includes(qn) || norm(it.Documento).includes(qn);
+
+    const fmtFecha = v => {
+        if (!v) return '';
+        const d = new Date(v);
+        return isNaN(d) ? String(v) : d.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    };
+    const esc = t => {
+        if (t == null) return '';
+        const m = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return String(t).replace(/[&<>"']/g, s => m[s]);
+    };
+    const emptyRow = (c, t) => `<tr><td colspan="${c}"><div class="empty-state"><div class="empty-state-icon">📋</div><p>${esc(t)}</p></div></td></tr>`;
+    const loadingRow = (c) => `<tr><td colspan="${c}"><div class="loading"><div class="spinner"></div><p>Cargando...</p></div></td></tr>`;
+
+    const tabActiva = () => $('.tab-btn.is-active').data('tab') || 'activos';
+
+    // ---------- Render ----------
+    function renderActivos(items) {
+        const $tb = $('#tbody-contratos');
+        if (!items.length) {
+            $tb.html(emptyRow(6, 'Sin contratos activos'));
+            $('#txt-total').text('0');
+            return;
+        }
+        const rows = items.map(it => `
+      <tr>
+        <td><p class="empleado-nombre">${esc(it.EmpleadoNombre)}</p></td>
+        <td>${esc(it.Documento)}</td>
+        <td>${esc(it.CargoNombre || '')}</td>
+        <td>${esc(it.EstadoContratoNombre || '')}</td>
+        <td>${fmtFecha(it.FechaInicio) || '-'}</td>
+        <td>${fmtFecha(it.FechaFin) || '-'}</td>
+      </tr>`).join('');
+        $tb.html(rows);
+        $('#txt-total').text(`${items.length} registro(s)`);
     }
-}
 
-// Función para ocultar el loading
-function ocultarLoading() {
-    document.getElementById('loadingSpinner').style.display = 'none';
-}
+    function renderSin(items) {
+        const $tb = $('#tbody-sin-contrato');
+        if (!items.length) {
+            $tb.html(emptyRow(3, 'No hay empleados sin contrato'));
+            $('#txt-total-sin').text('0');
+            return;
+        }
+        const rows = items.map(it => `
+      <tr>
+        <td>${esc(it.EmpleadoNombre)}</td>
+        <td>${esc(it.Documento)}</td>
+        <td><button class="btn btn-primary" data-trabid="${it.TrabajadorId}">Nuevo Contrato</button></td>
+      </tr>`).join('');
+        $tb.html(rows);
+        $('#txt-total-sin').text(`${items.length} sin contrato`);
+    }
 
-// Función para mostrar error
-function mostrarError(mensaje) {
-    ocultarLoading();
-    document.getElementById('modalContenido').innerHTML = `
-        <div style="text-align: center; padding: 40px; color: #d9534f;">
-            <h3>❌ Error</h3>
-            <p>${mensaje}</p>
-        </div>
-    `;
-}
+    // ---------- Carga desde servidor (guarda en caché) ----------
+    function cargarActivos() {
+        const $tb = $('#tbody-contratos');
+        $tb.html(loadingRow(6));
+        $('#txt-total').text(''); $('#paginador').empty();
 
-// ============================================
-// VER LISTA DE TRABAJADORES
-// ============================================
-function verListaTrabajadores() {
-    abrirModal('👥 Listado de Trabajadores');
-
-    fetch('/Contratos/ObtenerTrabajadores')
-        .then(response => response.json())
-        .then(data => {
-            ocultarLoading();
-            if (data.success) {
-                if (data.data.length === 0) {
-                    document.getElementById('modalContenido').innerHTML = `
-                        <div style="text-align: center; padding: 40px; color: #999;">
-                            <p>📭 No hay trabajadores registrados</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                let html = '<table class="data-table"><thead><tr>';
-                html += '<th>ID</th>';
-                html += '<th>Nombre Completo</th>';
-                html += '</tr></thead><tbody>';
-
-                data.data.forEach(trabajador => {
-                    html += '<tr>';
-                    html += `<td>${trabajador.TrabajadorId}</td>`;
-                    html += `<td>${trabajador.NombreCompleto}</td>`;
-                    html += '</tr>';
-                });
-
-                html += '</tbody></table>';
-                document.getElementById('modalContenido').innerHTML = html;
-            } else {
-                mostrarError(data.message);
+        $.get(URLS.listarActivos, resp => {
+            if (!resp || !resp.consultaExitosa) {
+                $tb.html(emptyRow(6, resp?.mensaje || 'No se pudieron obtener los contratos activos'));
+                return;
             }
-        })
-        .catch(error => {
-            mostrarError('Error al cargar los trabajadores: ' + error);
-        });
-}
+            Cache.activos = resp.data || [];        
+            aplicarFiltro();                       
+        }).fail(() => $tb.html(emptyRow(6, 'Error de conexión')));
+    }
 
-// ============================================
-// VER LISTA DE ÁREAS
-// ============================================
-function verListaAreas() {
-    abrirModal('🏢 Áreas de la Empresa');
+    function cargarSin() {
+        const $tb = $('#tbody-sin-contrato');
+        $tb.html(loadingRow(3));
+        $('#txt-total-sin').text('');
 
-    fetch('/Contratos/ObtenerAreas')
-        .then(response => response.json())
-        .then(data => {
-            ocultarLoading();
-            if (data.success) {
-                if (data.data.length === 0) {
-                    document.getElementById('modalContenido').innerHTML = `
-                        <div style="text-align: center; padding: 40px; color: #999;">
-                            <p>📭 No hay áreas registradas</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                let html = '<table class="data-table"><thead><tr>';
-                html += '<th>ID</th>';
-                html += '<th>Nombre del Área</th>';
-                html += '</tr></thead><tbody>';
-
-                data.data.forEach(area => {
-                    html += '<tr>';
-                    html += `<td>${area.AreaId}</td>`;
-                    html += `<td>${area.NombreArea}</td>`;
-                    html += '</tr>';
-                });
-
-                html += '</tbody></table>';
-                document.getElementById('modalContenido').innerHTML = html;
-            } else {
-                mostrarError(data.message);
+        $.get(URLS.listarSin, resp => {
+            if (!resp || !resp.consultaExitosa) {
+                $tb.html(emptyRow(3, resp?.mensaje || 'No se pudo obtener la lista'));
+                return;
             }
-        })
-        .catch(error => {
-            mostrarError('Error al cargar las áreas: ' + error);
-        });
-}
+            Cache.sin = resp.data || [];            
+            aplicarFiltro();                         
+        }).fail(() => $tb.html(emptyRow(3, 'Error de conexión')));
+    }
 
-// ============================================
-// VER LISTA DE CARGOS
-// ============================================
-function verListaCargos() {
-    abrirModal('💼 Cargos Disponibles');
+    // ---------- Filtro ----------
+    function aplicarFiltro() {
+        const qn = norm($('#fc_query').val());
+        if (tabActiva() === 'activos') {
+            renderActivos((Cache.activos || []).filter(x => coincide(x, qn)));
+        } else {
+            renderSin((Cache.sin || []).filter(x => coincide(x, qn)));
+        }
+    }
 
-    fetch('/Contratos/ObtenerCargos')
-        .then(response => response.json())
-        .then(data => {
-            ocultarLoading();
-            if (data.success) {
-                if (data.data.length === 0) {
-                    document.getElementById('modalContenido').innerHTML = `
-                        <div style="text-align: center; padding: 40px; color: #999;">
-                            <p>📭 No hay cargos registrados</p>
-                        </div>
-                    `;
-                    return;
-                }
+    // ---------- Eventos ----------
+    $(document).on('click', '.tab-btn', function () {
+        const tab = $(this).data('tab');          
+        $('.tab-btn').removeClass('is-active');
+        $(this).addClass('is-active');
+        $('.tab-panel').removeClass('is-active');
+        $('#tab-' + tab).addClass('is-active');
+        tab === 'activos' ? cargarActivos() : cargarSin();
+    });
 
-                let html = '<table class="data-table"><thead><tr>';
-                html += '<th>ID</th>';
-                html += '<th>Nombre del Cargo</th>';
-                html += '</tr></thead><tbody>';
+    $(document).on('click', '#fc_filtrar', aplicarFiltro);
+    $(document).on('keydown', '#fc_query', e => { if (e.key === 'Enter') { e.preventDefault(); aplicarFiltro(); } });
 
-                data.data.forEach(cargo => {
-                    html += '<tr>';
-                    html += `<td>${cargo.CargoId}</td>`;
-                    html += `<td>${cargo.NombreCargo}</td>`;
-                    html += '</tr>';
-                });
+    let t;
+    $(document).on('input', '#fc_query', function () {
+        clearTimeout(t); t = setTimeout(aplicarFiltro, 150);  
+    });
 
-                html += '</tbody></table>';
-                document.getElementById('modalContenido').innerHTML = html;
-            } else {
-                mostrarError(data.message);
-            }
-        })
-        .catch(error => {
-            mostrarError('Error al cargar los cargos: ' + error);
-        });
-}
+    $(document).on('reset', '#form-filtros-contratos', () => setTimeout(aplicarFiltro, 0));
 
-// ============================================
-// VER LISTA DE TIPOS DE PENSIÓN
-// ============================================
-function verListaPensiones() {
-    abrirModal('💰 Tipos de Pensión');
+    // ---------- Primera carga ----------
+    $(function () { cargarActivos(); });
 
-    fetch('/Contratos/ObtenerTiposPension')
-        .then(response => response.json())
-        .then(data => {
-            ocultarLoading();
-            if (data.success) {
-                if (data.data.length === 0) {
-                    document.getElementById('modalContenido').innerHTML = `
-                        <div style="text-align: center; padding: 40px; color: #999;">
-                            <p>📭 No hay tipos de pensión registrados</p>
-                        </div>
-                    `;
-                    return;
-                }
+    // (Opcional) expone funciones por si luego quieres recargar desde otro script
+    window.ContratosUI = { recargarActivos: cargarActivos, recargarSin: cargarSin };
 
-                let html = '<table class="data-table"><thead><tr>';
-                html += '<th>ID</th>';
-                html += '<th>Tipo de Pensión</th>';
-                html += '</tr></thead><tbody>';
+    // ===== Modal helpers =====
+    function openModal(id) {
+        const $m = $('#' + id);
+        $m.attr('aria-hidden', 'false').addClass('is-open');
+        $('body').addClass('modal-open'); // evita scroll del body (si tienes estilos)
+    }
+    function closeModal(id) {
+        const $m = $('#' + id);
+        $m.attr('aria-hidden', 'true').removeClass('is-open');
+        $('body').removeClass('modal-open');
+    }
 
-                data.data.forEach(pension => {
-                    html += '<tr>';
-                    html += `<td>${pension.TipoPensionId}</td>`;
-                    html += `<td>${pension.NombreTipo}</td>`;
-                    html += '</tr>';
-                });
+    // Cerrar por click en [data-modal-close] o backdrop
+    $(document).on('click', '[data-modal-close]', function () {
+        closeModal($(this).data('modal-close'));
+    });
+    $(document).on('click', '#modal-nuevo-contrato .modal-backdrop', function () {
+        closeModal('modal-nuevo-contrato');
+    });
+    // Cerrar con ESC
+    $(document).on('keydown', function (e) {
+        if (e.key === 'Escape') closeModal('modal-nuevo-contrato');
+    });
 
-                html += '</tbody></table>';
-                document.getElementById('modalContenido').innerHTML = html;
-            } else {
-                mostrarError(data.message);
-            }
-        })
-        .catch(error => {
-            mostrarError('Error al cargar los tipos de pensión: ' + error);
-        });
-}
+    // ===== Abrir "Nuevo Contrato" desde la lista de SIN contrato =====
+    // Nota: tus filas ya tienen <button class="btn btn-primary" data-trabid="...">
+    $(document).on('click', '#tbody-sin-contrato [data-trabid]', function () {
+        const id = Number($(this).data('trabid'));
 
-// ============================================
-// VER LISTA DE ESTADOS DE CONTRATO
-// ============================================
-function verListaEstados() {
-    abrirModal('📊 Estados de Contrato');
+        // Busca al trabajador en cache (Cache.sin lo llenas cuando cargas "sin contrato")
+        const item = (Cache.sin || []).find(x => Number(x.TrabajadorId) === id);
+        if (!item) return;
 
-    fetch('/Contratos/ObtenerEstadosContrato')
-        .then(response => response.json())
-        .then(data => {
-            ocultarLoading();
-            if (data.success) {
-                if (data.data.length === 0) {
-                    document.getElementById('modalContenido').innerHTML = `
-                        <div style="text-align: center; padding: 40px; color: #999;">
-                            <p>📭 No hay estados registrados</p>
-                        </div>
-                    `;
-                    return;
-                }
+        // Prellenar campos
+        $('#nc_trabajador_id').val(id);
+        $('#nc_nombre').val(item.EmpleadoNombre || '');
+        $('#nc_dni').val(item.Documento || '');
 
-                let html = '<table class="data-table"><thead><tr>';
-                html += '<th>ID</th>';
-                html += '<th>Estado</th>';
-                html += '<th>Descripción</th>';
-                html += '</tr></thead><tbody>';
+        // (Opcional) limpia otros campos del modal
+        $('#nc_cargo').val('');
+        $('#nc_domicilio').val('');
+        $('#nc_fecha_inicio').val('');
+        $('#nc_fecha_fin').val('');
+        $('#nc_hora_inicio').val('');
+        $('#nc_hora_fin').val('');
+        $('#nc_remuneracion').val('');
+        $('#nc_mensaje').text('');
 
-                data.data.forEach(estado => {
-                    let badgeClass = 'badge-activo';
-                    switch (estado.EstadoId) {
-                        case 1: badgeClass = 'badge-activo'; break;
-                        case 2: badgeClass = 'badge-finalizado'; break;
-                        case 3: badgeClass = 'badge-suspendido'; break;
-                        case 4: badgeClass = 'badge-inactivo'; break;
-                    }
+        // Abrir modal y enfocar
+        openModal('modal-nuevo-contrato');
+        setTimeout(() => $('#nc_cargo').trigger('focus'), 50);
+    });
 
-                    html += '<tr>';
-                    html += `<td>${estado.EstadoId}</td>`;
-                    html += `<td><span class="badge ${badgeClass}">${estado.NombreEstado}</span></td>`;
-                    html += `<td>Estado ${estado.NombreEstado.toLowerCase()} del contrato</td>`;
-                    html += '</tr>';
-                });
-
-                html += '</tbody></table>';
-                document.getElementById('modalContenido').innerHTML = html;
-            } else {
-                mostrarError(data.message);
-            }
-        })
-        .catch(error => {
-            mostrarError('Error al cargar los estados: ' + error);
-        });
-}
+})();

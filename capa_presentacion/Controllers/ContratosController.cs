@@ -16,7 +16,7 @@ namespace capa_presentacion.Controllers
             servicio = new ServicioContratos();
         }
 
-        // ✅ Página principal
+        // Página principal
         public ActionResult Index()
         {
             try
@@ -31,7 +31,7 @@ namespace capa_presentacion.Controllers
             }
         }
 
-        // ✅ Nuevo método para listar los contratos de trabajadores
+        // ✅ Nuevo método para listar los contratos de trabajadores actvos
         [HttpGet]
         public JsonResult ListarActivos()
         {
@@ -51,6 +51,28 @@ namespace capa_presentacion.Controllers
             catch (Exception ex)
             {
                 return Json(new { consultaExitosa = false, mensaje = ex.ToString() }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        // ✅ Nuevo método para listar trabajdores sin contratos
+
+        [HttpGet]
+        public JsonResult ListarSinContrato()
+        {
+            try
+            {
+                var data = servicio.ListarSinContratoActivo();
+                var resultado = data.Select(x => new {
+                    TrabajadorId = x.TrabajadorId,
+                    EmpleadoNombre = x.EmpleadoNombre,
+                    Documento = x.Documento,
+                    EstadoContratoNombre = x.EstadoContratoNombre
+                });
+                return Json(new { consultaExitosa = true, data = resultado }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { consultaExitosa = false, mensaje = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
 

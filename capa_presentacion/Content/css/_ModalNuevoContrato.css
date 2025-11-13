@@ -73,6 +73,13 @@
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    padding-top:1rem;
+}
+hr.modal-sep {
+    border: none;
+    height: 1px; /* Grosor de la línea */
+    background-color: #e5e7eb; /* Color de la línea (gris claro) */
+    margin: 15px 0; /* Espaciado superior e inferior */
 }
 
 .form-field {

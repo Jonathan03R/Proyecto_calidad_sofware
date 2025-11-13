@@ -1,30 +1,49 @@
 ﻿@model IEnumerable<capa_presentacion.Models.Mock.MenuItem>
-
 @{
     var action = (string)ViewContext.RouteData.Values["action"];
+    var controller = (string)ViewContext.RouteData.Values["controller"];
 }
 
-<style>
-    
-</style>
-<aside id="sidebar">
+<aside id="sidebar" class="navbar">
+    <!-- HEADER DENTRO DEL SIDEBAR -->
+    <div class="sidebar-header">
+        <img src="~/Content/img/icons/LogoPrincipal.svg" alt="Logo" class="brand-icon" />
+        <div class="texto-cabecera">
+            <a href="@Url.Action("Index","Nomina")" class="navbar-brand">GRUPO-02</a>
+            <a href="@Url.Action("Index","Nomina")" class="navbar-brand2">Sistema de Nómina</a>
+        </div>
+    </div>
     <nav class="navbar-links">
         @foreach (var item in Model)
         {
             if (item.SubItems.Any())
             {
-                <div class="nav-sub">
-                    <button type="button" class="nav-sub-toggle" aria-expanded="false">
-                        <img src="@Url.Content(item.Icono)" alt="@item.Titulo" class="icon" />
+                var isOpen = item.SubItems.Any(s =>
+                    s.Controlador.Equals(controller, StringComparison.OrdinalIgnoreCase) &&
+                    (string.IsNullOrEmpty(s.Accion) || s.Accion.Equals(action, StringComparison.OrdinalIgnoreCase))
+                );
+
+                <div class="nav-sub @(isOpen ? "open" : "")">
+                    <button type="button"
+                            class="nav-sub-toggle"
+                            aria-expanded="@(isOpen ? "true" : "false")"
+                            title="@item.Titulo">
+                        <img src="@Url.Content(item.Icono)" alt="" class="icon" />
                         <span>@item.Titulo</span>
                         <span class="chev">▾</span>
                     </button>
+
                     <div class="nav-sub-menu">
                         @foreach (var sub in item.SubItems)
                         {
+                            var isCurrentSub =
+                                sub.Controlador.Equals(controller, StringComparison.OrdinalIgnoreCase) &&
+                                sub.Accion.Equals(action, StringComparison.OrdinalIgnoreCase);
+
                             <a href="@Url.Action(sub.Accion, sub.Controlador)"
-                               class="nav-sub-item @(action == sub.Accion ? "current" : "")">
-                                @sub.Titulo
+                               class="nav-sub-item @(isCurrentSub ? "current" : "")"
+                               title="@sub.Titulo">
+                                <span>@sub.Titulo</span>
                             </a>
                         }
                     </div>
@@ -32,29 +51,17 @@
             }
             else
             {
+                var isCurrentTop =
+                    item.Controlador.Equals(controller, StringComparison.OrdinalIgnoreCase) &&
+                    (string.IsNullOrEmpty(item.Accion) || item.Accion.Equals(action, StringComparison.OrdinalIgnoreCase));
+
                 <a href="@Url.Action(item.Accion, item.Controlador)"
-                   class="@(action == item.Accion ? "active" : "")">
-                    <img src="@Url.Content(item.Icono)" alt="@item.Titulo" class="icon" />
-                    @item.Titulo
+                   class="@(isCurrentTop ? "active" : "")"
+                   title="@item.Titulo">
+                    <img src="@Url.Content(item.Icono)" alt="" class="icon" />
+                    <span>@item.Titulo</span>
                 </a>
             }
         }
     </nav>
 </aside>
-    <script>
-        // Control de submenús desplegables
-        document.querySelectorAll('.nav-sub-toggle').forEach(btn => {
-            btn.addEventListener('click', e => {
-                const sub = btn.closest('.nav-sub');
-                const isOpen = sub.classList.contains('open');
-                document.querySelectorAll('.nav-sub').forEach(s => s.classList.remove('open'));
-                if (!isOpen) sub.classList.add('open');
-            });
-        });
-
-        document.addEventListener('click', e => {
-            if (!e.target.closest('.nav-sub')) {
-                document.querySelectorAll('.nav-sub').forEach(s => s.classList.remove('open'));
-            }
-        });
-    </script>
