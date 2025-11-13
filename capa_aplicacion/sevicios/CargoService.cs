@@ -25,26 +25,31 @@ namespace capa_aplicacion.sevicios
         public List<Cargo> ObtenerCargos(int? cargoId = null, string cargoNombre = null)
         {
             List<Cargo> listaCargo;
+
             try
             {
+                // 🔹 IMPORTANTE: abrir conexión
+                conexion.AbrirConexion();
+
                 listaCargo = cargosDAO.ObtenerCargos();
 
                 if (cargoId.HasValue)
-                {
                     listaCargo = listaCargo.Where(c => c.CargoId == cargoId.Value).ToList();
-                }
 
                 if (!string.IsNullOrEmpty(cargoNombre))
-                {
                     listaCargo = listaCargo.Where(c => c.CargoNombre.Contains(cargoNombre)).ToList();
-                }
             }
             catch (Exception ex)
             {
-                // ✅ NO vuelvas a lanzar la excepción sin mostrar el error real
                 System.Diagnostics.Debug.WriteLine("Error en CargoService: " + ex.ToString());
-                throw;  // ← Cambia "throw ex;" por solo "throw" para mantener el stack trace
+                throw; // mantiene el stack trace
             }
+            finally
+            {
+                // 🔹 IMPORTANTE: cerrar conexión
+                conexion.CerrarConexion();
+            }
+
             return listaCargo;
         }
     }

@@ -1,9 +1,31 @@
 ﻿.modal-parametros {
-    display: flex;
+    position: fixed;
+    inset: 0;
+    display: none; /* oculto por defecto */
+    align-items: center;
     justify-content: center;
+    z-index: 999;
     background-color: #F9FAFB;
 }
-
+    .modal-parametros.is-open {
+        display: flex; /* se muestra cuando agregamos la clase */
+    }
+    .modal-parametros .modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+    }
+    .modal-parametros .modal-content {
+        position: relative;
+        z-index: 1;
+        max-width: 960px;
+        max-height: 90vh;
+        overflow: auto;
+        background-color: #FFFFFF;
+        border-radius: 10px;
+        padding: 20px 24px;
+        box-shadow: 0 25px 50px rgba(15,23,42,.35);
+    }
 .modal-header {
     display: flex;
     justify-content: space-between;

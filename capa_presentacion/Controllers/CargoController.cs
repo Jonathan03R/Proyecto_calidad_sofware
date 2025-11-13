@@ -25,30 +25,45 @@ namespace capa_presentacion.Controllers
             return View();
         }
 
+        //[HttpGet]
+        //public JsonResult ObtenerCargos(int? cargoId = null, string cargoNombre = null)
+        //{
+        //    Boolean accionExitosa;
+        //    String mensajeRetorno;
+        //    List<Cargo> listaCargo = new List<Cargo>();
+        //    try
+        //    {
+        //        listaCargo = cargoService.ObtenerCargos(cargoId, cargoNombre);
+        //        accionExitosa = true;
+        //        mensajeRetorno = "";
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        listaCargo = null;
+        //        accionExitosa = false;
+        //        mensajeRetorno = e.Message;
+
+        //        System.Diagnostics.Debug.WriteLine("Error completo: " + e.ToString());
+        //    }
+
+        //    return Json(new { data = listaCargo, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+
+        //}
         [HttpGet]
-        public JsonResult ObtenerCargos(int? cargoId = null, string cargoNombre = null)
+        public JsonResult ObtenerCargos()
         {
-            Boolean accionExitosa;
-            String mensajeRetorno;
-            List<Cargo> listaCargo = new List<Cargo>();
             try
             {
-                listaCargo = cargoService.ObtenerCargos(cargoId, cargoNombre);
-                accionExitosa = true;
-                mensajeRetorno = "";
+                var lista = cargoService.ObtenerCargos();
+                var dto = (lista ?? new List<Cargo>())
+                          .Select(c => new { c.CargoId, c.CargoNombre });
+                return Json(new { consultaExitosa = true, data = dto }, JsonRequestBehavior.AllowGet);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                listaCargo = null;
-                accionExitosa = false;
-                mensajeRetorno = e.Message;
-
-                // ✅ Debug adicional
-                System.Diagnostics.Debug.WriteLine("Error completo: " + e.ToString());
+                return Json(new { consultaExitosa = false, mensaje = ex.Message }, JsonRequestBehavior.AllowGet);
             }
-
-            return Json(new { data = listaCargo, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
-
         }
+
     }
 }

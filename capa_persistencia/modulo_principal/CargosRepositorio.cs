@@ -21,7 +21,6 @@ namespace capa_persistencia.modulo_principal
 
             try
             {
-                conexion.AbrirConexion();
                 var comando = conexion.ObtenerComandoDeProcedimiento("proc_obtener_cargos");
 
                 using (var reader = comando.ExecuteReader())
@@ -41,10 +40,6 @@ namespace capa_persistencia.modulo_principal
             {
 
                 throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CONSULTA);
-            }
-            finally
-            {
-                conexion.CerrarConexion();
             }
 
             return listaCargos;

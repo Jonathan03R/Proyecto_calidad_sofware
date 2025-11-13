@@ -7,13 +7,16 @@
 
 <section id="page-contratos" class="page-contratos"
          data-url-listar-activos="@Url.Action("ListarActivos","Contratos")"
-         data-url-listar-sin="@Url.Action("ListarSinContrato","Contratos")">
+         data-url-listar-sin="@Url.Action("ListarSinContrato","Contratos")"
+         data-url-cargos="@Url.Action("ObtenerCargos","Cargo")"
+         data-url-areas="@Url.Action("ObtenerAreas","Area")">
 
     @Html.Partial("_CardResumenContratos")
     @Html.Partial("_FiltrosContratos")
     @Html.Partial("_TablaActivos")
     @Html.Partial("_TablaSinContrato")
     @Html.Partial("_ModalNuevoContrato")
+
 </section>
 
 <link rel="stylesheet" href="~/Content/css/contratos.css" />
@@ -23,5 +26,7 @@
 <link rel="stylesheet" href="~/Content/css/_ModalNuevoContrato.css" />
 
 @section Scripts{
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script> <!-- importante -->
+
     <script src="~/Scripts/contrato/contratos.js"></script>
 }
