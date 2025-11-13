@@ -1,129 +1,137 @@
-﻿.tabla-contratos-container {
-    background: #fff;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
+﻿
 
-.tabla-contratos-filtros {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.input-busqueda {
-    flex: 1;
-    padding: 0.5rem 1rem;
-    border: 1px solid #ccc;
-    border-radius: 0.5rem;
-}
-
-.select-filtro {
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    border: 1px solid #ccc;
-}
-
+/* ===== Tabla base ===== */
 .tabla-contratos {
     width: 100%;
-    border-collapse: collapse;
-}
-
-    .tabla-contratos thead {
-        background: #f9fafb;
-        text-align: left;
-    }
-
-    .tabla-contratos th,
-    .tabla-contratos td {
-        padding: 0.8rem;
-        border-bottom: 1px solid #eee;
-    }
-
-.empleado-info {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-}
-
-.empleado-foto {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.empleado-nombre {
-    font-weight: 600;
-}
-
-.empleado-correo {
-    font-size: 0.85rem;
-    color: #666;
-}
-
-.btn-nuevo-contrato {
-    background: #2563EB;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-}
-
-.tabla-paginacion {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1rem;
-}
-
-.btn-pagina {
-    border: 1px solid #ccc;
-    background: white;
-    padding: 0.3rem 0.8rem;
-    border-radius: 0.3rem;
-    cursor: pointer;
-}
-
-    .btn-pagina.activa {
-        background: #2563EB;
-        color: white;
-        border-color: #2563EB;
-    }
-
-/*
-.tabs-contratos {
-    display: flex;
-    gap: .5rem;
-    margin: .5rem 0 1rem;
-}
-
-.tab-btn {
-    border: 1px solid #d1d5db;
+    border-collapse: separate; /* permite radios */
+    border-spacing: 0;
     background: #fff;
-    padding: .5rem .9rem;
-    border-radius: .5rem;
-    cursor: pointer;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden; /* redondeado visible */
+    font-size: 14px;
+    padding: 10px;
 }
 
-    .tab-btn.is-active {
+    .tabla-contratos thead th {
+        background: #f9fafb;
+        color: #6b7280;
+        text-align: left;
+        font-weight: 600;
+        padding: 14px 16px;
+        border-bottom: 1px solid #e5e7eb;
+
+    }
+
+    .tabla-contratos tbody td {
+        padding: 16px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+        gap: 1rem;
+
+    }
+
+    .tabla-contratos tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Hover de fila */
+    .tabla-contratos tbody tr:hover {
+        background: #f9fbff;
+    }
+
+/* ===== Columna Empleado (avatar + nombre + correo) ===== */
+.td-empleado {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+}
+
+    .td-empleado .emp-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
+    }
+
+    .td-empleado .emp-name {
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 2px;
+    }
+
+    .td-empleado .emp-mail {
+        color: #6b7280;
+        font-size: 12.5px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 320px;
+    }
+
+/* ===== Columnas numéricas/fechas ===== */
+.td-center {
+    text-align: center;
+    color: #374151;
+}
+
+.td-right {
+    text-align: right;
+}
+
+/* ===== Columna Acciones ===== */
+.td-actions {
+    width: 220px;
+}
+
+    .td-actions .btn {
+        width: 100%;
+    }
+
+/* ===== Pie de tabla: total y paginación ===== */
+.tabla-paginacion, .tabla-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+    padding: 12px 14px;
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    background: #fff;
+}
+
+.tabla-total {
+    color: #6b7280;
+    font-size: 13px;
+    margin: 0;
+}
+
+/* Paginador simple (si usas <button>) */
+.tabla-paginas {
+    display: flex;
+    gap: 6px;
+}
+
+    .tabla-paginas .page-btn {
+        min-width: 36px;
+        height: 32px;
+        padding: 0 10px;
+        border: 1px solid #d1d5db;
+        background: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #374151;
+    }
+
+        .tabla-paginas .page-btn:hover {
+            background: #f3f4f6;
+        }
+
+    .tabla-paginas .is-active {
+        border-color: #2563eb;
         background: #2563eb;
         color: #fff;
-        border-color: #2563eb;
     }
 
-.tab-panel {
-    display: none;
-}
-
-    .tab-panel.is-active {
-        display: block;
-    }
-
-.tabla-footer {
-    margin-top: .5rem;
-    color: #6b7280;
-    font-size: .9rem;
-}
-*/

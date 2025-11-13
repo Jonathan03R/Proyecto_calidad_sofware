@@ -3,19 +3,20 @@
     background: #fff;
     padding: 1rem 1.5rem;
     border-radius: 1rem;
-    margin-bottom: 1.5rem;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 .filtros-contratos {
-    display: flex;
+/*    display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
-    gap: 1rem;
+    gap: 1rem;*/
+    padding:0.5rem ;
 }
 
 .filtro-item {
     display: flex;
+    gap:0.7rem;
     flex-direction: column;
 }
 

@@ -1,105 +1,27 @@
 ﻿@{
     ViewBag.Title = "Contratos";
-    ViewBag.PageTitle = "Gestion de Contratos";
+    ViewBag.PageTitle = "Gestión de Contratos";
     ViewBag.PageSubtitle = "Crear Contratos - " + DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
     ViewBag.PagePeriodo = DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
 }
 
-<section class="page-contratos">
+<section id="page-contratos" class="page-contratos"
+         data-url-listar-activos="@Url.Action("ListarActivos","Contratos")"
+         data-url-listar-sin="@Url.Action("ListarSinContrato","Contratos")">
+
     @Html.Partial("_CardResumenContratos")
-    @Html.Partial("_FiltrosContratos")  <!-- AQUI están los tabs -->
-    @* Paneles debajo *@
-    <div id="tab-activos" class="tab-panel is-active">
-        <table class="tabla-contratos">
-            <thead>
-                <tr>
-                    <th>Empleado</th>
-                    <th>Documento</th>
-                    <th>Cargo</th>
-                    <th>Tipo</th>
-                    <th>Fecha Inicio</th>
-                    <th>Fecha Fin</th>
-                </tr>
-            </thead>
-            <tbody id="tbody-contratos"></tbody>
-        </table>
-        <div class="tabla-paginacion">
-            <p class="tabla-total" id="txt-total"></p>
-            <div class="tabla-paginas" id="paginador"></div>
-        </div>
-    </div>
-
-    <div id="tab-sin" class="tab-panel">
-        <table class="tabla-contratos">
-            <thead>
-                <tr><th>Empleado</th><th>Documento</th><th>Acciones</th></tr>
-            </thead>
-            <tbody id="tbody-sin-contrato"></tbody>
-        </table>
-        <div class="tabla-footer"><span id="txt-total-sin"></span></div>
-    </div>
-
+    @Html.Partial("_FiltrosContratos")
+    @Html.Partial("_TablaActivos")
+    @Html.Partial("_TablaSinContrato")
     @Html.Partial("_ModalNuevoContrato")
 </section>
 
-<!-- CSS: asegúrate que _FiltrosContratos.css va DESPUÉS de Bootstrap/site.css -->
+<link rel="stylesheet" href="~/Content/css/contratos.css" />
 <link rel="stylesheet" href="~/Content/css/_CardResumenContratos.css" />
-<link rel="stylesheet" href="~/Content/css/_FiltrosContratos.css?v=4" />
+<link rel="stylesheet" href="~/Content/css/_FiltrosContratos.css" />
 <link rel="stylesheet" href="~/Content/css/_TablaContratos.css" />
 <link rel="stylesheet" href="~/Content/css/_ModalNuevoContrato.css" />
-<link rel="stylesheet" href="~/Content/css/contratos.css" />
 
-@section Scripts {
-
-    <script>
-  window.ContratosConfig = {
-    urls: { listarActivos: '@Url.Action("ListarActivos","Contratos")' }
-  };
-    </script>
-
-    <script>
-        function fmtFecha(val) { if (!val) return ''; const d = new Date(val); if (isNaN(d)) return val; return d.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
-        function esc(t) { if (t == null) return ''; const m = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }; return String(t).replace(/[&<>"']/g, s => m[s]); }
-        function emptyRow(c, t) { return `<tr><td colspan="${c}"><div class="empty-state"><div class="empty-state-icon">📋</div><p>${esc(t)}</p></div></td></tr>`; }
-        function loadingRow(c) { return `<tr><td colspan="${c}"><div class="loading"><div class="spinner"></div><p>Cargando...</p></div></td></tr>`; }
-
-        function cargarActivos() {
-            const $tb = $('#tbody-contratos');
-            $tb.html(loadingRow(6));
-            $('#txt-total').text(''); $('#paginador').empty();
-
-            $.get(window.ContratosConfig.urls.listarActivos, function (resp) {
-                if (!resp || !resp.consultaExitosa) {
-                    const msg = (resp && resp.mensaje) ? resp.mensaje : 'No se pudieron obtener los contratos activos';
-                    $tb.html(emptyRow(6, msg));
-                    return;
-                }
-                renderActivos(resp.data || []);
-            }).fail(function (xhr) {
-                console.error('ListarActivos error:', xhr.status, xhr.responseText);
-                $('#tbody-contratos').html(emptyRow(6, 'Error de conexión'));
-            });
-        }
-
-        function renderActivos(items) {
-            const $tb = $('#tbody-contratos');
-            if (!items.length) { $tb.html(emptyRow(6, 'Sin contratos activos')); $('#txt-total').text('0'); return; }
-
-            const rows = items.map(it => `
-          <tr>
-            <td><p class="empleado-nombre">${esc(it.EmpleadoNombre)}</p></td>
-            <td>${esc(it.Documento)}</td>
-            <td>${esc(it.CargoNombre || '')}</td>
-            <td>${esc(it.EstadoContratoNombre || '')}</td>
-            <td>${fmtFecha(it.FechaInicio) || '-'}</td>
-            <td>${fmtFecha(it.FechaFin) || '-'}</td>
-          </tr>`).join('');
-
-            $tb.html(rows);
-            $('#txt-total').text(`${items.length} registro(s)`);
-        }
-
-        $(function () { cargarActivos(); });
-    </script>
+@section Scripts{
+    <script src="~/Scripts/contrato/contratos.js"></script>
 }
-
