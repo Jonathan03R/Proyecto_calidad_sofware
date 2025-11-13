@@ -8,7 +8,6 @@
 
     <!-- Estilos -->
     <link rel="stylesheet" href="@Url.Content("~/Content/css/layout.css")?v=@DateTime.Now.Ticks" />
-
     @RenderSection("Head", required: false)
 </head>
 
@@ -17,23 +16,36 @@
         var action = (string)ViewContext.RouteData.Values["action"];
         var controller = (string)ViewContext.RouteData.Values["controller"];
     }
+    @Html.Action("Navbar", "Menu")
+    <script>
+        (function () {
+            document.querySelectorAll('.nav-sub').forEach(sub => {
+                const btn = sub.querySelector('.nav-sub-toggle');
+                const menu = sub.querySelector('.nav-sub-menu');
+                if (!btn || !menu) return;
+                function toggle(open) {
+                    menu.classList.toggle('show', open);
+                    sub.classList.toggle('open', open);
+                    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                }
+                btn.addEventListener('click', () => toggle(!menu.classList.contains('show')));
+                document.addEventListener('click', e => { if (!sub.contains(e.target)) toggle(false); });
+                menu.addEventListener('click', e => { if (e.target.closest('a')) toggle(false); });
+            });
+        })();
+        (function () {
+            const KEY = 'sidebar-collapsed';
+            const btn = document.getElementById('btn-collapse');
+            const saved = localStorage.getItem(KEY);
+            if (saved === '1') { document.body.classList.add('sidebar-collapsed'); if (btn) btn.setAttribute('aria-pressed', 'true'); }
+            btn && btn.addEventListener('click', () => {
+                const collapsed = document.body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem(KEY, collapsed ? '1' : '0');
+                btn.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+            });
+        })();
+    </script>
 
-    <header class="navbar" >
-        <div class="navbar-container">
-            <div class="navbar-cabecera">
-                <button id="btn-toggle-nav" class="btn-hamburger" aria-label="Alternar navegación" aria-expanded="true" aria-controls="sidebar">
-                    <span></span><span></span><span></span>
-                </button>
-                <img src="@Url.Content("~/Content/img/icons/LogoPrincipal.svg")" alt="LogoPrincipal" class="icon" />
-                <div class="texto-cabecera">
-                    <a href="@Url.Action("Index","Nomina")" class="navbar-brand">GRUPO-02</a>
-                    <a href="@Url.Action("Index","Nomina")" class="navbar-brand2">Sistema de Nómina</a>
-                </div>
-            </div>
-
-            @Html.Action("Navbar", "Menu")
-        </div>
-    </header>
 
     @RenderSection("PageActions", required: false)
 
@@ -46,33 +58,27 @@
     <footer class="footer">
         @*<p>© @DateTime.Now.Year - Sistema de Nómina | Desarrollado por el equipo número 2</p>*@
     </footer>
-
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-   
     <script>
         (function () {
-            // Lógica para submenús desplegables
-            document.querySelectorAll('.nav-sub').forEach(sub => {
-                const btn = sub.querySelector('.nav-sub-toggle');
-                const menu = sub.querySelector('.nav-sub-menu');
+            const KEY = 'sidebar-collapsed';
+            const btn = document.getElementById('btn-collapse');
 
-                function toggle(open) {
-                    menu.classList.toggle('show', open);
-                    sub.classList.toggle('open', open);
-                    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-                }
+            // Restaurar estado
+            const saved = localStorage.getItem(KEY);
+            if (saved === '1') {
+                document.body.classList.add('sidebar-collapsed');
+                if (btn) btn.setAttribute('aria-pressed', 'true');
+            }
 
-                btn.addEventListener('click', () => toggle(!menu.classList.contains('show')));
-                btn.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(!menu.classList.contains('show')); }
-                    if (e.key === 'Escape') toggle(false);
-                });
-                document.addEventListener('click', (e) => { if (!sub.contains(e.target)) toggle(false); });
-                menu.addEventListener('click', (e) => { if (e.target.closest('a')) toggle(false); });
+            // Toggle
+            btn && btn.addEventListener('click', () => {
+                const collapsed = document.body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem(KEY, collapsed ? '1' : '0');
+                btn.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
             });
         })();
     </script>
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

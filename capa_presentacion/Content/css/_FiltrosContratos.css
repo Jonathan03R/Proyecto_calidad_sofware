@@ -1,0 +1,123 @@
+﻿
+.filtros-contratos-container {
+    background: #fff;
+    padding: 1rem 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.filtros-contratos {
+/*    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem;*/
+    padding:0.5rem ;
+}
+
+.filtro-item {
+    display: flex;
+    gap:0.7rem;
+    flex-direction: column;
+}
+
+    .filtro-item label {
+        font-size: 0.85rem;
+        color: #4b5563;
+        margin-bottom: 0.3rem;
+    }
+
+    .filtro-item input,
+    .filtro-item select {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        min-width: 200px;
+    }
+
+        .filtro-item input:focus,
+        .filtro-item select:focus {
+            border-color: #2563eb;
+            outline: none;
+        }
+
+.filtro-acciones {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+.btn {
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background: #2563eb;
+    border: none;
+    color: #fff;
+}
+
+    .btn-primary:hover {
+        background: #1d4ed8;
+    }
+
+.btn-light {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    color: #374151;
+}
+
+.btn-outline {
+    border: 1px solid #2563eb;
+    background: transparent;
+    color: #2563eb;
+}
+
+    .btn-outline:hover {
+        background: #2563eb;
+        color: #fff;
+    }
+
+
+
+
+.tabs-contratos {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #d1d5db; /* ← línea más gruesa */
+}
+
+.tab-btn {
+    border: 1px solid #ffff;
+    background: #fff;
+    color: #374151;
+    padding: 0.45rem 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+    .tab-btn:hover {
+        background: #ffff;
+        border-bottom: 1px solid #2563eb; /* ← línea más gruesa */
+
+        color: #2563eb;
+    }
+
+    .tab-btn.is-active {
+        background: #ffff;
+        color: #2563EB;
+    }
+
+.tab-panel {
+    display: none;
+}
+
+    .tab-panel.is-active {
+        display: block;
+    }

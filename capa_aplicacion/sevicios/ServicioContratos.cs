@@ -10,12 +10,12 @@ namespace capa_aplicacion.Servicios
     public class ServicioContratos
     {
         private readonly AccesoSQLServer accesoSQLServer;
-        private readonly ContratosRepositorio contratosRepo;
+        private readonly ContratoRepositorio contratosRepo;
 
         public ServicioContratos()
         {
             accesoSQLServer = new AccesoSQLServer();
-            contratosRepo = new ContratosRepositorio(accesoSQLServer);
+            contratosRepo = new ContratoRepositorio(accesoSQLServer);
         }
 
         // ✅ CREAR CONTRATO
@@ -101,19 +101,21 @@ namespace capa_aplicacion.Servicios
             }
         }
 
-        // ✅ CONSULTAR TODOS LOS CONTRATOS
-        public List<ContratoDTO> ConsultarTodosLosContratos()
+        // ✅ LISTAR TRABAJADORES CON CONTRATOS ACTIVOS
+        public List<ContratoDTO> ListarContratosActivos()
         {
-            accesoSQLServer.AbrirConexion();
-            try
-            {
-                throw new NotImplementedException("Implementar consulta general de contratos en la capa de persistencia.");
-            }
-            finally
-            {
-                accesoSQLServer.CerrarConexion();
-            }
+            return contratosRepo.ListarConContratoActivo();
         }
 
+        // ✅ LISTAR TRABAJADORES SIN CONTRATOS A
+        public List<ContratoDTO> ListarSinContratoActivo()
+        {
+            return contratosRepo.ListarSinContratoActivo();
+        }
+
+
+
     }
+
+
 }
