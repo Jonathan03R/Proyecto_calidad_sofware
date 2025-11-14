@@ -65,12 +65,11 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #F3F4F6;
-    border: 1px solid var(--c-border);
+    background: #ffff;
     color: #374151;
     padding: 6px 10px;
     border-radius: 999px;
-    font-size: 12px
+    font-size: 15px;
 }
 
 .btn-primary {

@@ -500,6 +500,7 @@
     <Content Include="Content\css\_FiltrosContratos.css" />
     <Content Include="Content\css\_ModalNuevoContrato.css" />
     <Content Include="Content\css\_TablaContratos.css" />
+    <Content Include="Content\img\icons\calendar.svg" />
     <Content Include="Content\img\icons\Contrato.svg" />
     <Content Include="Content\img\icons\contrato_activo.svg" />
     <Content Include="Content\img\icons\contrato_alerta.svg" />
@@ -515,6 +516,7 @@
     <Content Include="Content\img\icons\Parametros.svg" />
     <Content Include="Content\img\icons\Reportes.svg" />
     <Content Include="Content\img\icons\TotalNomina.svg" />
+    <Content Include="Content\img\icons\user.svg" />
     <Content Include="Content\util.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />

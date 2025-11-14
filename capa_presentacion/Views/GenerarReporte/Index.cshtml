@@ -1,23 +1,20 @@
 ﻿@{
     ViewBag.Title = "Gestión de Reportes de Nómina";
+    ViewBag.PageTitle = "Genera todos los reportes de los trabajadores por periodo";
+    ViewBag.PageSubtitle = "Crear Contratos - " + DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
+    ViewBag.PagePeriodo = DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
 }
 
 @section Head {
-    <link href="~/Content/css/reporte.css" rel="stylesheet" />
+    <link href="~/Content/css/reporte.css?v=@DateTime.Now.Ticks" rel="stylesheet" />
+
 }
-<main class="main-content">
+<main class="main-reporte">
     <div class="header-section">
-        <div>
-            <h1>Gestión de Reportes de Nómina</h1>
-            <p>Genera todos los reportes de los trabajadores por periodo</p>
-        </div>
+
         <div style="display: flex; align-items: center; gap: 20px;">
-            <div class="user-section">
-                <div class="user-avatar">A</div>
-                <span class="user-name">Admin RH</span>
-            </div>
             <button class="btn-generar" id="btnGenerarReporte" disabled>
-                <span>📥</span> Generar Reporte (PDF/Excel)
+                Generar Reporte (PDF/Excel)
             </button>
         </div>
     </div>
@@ -40,7 +37,7 @@
     </div>
     <div class="table-section">
         <div class="table-header">
-            <h3>📋 Lista de Trabajadores</h3>
+            <h3>Lista de Trabajadores</h3>
             <span class="records-count" id="recordsCount">0 registros</span>
         </div>
         <div class="table-responsive">
