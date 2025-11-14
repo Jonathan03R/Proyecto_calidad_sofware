@@ -15,8 +15,6 @@
          data-url-obtener-jornadas="@Url.Action("ObtenerTiposJornadas", "Contratos")"
          data-url-crear-contrato="@Url.Action("CrearContrato", "Contratos")">
 
-
-
     @Html.Partial("_CardResumenContratos")
     @Html.Partial("_FiltrosContratos")
     @Html.Partial("_TablaActivos")
@@ -32,5 +30,7 @@
 <link rel="stylesheet" href="~/Content/css/_ModalNuevoContrato.css" />
 
 @section Scripts{
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script> <!-- importante -->
+
     <script src="~/Scripts/contrato/contratos.js"></script>
 }

@@ -11,14 +11,14 @@ namespace capa_aplicacion.sevicios
 {
     public class AreaService
     {
-        private readonly AreasRepositorio areaDAO;
+        private readonly AreasRepositorio areaRepositorio;
         private readonly AccesoSQLServer conexion;
         
 
         public AreaService()
         {
             conexion = new AccesoSQLServer();
-            areaDAO = new AreasRepositorio(conexion);
+            areaRepositorio = new AreasRepositorio(conexion);
         }
 
         public List<Area> ObtenerAreas()
@@ -27,10 +27,11 @@ namespace capa_aplicacion.sevicios
             try
             {
                 conexion.AbrirConexion();
-                listaAreas = areaDAO.ObtenerAreas();
+                listaAreas = areaRepositorio.ObtenerAreas();
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Error al obtener areas{ex.Message}");
                 throw ex;
             }
             finally

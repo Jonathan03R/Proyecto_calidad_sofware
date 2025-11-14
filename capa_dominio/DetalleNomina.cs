@@ -27,7 +27,7 @@ namespace capa_dominio
         private string sistemasPensionAplicado;
         private decimal descuentoFaltas;
         private decimal descuentoAdelantos;
-
+        private decimal descuentoTardanzas;
         private decimal totalIngresos;
         private decimal totalDescuentos;
         private decimal netoPagar;
@@ -52,6 +52,7 @@ namespace capa_dominio
         public decimal ImpuestoRentaMensual { get => impuestoRentaMensual; set => impuestoRentaMensual = value; }
         public string SistemasPensionAplicado { get => sistemasPensionAplicado; set => sistemasPensionAplicado = value; }
         public decimal DescuentoFaltas { get => descuentoFaltas; set => descuentoFaltas = value; }
+        public decimal DescuentoTardanzas { get => descuentoTardanzas; set => descuentoTardanzas = value; }
         public decimal DescuentoAdelantos { get => descuentoAdelantos; set => descuentoAdelantos = value; }
         public decimal TotalIngresos { get => totalIngresos; set => totalIngresos = value; }
         public decimal TotalDescuentos { get => totalDescuentos; set => totalDescuentos = value; }
@@ -86,6 +87,7 @@ namespace capa_dominio
 
             int diasPagados = 0;
             int diasFalta = 0;
+            decimal descuentoTardanzas = 0m;
 
             foreach (var dia in diasPeriodo)
             {
@@ -109,18 +111,18 @@ namespace capa_dominio
 
                 if (registro.TieneTardanza(jornadaDiariaHoras))
                 {
-                    diasFalta++;
-                    continue;
+                    descuentoTardanzas += registro.CalcularDescuentoTardanza();
                 }
 
                 diasPagados++;
             }
 
-            sueldoBasico = Math.Round(diasPagados * sueldoPorDia, 2);
-            descuentoFaltas = Math.Round(diasFalta * sueldoPorDia, 2);
+            SueldoBasico = Math.Round(diasPagados * sueldoPorDia, 2);
+            DescuentoFaltas = Math.Round(diasFalta * sueldoPorDia, 2);
+            DescuentoTardanzas = Math.Round(descuentoTardanzas, 2);
 
             System.Diagnostics.Trace.WriteLine(
-                $"ASISTENCIA -> DiasPagados: {diasPagados} | DiasFalta: {diasFalta} | SueldoBasico: {sueldoBasico} | DescuentoFaltas: {descuentoFaltas}"
+                $"ASISTENCIA -> DiasPagados: {diasPagados} | DiasFalta: {diasFalta} | DescuentoTardanzas: {DescuentoTardanzas} | SueldoBasico: {SueldoBasico} | DescuentoFaltas: {DescuentoFaltas}"
             );
         }
 
@@ -130,7 +132,9 @@ namespace capa_dominio
 
         public void CalcularPagoTotalHorasExtras()
         {
-            if (Contrato == null)
+            System.Diagnostics.Trace.WriteLine("CALCULANDO HORAS EXTRAS...");
+
+            if (contrato == null)
                 throw new InvalidOperationException("El contrato no puede ser nulo en el detalle de nómina.");
 
             if (HorasTrabajadas == null || HorasTrabajadas.Count == 0)
@@ -158,7 +162,37 @@ namespace capa_dominio
             }
 
             horasExtras = Math.Round(totalExtras, 2);
+
+            System.Diagnostics.Trace.WriteLine($"HORAS_EXTRAS -> Total: {horasExtras:F2}");
         }
+
+
+
+        public void CalcularRemuneracionBruta()
+        {
+            System.Diagnostics.Trace.WriteLine("CALCULANDO REMUNERACION BRUTA...");
+            System.Diagnostics.Trace.WriteLine(
+                $"BRUTO -> Nomina:{Nomina?.NominaId} Trabajador:{Contrato?.Trabajador?.TrabajadorId} " +
+                $"Sueldo:{SueldoBasico:F2} AsigFam:{AsignacionFamiliar:F2} Extras:{HorasExtras:F2} " +
+                $"Bonos:{BonosRegulares:F2} Otros:{OtrosIngresos:F2}"
+            );
+
+            remuneracionBruta =
+                SueldoBasico +
+                AsignacionFamiliar +
+                HorasExtras +
+                BonosRegulares +
+                OtrosIngresos;
+
+            if (remuneracionBruta < 0)
+                remuneracionBruta = 0;
+
+            System.Diagnostics.Trace.WriteLine(
+                $"BRUTO -> RemuneracionBruta:{RemuneracionBruta:F2}"
+            );
+        }
+
+
 
         // =========================
         // ASIGNACIÓN FAMILIAR
@@ -166,29 +200,29 @@ namespace capa_dominio
 
         public decimal CalculoAsignacionFamiliar(bool tieneRemuneracionFamiliar)
         {
-            if (!tieneRemuneracionFamiliar || Contrato == null)
+            System.Diagnostics.Trace.WriteLine("CALCULANDO ASIGNACION FAMILIAR...");
+            System.Diagnostics.Trace.WriteLine(
+                $"ASIG_FAM -> Trabajador:{Contrato?.Trabajador?.TrabajadorId} | " +
+                $"TieneFam:{tieneRemuneracionFamiliar} | Salario:{Contrato?.ContratoSalario:F2}"
+            );
+
+            if (!tieneRemuneracionFamiliar)
             {
                 asignacionFamiliar = 0;
+                System.Diagnostics.Trace.WriteLine("ASIG_FAM -> Monto: 0.00");
+
                 return 0;
             }
 
             asignacionFamiliar = Math.Round(Contrato.ContratoSalario * 0.10m, 2);
+
+            System.Diagnostics.Trace.WriteLine(
+                $"ASIG_FAM -> Monto:{asignacionFamiliar:F2}"
+            );
+
             return asignacionFamiliar;
         }
 
-        // =========================
-        // REMUNERACIÓN BRUTA
-        // =========================
-
-        public void CalcularRemuneracionBruta()
-        {
-            remuneracionBruta =
-                sueldoBasico +
-                asignacionFamiliar +
-                horasExtras +
-                bonosRegulares +
-                otrosIngresos;
-        }
 
         // =========================
         // SISTEMA DE PENSIONES
@@ -196,6 +230,7 @@ namespace capa_dominio
 
         public void CalcularSistemaPensiones()
         {
+           
             if (Contrato == null || Contrato.TipoPension == null)
                 throw new InvalidOperationException("El contrato o el tipo de pensión no están definidos.");
 
@@ -234,8 +269,18 @@ namespace capa_dominio
         {
             if (parametroEssalud == null)
                 throw new ArgumentNullException(nameof(parametroEssalud));
+            decimal porcentaje = parametroEssalud.ParametroValor;
+            decimal calculoBruto = remuneracionBruta * porcentaje;
 
-            aporteEssalud = Math.Round(remuneracionBruta * parametroEssalud.ParametroValor, 2);
+            System.Diagnostics.Trace.WriteLine(
+                $"ESSALUD -> RemuneracionBruta: {remuneracionBruta:F2} | Porcentaje: {porcentaje:P2} | CalculoBruto: {calculoBruto:F2}"
+            );
+            aporteEssalud = Math.Round(calculoBruto, 2);
+
+            System.Diagnostics.Trace.WriteLine(
+                $"ESSALUD -> AporteEssalud (redondeado): {aporteEssalud:F2}"
+            );
+
         }
 
         // =========================
@@ -293,15 +338,17 @@ namespace capa_dominio
 
         public void CalcularTotales()
         {
-            totalIngresos = remuneracionBruta;
+            // Sumar todos los ingresos
+            totalIngresos = SueldoBasico + AsignacionFamiliar + BonosRegulares + OtrosIngresos;
 
-            totalDescuentos =
-                aporteONP +
-                descuentoAFP +
-                impuestoRentaMensual +
-                descuentoFaltas +
-                descuentoAdelantos;
+            // Sumar todos los descuentos
+            totalDescuentos = aporteONP +
+                              descuentoAFP +
+                              impuestoRentaMensual +
+                              descuentoFaltas +
+                              descuentoAdelantos;
 
+            // Calcular neto
             netoPagar = totalIngresos - totalDescuentos;
 
             System.Diagnostics.Trace.WriteLine(

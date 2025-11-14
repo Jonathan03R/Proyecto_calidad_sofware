@@ -3,7 +3,6 @@ using capa_aplicacion.sevicios;
 using capa_aplicacion.sevicios.Tipos_salarios;
 using capa_dominio.dto;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -31,12 +30,10 @@ namespace capa_presentacion.Controllers
             _jornadaService = new TipoJornadaService();
         }
 
-        // Página principal
         public ActionResult Index()
         {
             try
             {
-                // La data se carga vía AJAX
                 return View();
             }
             catch (Exception ex)
@@ -46,14 +43,14 @@ namespace capa_presentacion.Controllers
             }
         }
 
-        // ✅ Nuevo método para listar los contratos de trabajadores actvos
         [HttpGet]
         public JsonResult ListarActivos()
         {
             try
             {
-                var data = servicio.ListarContratosActivos(); // <- ahora existe
-                var resultado = data.Select(x => new {
+                var data = servicio.ListarContratosActivos();
+                var resultado = data.Select(x => new
+                {
                     EmpleadoNombre = x.EmpleadoNombre,
                     Documento = x.Documento,
                     CargoNombre = x.CargoNombre,
@@ -69,15 +66,14 @@ namespace capa_presentacion.Controllers
             }
         }
 
-        // ✅ Nuevo método para listar trabajdores sin contratos
-
         [HttpGet]
         public JsonResult ListarSinContrato()
         {
             try
             {
                 var data = servicio.ListarSinContratoActivo();
-                var resultado = data.Select(x => new {
+                var resultado = data.Select(x => new
+                {
                     TrabajadorId = x.TrabajadorId,
                     EmpleadoNombre = x.EmpleadoNombre,
                     Documento = x.Documento,
@@ -90,7 +86,6 @@ namespace capa_presentacion.Controllers
                 return Json(new { consultaExitosa = false, mensaje = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
-
         // ✅ Obtener Areas
         [HttpGet]
         public JsonResult ObtenerAreas()
@@ -189,8 +184,5 @@ namespace capa_presentacion.Controllers
                 });
             }
         }
-
-
-
     }
 }
