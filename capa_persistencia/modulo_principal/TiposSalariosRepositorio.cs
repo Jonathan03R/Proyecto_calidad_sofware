@@ -10,9 +10,9 @@ namespace capa_persistencia.modulo_principal
     {
         private readonly AccesoSQLServer _accesoSQL;
 
-        public TiposSalariosRepositorio()
+        public TiposSalariosRepositorio(AccesoSQLServer accesoSQL)
         {
-            _accesoSQL = new AccesoSQLServer();
+            _accesoSQL = accesoSQL;
         }
 
         public List<TipoSalario> ObtenerTiposSalarios()
@@ -21,7 +21,6 @@ namespace capa_persistencia.modulo_principal
 
             try
             {
-                _accesoSQL.AbrirConexion();
                 var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_tipos_salarios");
 
                 using (var reader = comando.ExecuteReader())
@@ -40,10 +39,6 @@ namespace capa_persistencia.modulo_principal
             catch (Exception)
             {
                 throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CONSULTA);
-            }
-            finally
-            {
-                _accesoSQL.CerrarConexion();
             }
 
             return tipos;
