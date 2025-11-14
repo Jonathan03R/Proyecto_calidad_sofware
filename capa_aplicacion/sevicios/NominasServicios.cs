@@ -33,16 +33,13 @@ namespace capa_aplicacion.servicios
             _periodos = new PeriodosRepositorio(_conexion);
         }
 
-        /// <summary>
-        /// Procesa la nómina para un periodo específico.
-        /// </summary>
         public void ProcesarNominaPorPeriodo(int? periodoId, List<ImpuestoRentaTramo> tramos, Parametro parametroEssalud, decimal valorUIT)
         {
             if (periodoId == null)
                 throw new ArgumentException("Selecciona un periodo.");
 
               _conexion.IniciarTransaccion();
-            // 1) Traer el periodo COMPLETO desde BD y meterlo al objeto nomina
+         
             var periodo = _periodos.ObtenerPeriodoPorId(periodoId.Value);
             if (periodo == null)
                 throw new InvalidOperationException($"El periodo {periodoId.Value} no existe.");
@@ -55,23 +52,16 @@ namespace capa_aplicacion.servicios
 
             try
             {
-
-                // 2) Validar existencia de una nómina previa
                 ValidarExistenciaNomina(periodo.PeriodoId);
-
-                // 3) Obtener trabajadores y tipos de HHEE
                 var trabajadores = ObtenerTrabajadoresConContratoActivo();
                 var tiposHorasExtras = _tiposHorasExtras.ObtenerTiposHorasExtrasActivos();
 
-                // 4) Crear cabecera
                 var nominaId = CrearCabeceraNomina(periodo.PeriodoId);
                 nomina.NominaId = nominaId;
                 nomina.NominaEstado = "Procesando";
 
-                // 5) Procesar detalles usando SIEMPRE nomina.Periodo.*
                 var huboErrores = ProcesarDetallesNomina(nomina, trabajadores, tramos, parametroEssalud, valorUIT);
 
-                // 6) Finalizar
                 FinalizarNomina(nomina, huboErrores);
 
                 _conexion.TerminarTransaccion();

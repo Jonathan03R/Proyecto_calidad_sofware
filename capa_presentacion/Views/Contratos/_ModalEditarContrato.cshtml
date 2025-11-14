@@ -14,13 +14,32 @@
 
         <div class="modal-body">
             <form id="form-editar-contrato" class="form-contrato" autocomplete="off">
+                <!-- IDs ocultos -->
                 <input type="hidden" id="ec_contrato_id" name="ContratoId" />
+                <input type="hidden" id="ec_trabajador_id" name="TrabajadorId" />
 
                 <!-- Solo lectura: empleado -->
                 <div class="form-row">
                     <div class="form-field full">
                         <label for="ec_empleado">Empleado</label>
                         <input id="ec_empleado" type="text" readonly />
+                    </div>
+                </div>
+
+                <!-- Área y Sistema de Pensión -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="ec_area_id">Área</label>
+                        <select id="ec_area_id" name="AreaId">
+                            <option value="">Seleccione área</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="ec_tipo_pension_id">Sistema de pensión</label>
+                        <select id="ec_tipo_pension_id" name="TipoPensionId">
+                            <option value="">Seleccione pensión</option>
+                        </select>
                     </div>
                 </div>
 
@@ -46,8 +65,41 @@
                     </div>
                 </div>
 
-                <!-- Modo pago -->
+                <!-- Tipo jornada y horas semanales -->
                 <div class="form-row">
+                    <div class="form-field">
+                        <label for="ec_tipo_jornada_id">Tipo de jornada</label>
+                        <select id="ec_tipo_jornada_id" name="TipoJornadaId">
+                            <option value="">Seleccione jornada</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="ec_horas_semanales">Horas semanales</label>
+                        <input id="ec_horas_semanales" name="HorasSemanales" type="number" min="0" />
+                    </div>
+                </div>
+
+                <!-- Fechas -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="ec_fecha_inicio">Fecha de inicio</label>
+                        <input id="ec_fecha_inicio" name="FechaInicio" type="date" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="ec_fecha_fin">Fecha de fin</label>
+                        <input id="ec_fecha_fin" name="FechaFin" type="date" />
+                    </div>
+                </div>
+
+                <!-- Tarifa hora y modo de pago -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="ec_tarifa_hora">Tarifa por hora</label>
+                        <input id="ec_tarifa_hora" name="TarifaHora" type="number" step="0.01" min="0" />
+                    </div>
+
                     <div class="form-field">
                         <label for="ec_modo_pago">Modo de pago</label>
                         <input id="ec_modo_pago" name="ModoPago" type="text"
@@ -55,15 +107,23 @@
                     </div>
                 </div>
 
-                <!-- Observaciones -->
+                <!-- Descripción de funciones -->
                 <div class="form-row">
                     <div class="form-field full">
-                        <label for="ec_observaciones">Observaciones</label>
+                        <label for="ec_descripcion_funciones">Descripción de funciones</label>
+                        <textarea id="ec_descripcion_funciones" name="DescripcionFunciones" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <!-- Observaciones del contrato -->
+                <div class="form-row">
+                    <div class="form-field full">
+                        <label for="ec_observaciones">Observaciones del contrato</label>
                         <textarea id="ec_observaciones" name="Observaciones" rows="2"></textarea>
                     </div>
                 </div>
 
-                <!-- Motivo obligatorio -->
+                <!-- Motivo obligatorio (auditoría) -->
                 <div class="form-row">
                     <div class="form-field full">
                         <label for="ec_motivo">Motivo de la actualización</label>
