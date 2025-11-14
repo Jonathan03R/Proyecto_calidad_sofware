@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Security.Cryptography;
 
 namespace capa_dominio
 {
@@ -58,71 +60,83 @@ namespace capa_dominio
         public decimal TotalDescuentos { get => totalDescuentos; set => totalDescuentos = value; }
         public decimal NetoPagar { get => netoPagar; set => netoPagar = value; }
 
-        // =========================
-        // SUELDO SEGÚN ASISTENCIA
-        // =========================
 
-        public void CalcularSueldoSegunAsistencia(DateTime fechaInicio, DateTime fechaFin)
+
+        public void CalcularDescuentoTardanzas()
         {
             if (Contrato == null)
-                throw new InvalidOperationException("El contrato no puede ser nulo para calcular sueldo.");
+                throw new InvalidOperationException("El contrato no puede ser nulo para calcular tardanzas.");
 
-            if (!Contrato.ContratoHorasSemanales.HasValue || Contrato.ContratoHorasSemanales.Value <= 0)
-                throw new InvalidOperationException("El contrato no tiene configuradas las horas semanales.");
+            if (HorasTrabajadas == null || HorasTrabajadas.Count == 0)
+            {
+                DescuentoTardanzas = 0;
+                return;
+            }
+
+            decimal totalDescuento = 0;
+
+            foreach (var r in HorasTrabajadas)
+            {
+                r.Contrato = Contrato;
+                totalDescuento += r.CalcularDescuentoTardanza();
+            }
+
+            DescuentoTardanzas = Math.Round(totalDescuento, 2, MidpointRounding.AwayFromZero);
+        }
+
+        public void CalcularDescuentoFaltas()
+        {
+            if (Contrato == null)
+                throw new InvalidOperationException("El contrato no puede ser nulo para calcular faltas.");
 
             if (HorasTrabajadas == null)
-                HorasTrabajadas = new List<HoraTrabajada>();
+            {
+                System.Diagnostics.Trace.WriteLine(
+                $"las horas han llegado NULL"
+            );
+                DescuentoFaltas = 0;
+                return;
+            }
 
-            decimal jornadaDiariaHoras = Contrato.ContratoHorasSemanales.Value / 6m;
-            decimal sueldoPorDia = Math.Round(Contrato.ContratoSalario / 30m, 2);
+            //decimal jornadaDiaria = Contrato.ObtenerJornadaDiaria();
+            decimal sueldoPorDia = Contrato.ObtenerSueldoPorDia();
+
+            // agrupar por fecha de trabajo
+            var diasTrabajados = HorasTrabajadas
+                .GroupBy(h => h.Fecha.Date)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            DateTime fechaInicio = nomina.Periodo.PeriodoFechaInicio;
+            DateTime fechaFin = nomina.Periodo.PeriodoFechaFin;
 
             var diasPeriodo = Enumerable
                 .Range(0, (fechaFin.Date - fechaInicio.Date).Days + 1)
                 .Select(offset => fechaInicio.Date.AddDays(offset))
+                .Where(d => d.DayOfWeek != DayOfWeek.Sunday)
                 .ToList();
 
-            var horasPorDia = HorasTrabajadas
-                .GroupBy(h => h.Fecha.Date)
-                .ToDictionary(g => g.Key, g => g.ToList());
-
-            int diasPagados = 0;
-            int diasFalta = 0;
-            decimal descuentoTardanzas = 0m;
+            int totalFaltas = 0;
 
             foreach (var dia in diasPeriodo)
             {
-                if (dia.DayOfWeek == DayOfWeek.Sunday)
-                    continue;
-
-                if (!horasPorDia.TryGetValue(dia, out var registrosDelDia) || registrosDelDia.Count == 0)
+                // si no trabajó ese día → falta
+                if (!diasTrabajados.ContainsKey(dia))
                 {
-                    diasFalta++;
-                    continue;
+                    totalFaltas++;
                 }
-
-                var registro = registrosDelDia[0];
-                registro.Contrato = Contrato;
-
-                if (registro.EsFalta())
+                else
                 {
-                    diasFalta++;
-                    continue;
+                    var registros = diasTrabajados[dia];
+                    // Si trabajó 0 horas normales, también cuenta como falta
+                    if (registros.All(r => r.HorasNormales <= 0))
+                        totalFaltas++;
                 }
-
-                if (registro.TieneTardanza(jornadaDiariaHoras))
-                {
-                    descuentoTardanzas += registro.CalcularDescuentoTardanza();
-                }
-
-                diasPagados++;
             }
 
-            SueldoBasico = Math.Round(diasPagados * sueldoPorDia, 2);
-            DescuentoFaltas = Math.Round(diasFalta * sueldoPorDia, 2);
-            DescuentoTardanzas = Math.Round(descuentoTardanzas, 2);
+            DescuentoFaltas = Math.Round(totalFaltas * sueldoPorDia, 2 , MidpointRounding.AwayFromZero);
 
             System.Diagnostics.Trace.WriteLine(
-                $"ASISTENCIA -> DiasPagados: {diasPagados} | DiasFalta: {diasFalta} | DescuentoTardanzas: {DescuentoTardanzas} | SueldoBasico: {SueldoBasico} | DescuentoFaltas: {DescuentoFaltas}"
+                $"DESCUENTO FALTAS -> Faltas:{totalFaltas} | SueldoDia:{sueldoPorDia:F2} | TotalDescuento:{DescuentoFaltas:F2}"
             );
         }
 
@@ -134,7 +148,7 @@ namespace capa_dominio
         {
             System.Diagnostics.Trace.WriteLine("CALCULANDO HORAS EXTRAS...");
 
-            if (contrato == null)
+            if (Contrato == null)
                 throw new InvalidOperationException("El contrato no puede ser nulo en el detalle de nómina.");
 
             if (HorasTrabajadas == null || HorasTrabajadas.Count == 0)
@@ -153,44 +167,28 @@ namespace capa_dominio
                 h.Contrato = Contrato;
                 h.TiposHorasExtras = TiposHorasExtras;
 
-                decimal pagoDia = h.CalcularPagoDia();
-                decimal pagoNormalDia = h.HorasNormales * Contrato.ContratoTarifaHora;
-                decimal extraDia = pagoDia - pagoNormalDia;
+                decimal pagoDiaExtras = h.CalcularPagoHorasExtras();
 
-                if (extraDia > 0)
-                    totalExtras += extraDia;
+                if (pagoDiaExtras > 0)
+                    totalExtras += pagoDiaExtras;
+
+                System.Diagnostics.Trace.WriteLine(
+                    $"HORAS_EXTRAS -> Fecha:{h.Fecha:yyyy-MM-dd} | HorasExtras:{h.HorasExtras:F2} | PagoDia:{pagoDiaExtras:F2}"
+                );
             }
 
             horasExtras = Math.Round(totalExtras, 2);
 
-            System.Diagnostics.Trace.WriteLine($"HORAS_EXTRAS -> Total: {horasExtras:F2}");
+            System.Diagnostics.Trace.WriteLine($"HORAS_EXTRAS -> Total general: {horasExtras:F2}");
         }
 
 
-
-        public void CalcularRemuneracionBruta()
+        public void calcularRemuneracionBruta() 
         {
-            System.Diagnostics.Trace.WriteLine("CALCULANDO REMUNERACION BRUTA...");
-            System.Diagnostics.Trace.WriteLine(
-                $"BRUTO -> Nomina:{Nomina?.NominaId} Trabajador:{Contrato?.Trabajador?.TrabajadorId} " +
-                $"Sueldo:{SueldoBasico:F2} AsigFam:{AsignacionFamiliar:F2} Extras:{HorasExtras:F2} " +
-                $"Bonos:{BonosRegulares:F2} Otros:{OtrosIngresos:F2}"
-            );
-
-            remuneracionBruta =
-                SueldoBasico +
-                AsignacionFamiliar +
-                HorasExtras +
-                BonosRegulares +
-                OtrosIngresos;
-
-            if (remuneracionBruta < 0)
-                remuneracionBruta = 0;
-
-            System.Diagnostics.Trace.WriteLine(
-                $"BRUTO -> RemuneracionBruta:{RemuneracionBruta:F2}"
-            );
+            remuneracionBruta = contrato.ContratoSalario + horasExtras + asignacionFamiliar + bonosRegulares;
         }
+
+
 
 
 
@@ -243,14 +241,14 @@ namespace capa_dominio
             switch (tipoPensionId)
             {
                 case 1:
-                    aporteONP = Math.Round(remuneracionBruta * 0.13m, 2);
+                    aporteONP = Math.Round(remuneracionBruta * 0.13m, 2, MidpointRounding.AwayFromZero);
                     break;
 
                 case 2:
                 case 3:
                 case 4:
                 case 5:
-                    descuentoAFP = Math.Round(remuneracionBruta * 0.10m, 2);
+                    descuentoAFP = Math.Round(remuneracionBruta * 0.10m, 2, MidpointRounding.AwayFromZero);
                     break;
 
                 case 6:
@@ -275,7 +273,7 @@ namespace capa_dominio
             System.Diagnostics.Trace.WriteLine(
                 $"ESSALUD -> RemuneracionBruta: {remuneracionBruta:F2} | Porcentaje: {porcentaje:P2} | CalculoBruto: {calculoBruto:F2}"
             );
-            aporteEssalud = Math.Round(calculoBruto, 2);
+            aporteEssalud = Math.Round(calculoBruto, 2, MidpointRounding.AwayFromZero);
 
             System.Diagnostics.Trace.WriteLine(
                 $"ESSALUD -> AporteEssalud (redondeado): {aporteEssalud:F2}"
@@ -329,25 +327,26 @@ namespace capa_dominio
                     break;
             }
 
-            impuestoRentaMensual = Math.Round(impuestoAnual / 12, 2);
+            impuestoRentaMensual = Math.Round(impuestoAnual / 12, 2, MidpointRounding.AwayFromZero);
         }
+
 
         // =========================
         // TOTALES
         // =========================
 
+       
+
         public void CalcularTotales()
         {
             // Sumar todos los ingresos
-            totalIngresos = SueldoBasico + AsignacionFamiliar + BonosRegulares + OtrosIngresos;
+            totalIngresos = remuneracionBruta;
 
-            // Sumar todos los descuentos
             totalDescuentos = aporteONP +
                               descuentoAFP +
                               impuestoRentaMensual +
                               descuentoFaltas +
                               descuentoAdelantos;
-
             // Calcular neto
             netoPagar = totalIngresos - totalDescuentos;
 
@@ -355,5 +354,9 @@ namespace capa_dominio
                 $"TOTAL_INGRESOS: {totalIngresos} | TOTAL_DESCUENTOS: {totalDescuentos} | NETO_PAGAR: {netoPagar}"
             );
         }
+
+
+
+        
     }
 }
