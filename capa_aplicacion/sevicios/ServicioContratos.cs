@@ -102,16 +102,30 @@ namespace capa_aplicacion.Servicios
             }
         }
 
-        // LISTAR ACTIVOS
         public List<ContratoDTO> ListarContratosActivos()
         {
-            return contratosRepo.ListarConContratoActivo();
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                return contratosRepo.ListarConContratoActivo();
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
         }
 
-        // LISTAR SIN CONTRATO
         public List<ContratoDTO> ListarSinContratoActivo()
         {
-            return contratosRepo.ListarSinContratoActivo();
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                return contratosRepo.ListarSinContratoActivo();
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
         }
 
         // OBTENER DATOS COMPLETOS PARA NUEVO CONTRATO

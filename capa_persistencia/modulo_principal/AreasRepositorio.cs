@@ -46,5 +46,6 @@ namespace capa_persistencia.modulo_principal
 
             return areas;
         }
+
     }
 }
