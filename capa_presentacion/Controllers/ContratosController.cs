@@ -239,6 +239,29 @@ namespace capa_presentacion.Controllers
             }
         }
 
+        [HttpGet]
+        public JsonResult ResumenContratos()
+        {
+            try
+            {
+                var resumen = servicio.ObtenerResumen();
+                return Json(new
+                {
+                    exito = true,
+                    data = resumen
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    exito = false,
+                    mensaje = ex.Message
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
 
     }
 }

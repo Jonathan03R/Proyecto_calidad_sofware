@@ -318,6 +318,45 @@ namespace capa_persistencia.modulo_principal
             return lista;
         }
 
+        // RESUMEN DE CONTRATOS PARA LAS CARDS
+        public ResumenContratosDTO ObtenerResumenContratos()
+        {
+            var resumen = new ResumenContratosDTO();
+
+            try
+            {
+                _accesoSQL.AbrirConexion();
+
+                var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("Personal.proc_contratos_resumen");
+
+                using (var dr = cmd.ExecuteReader())
+                {
+                    if (dr.Read())
+                    {
+                        // OJO: mismos nombres de columnas que en el SELECT del SP
+                        resumen.TotalContratos = dr.IsDBNull(dr.GetOrdinal("TotalContratos"))
+                            ? 0 : dr.GetInt32(dr.GetOrdinal("TotalContratos"));
+
+                        resumen.ContratosActivos = dr.IsDBNull(dr.GetOrdinal("ContratosActivos"))
+                            ? 0 : dr.GetInt32(dr.GetOrdinal("ContratosActivos"));
+
+                        resumen.PorVencer30 = dr.IsDBNull(dr.GetOrdinal("PorVencer30"))
+                            ? 0 : dr.GetInt32(dr.GetOrdinal("PorVencer30"));
+
+                        resumen.AlertasLegales = dr.IsDBNull(dr.GetOrdinal("AlertasLegales"))
+                            ? 0 : dr.GetInt32(dr.GetOrdinal("AlertasLegales"));
+                    }
+                }
+            }
+            finally
+            {
+                _accesoSQL.CerrarConexion();
+            }
+
+            return resumen;
+        }
+
+
 
     }
 }

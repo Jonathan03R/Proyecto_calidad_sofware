@@ -138,6 +138,18 @@ namespace capa_aplicacion.Servicios
             }
         }
 
+        public ResumenContratosDTO ObtenerResumen()
+        {
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                return contratosRepo.ObtenerResumenContratos();
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
+        }
 
         // CLASE CONTENEDORA
         public class DatosNuevoContrato

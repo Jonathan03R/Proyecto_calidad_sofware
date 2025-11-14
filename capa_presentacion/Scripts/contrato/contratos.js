@@ -12,7 +12,8 @@
         obtenerTiposSalarios: $page.data('url-obtener-tipos-salarios'),
         obtenerJornadas: $page.data('url-obtener-jornadas'),
         crearContrato: $page.data('url-crear-contrato'),
-        actualizarContrato: $page.data('url-actualizar-contrato')
+        actualizarContrato: $page.data('url-actualizar-contrato'),
+        resumenContratos: $page.data('url-resumen-contratos')
     };
 
     const Cache = { activos: [], sin: [] };
@@ -404,8 +405,10 @@
                         $('#nc_mensaje').text('');
                         if (window.ContratosUI) {
                             window.ContratosUI.recargarActivos();
-                            window.ContratosUI.recargarSin();
+                            window.ContratosUI.recargarSin && window.ContratosUI.recargarSin();
+                            window.ContratosUI.recargarResumen && window.ContratosUI.recargarResumen();
                         }
+
                         $('[data-modal-close="modal-nuevo-contrato"]').click();
                     }, 700);
                 } else {
@@ -577,14 +580,38 @@
         });
     });
 
+    function cargarResumenContratos() {
+        $.get(URLS.resumenContratos, function (resp) {
+            if (!resp || !resp.exito || !resp.data) {
+                console.error('No se pudo obtener el resumen de contratos:', resp && resp.mensaje);
+                return;
+            }
+
+            const r = resp.data;
+
+            $('#cr_total_contratos').text(r.TotalContratos);
+            $('#cr_contratos_activos').text(r.ContratosActivos);
+            $('#cr_por_vencer_30').text(r.PorVencer30);
+            $('#cr_alertas_legales').text(r.AlertasLegales);
+        }).fail(function () {
+            console.error('Error de conexión al obtener el resumen de contratos');
+        });
+    }
+
 
     // ---------- Primera carga ----------
-    $(function () { cargarActivos(); });
+
+    $(function () {
+        cargarResumenContratos();
+        cargarActivos();
+    });
+
 
     // Exponer recargas globales
     window.ContratosUI = {
         recargarActivos: cargarActivos,
-        recargarSin: cargarSin
+        recargarSin: cargarSin,
+        recargarResumen: cargarResumenContratos
     };
 
 })(jQuery);

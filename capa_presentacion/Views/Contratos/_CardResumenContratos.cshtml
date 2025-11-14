@@ -1,12 +1,13 @@
-﻿
-<div class="card-resumen-container">
+﻿<div class="card-resumen-container"
+     data-url-resumen="@Url.Action("ResumenContratos", "Contratos")">
+
     <div class="card-resumen total">
         <div class="card-icon">
             <img src="~/Content/img/icons/contrato_total.svg" alt="Total contratos" />
         </div>
         <div class="card-info">
             <h3 class="card-title">Total Contratos</h3>
-            <p class="card-value">247</p>
+            <p id="cr_total_contratos" class="card-value">0</p>
         </div>
     </div>
 
@@ -16,7 +17,7 @@
         </div>
         <div class="card-info">
             <h3 class="card-title">Contratos Activos</h3>
-            <p class="card-value">189</p>
+            <p id="cr_contratos_activos" class="card-value">0</p>
         </div>
     </div>
 
@@ -26,7 +27,7 @@
         </div>
         <div class="card-info">
             <h3 class="card-title">Por Vencer (30 días)</h3>
-            <p class="card-value">12</p>
+            <p id="cr_por_vencer_30" class="card-value">0</p>
         </div>
     </div>
 
@@ -36,7 +37,9 @@
         </div>
         <div class="card-info">
             <h3 class="card-title">Alertas Legales</h3>
-            <p class="card-value">3</p>
+            <p id="cr_alertas_legales" class="card-value">0</p>
         </div>
     </div>
+
+
 </div>
