@@ -29,9 +29,9 @@ namespace capa_aplicacion.sevicios
             }
             catch (Exception ex)
             {
-                // ✅ NO vuelvas a lanzar la excepción sin mostrar el error real
+        
                 System.Diagnostics.Debug.WriteLine("Error en TrabajadorService: " + ex.ToString());
-                throw;  // ← Cambia "throw ex;" por solo "throw" para mantener el stack trace
+                throw;  
             }
             return listaTrabajadores;
         }

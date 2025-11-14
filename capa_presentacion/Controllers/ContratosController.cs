@@ -51,12 +51,30 @@ namespace capa_presentacion.Controllers
                 var data = servicio.ListarContratosActivos();
                 var resultado = data.Select(x => new
                 {
+                    // Para tabla
+                    ContratoId = x.ContratoId,
+                    TrabajadorId = x.TrabajadorId,
                     EmpleadoNombre = x.EmpleadoNombre,
                     Documento = x.Documento,
                     CargoNombre = x.CargoNombre,
                     EstadoContratoNombre = x.EstadoContratoNombre,
                     FechaInicio = x.FechaInicio == DateTime.MinValue ? "" : x.FechaInicio.ToString("yyyy-MM-dd"),
-                    FechaFin = x.FechaFin.HasValue ? x.FechaFin.Value.ToString("yyyy-MM-dd") : ""
+                    FechaFin = x.FechaFin.HasValue ? x.FechaFin.Value.ToString("yyyy-MM-dd") : "",
+
+                    // Para modal
+                    CargoId = x.CargoId,
+                    TipoSalarioId = x.TipoSalarioId,
+                    Salario = x.Salario,
+                    ModoPago = x.ModoPago,
+                    Observaciones = x.Observaciones,
+
+                    // Otros datos por si luego los usas
+                    AreaId = x.AreaId,
+                    TipoPensionId = x.TipoPensionId,
+                    TipoJornadaId = x.TipoJornadaId,
+                    TarifaHora = x.TarifaHora,
+                    HorasSemanales = x.HorasSemanales,
+                    DescripcionFunciones = x.DescripcionFunciones
                 });
                 return Json(new { consultaExitosa = true, data = resultado }, JsonRequestBehavior.AllowGet);
             }
@@ -65,6 +83,7 @@ namespace capa_presentacion.Controllers
                 return Json(new { consultaExitosa = false, mensaje = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
+
 
         [HttpGet]
         public JsonResult ListarSinContrato()
@@ -124,7 +143,7 @@ namespace capa_presentacion.Controllers
                 {
                     id = p.TipoPensionId,
                     nombre = p.Nombre,
-                    entidad = p.Entidad   
+                    entidad = p.Entidad
                 })
                 .ToList();
 
@@ -183,6 +202,43 @@ namespace capa_presentacion.Controllers
                     mensaje = ex.Message
                 });
             }
+        
         }
+
+        [HttpPost]
+        public JsonResult ActualizarContrato(ContratoDTO contrato, string motivo)
+        {
+            try
+            {
+                if (!contrato.ContratoId.HasValue || contrato.ContratoId.Value <= 0)
+                    throw new Exception("El contrato a actualizar no es válido.");
+
+                if (string.IsNullOrWhiteSpace(motivo))
+                    throw new Exception("Debes indicar el motivo de la actualización.");
+
+                // Usuario que hace el cambio (puedes ajustar esto a tu realidad)
+                var usuario = User?.Identity != null && User.Identity.IsAuthenticated
+                    ? User.Identity.Name
+                    : Environment.UserName; // o un valor fijo tipo "sistema"
+
+                servicio.ActualizarContrato(contrato.ContratoId.Value, usuario, motivo, contrato);
+
+                return Json(new
+                {
+                    exito = true,
+                    mensaje = "Contrato actualizado correctamente."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    exito = false,
+                    mensaje = ex.Message
+                });
+            }
+        }
+
+
     }
 }
