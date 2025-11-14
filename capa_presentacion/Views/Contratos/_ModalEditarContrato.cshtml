@@ -1,0 +1,84 @@
+﻿<div id="modal-editar-contrato" class="modal-contrato" aria-hidden="true" role="dialog">
+    <div class="modal-backdrop"></div>
+
+    <div class="modal-dialog" role="document" aria-labelledby="modal-editar-contrato-title">
+        <div class="modal-header">
+            <div class="modal-title-wrap">
+                <div>
+                    <h3 id="modal-editar-contrato-title" class="modal-title">Editar contrato</h3>
+                    <p class="modal-subtitle">Actualización de datos del contrato</p>
+                </div>
+            </div>
+            <button type="button" class="modal-close" data-modal-close="modal-editar-contrato" aria-label="Cerrar">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="form-editar-contrato" class="form-contrato" autocomplete="off">
+                <input type="hidden" id="ec_contrato_id" name="ContratoId" />
+
+                <!-- Solo lectura: empleado -->
+                <div class="form-row">
+                    <div class="form-field full">
+                        <label for="ec_empleado">Empleado</label>
+                        <input id="ec_empleado" type="text" readonly />
+                    </div>
+                </div>
+
+                <!-- Cargo, tipo salario, salario -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="ec_cargo_id">Cargo</label>
+                        <select id="ec_cargo_id" name="CargoId">
+                            <option value="">Seleccione cargo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="ec_tipo_salario_id">Tipo salario</label>
+                        <select id="ec_tipo_salario_id" name="TipoSalarioId">
+                            <option value="">Seleccione</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="ec_salario">Salario</label>
+                        <input id="ec_salario" name="Salario" type="number" step="0.01" min="0" />
+                    </div>
+                </div>
+
+                <!-- Modo pago -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="ec_modo_pago">Modo de pago</label>
+                        <input id="ec_modo_pago" name="ModoPago" type="text"
+                               placeholder="Ej: Transferencia, Efectivo, Yape..." />
+                    </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="form-row">
+                    <div class="form-field full">
+                        <label for="ec_observaciones">Observaciones</label>
+                        <textarea id="ec_observaciones" name="Observaciones" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <!-- Motivo obligatorio -->
+                <div class="form-row">
+                    <div class="form-field full">
+                        <label for="ec_motivo">Motivo de la actualización</label>
+                        <textarea id="ec_motivo" name="Motivo" rows="2"
+                                  placeholder="Ej: Ajuste de salario por evaluación de desempeño"></textarea>
+                    </div>
+                </div>
+
+                <div id="ec_mensaje" class="form-mensaje" aria-live="polite"></div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-modal-close="modal-editar-contrato">Cancelar</button>
+            <button type="button" class="btn btn-primary" id="ec_confirmar">Guardar cambios</button>
+        </div>
+    </div>
+</div>

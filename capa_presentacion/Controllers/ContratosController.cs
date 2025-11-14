@@ -51,6 +51,12 @@ namespace capa_presentacion.Controllers
                 var data = servicio.ListarContratosActivos();
                 var resultado = data.Select(x => new
                 {
+                    ContratoId = x.ContratoId,         
+                    CargoId = x.CargoId,               
+                    TipoSalarioId = x.TipoSalarioId, 
+                    Salario = x.Salario,             
+                    ModoPago = x.ModoPago,         
+                    Observaciones = x.Observaciones,
                     EmpleadoNombre = x.EmpleadoNombre,
                     Documento = x.Documento,
                     CargoNombre = x.CargoNombre,
@@ -184,5 +190,6 @@ namespace capa_presentacion.Controllers
                 });
             }
         }
+
     }
 }

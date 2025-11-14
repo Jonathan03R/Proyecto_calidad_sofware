@@ -575,6 +575,7 @@
     <Content Include="Views\Contratos\Index.cshtml" />
     <Content Include="Views\Contratos\_TablaActivos.cshtml" />
     <Content Include="Views\Contratos\_TablaSinContrato.cshtml" />
+    <Content Include="Views\Contratos\_ModalEditarContrato.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

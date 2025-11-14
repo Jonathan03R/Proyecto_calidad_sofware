@@ -92,6 +92,25 @@ namespace capa_dominio
             return Math.Round(ContratoSalario / 30m, 2);
         }
 
+        public void CalcularTarifaHora()
+        {
+            if (contratoSalario <= 0)
+                throw new InvalidOperationException("el salario es inválido.");
+
+            if (!contratoHorasSemanales.HasValue || contratoHorasSemanales.Value <= 0)
+                throw new InvalidOperationException("las horas semanales no están configuradas.");
+
+            var jornadaDiaria = contratoHorasSemanales.Value / 6m;
+
+            if (jornadaDiaria <= 0)
+                throw new InvalidOperationException("la jornada diaria es inválida.");
+
+            contratoTarifaHora = Math.Round(
+                contratoSalario / (30m * jornadaDiaria),
+                2
+            );
+        }
+
 
     }
 }
