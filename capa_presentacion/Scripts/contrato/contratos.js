@@ -289,7 +289,6 @@
 (function ($) {
     'use strict';
 
-    // ---------- Config desde la vista ----------
     const $page = $('#page-contratos');
     const URLS = {
         listarActivos: $page.data('url-listar-activos'),
@@ -298,11 +297,9 @@
         areas: $page.data('url-areas')
     };
 
-    // ---------- Caché ----------
     const Cache = { activos: [], sin: [] };
     const Lookups = { cargos: null, areas: null };
 
-    // ---------- Utils ----------
     const norm = s => (s ?? '').toString()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         .toLowerCase().trim();
@@ -376,7 +373,6 @@
         $('#txt-total-sin').text(`${items.length} sin contrato`);
     }
 
-    // ---------- Carga desde servidor ----------
     function cargarActivos() {
         const $tb = $('#tbody-contratos');
         $tb.html(loadingRow(6));
@@ -396,8 +392,6 @@
     function cargarSin() {
         const $tb = $('#tbody-sin-contrato');
         $tb.html(loadingRow(3));
-        $('#txt-total-sin').text('');
-
         $.get(URLS.listarSin, resp => {
             if (!resp || !resp.consultaExitosa) {
                 $tb.html(emptyRow(3, resp?.mensaje || 'No se pudo obtener la lista'));
@@ -408,7 +402,6 @@
         }).fail(() => $tb.html(emptyRow(3, 'Error de conexión')));
     }
 
-    // ---------- Filtro ----------
     function aplicarFiltro() {
         const qn = norm($('#fc_query').val());
         if (tabActiva() === 'activos') {
@@ -417,7 +410,6 @@
             renderSin((Cache.sin || []).filter(x => coincide(x, qn)));
         }
     }
-
     // ---------- Lookups: cargos y áreas ----------
     function fillSelect($sel, arr, idKey, textKey) {
         $sel.empty().append('<option value="">-- Seleccione --</option>');
@@ -435,7 +427,6 @@
             Lookups.cargos = resp.data || [];
         });
     }
-
     function cargarAreas() {
         if (Lookups.areas) return $.Deferred().resolve(Lookups.areas).promise();
         return $.get(URLS.areas, resp => {
@@ -475,7 +466,6 @@
     $(document).on('keydown', function (e) {
         if (e.key === 'Escape') closeModal('modal-nuevo-contrato');
     });
-
     // ---------- Abrir modal desde "Sin contratos" ----------
     $(document).on('click', '#tbody-sin-contrato [data-trabid]', function () {
         const id = Number($(this).data('trabid'));
@@ -543,4 +533,3 @@
     };
 
 })(jQuery);
-

@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using capa_dominio;
+﻿using capa_dominio;
 using capa_dominio.dto;
 using capa_persistencia.modulo_base;
 using capa_persistencia.modulo_principal;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace capa_aplicacion.Servicios
 {
@@ -18,7 +19,7 @@ namespace capa_aplicacion.Servicios
             contratosRepo = new ContratoRepositorio(accesoSQLServer);
         }
 
-        // ✅ CREAR CONTRATO
+        // CREAR CONTRATO
         public int CrearContrato(ContratoDTO contrato)
         {
             accesoSQLServer.AbrirConexion();
@@ -44,7 +45,7 @@ namespace capa_aplicacion.Servicios
             }
         }
 
-        // ✅ ACTUALIZAR CONTRATO
+        // ACTUALIZAR CONTRATO
         public void ActualizarContrato(int contratoId, string usuario, string motivo, ContratoDTO contrato)
         {
             accesoSQLServer.AbrirConexion();
@@ -67,7 +68,7 @@ namespace capa_aplicacion.Servicios
             }
         }
 
-        // ✅ FINALIZAR CONTRATO
+        // FINALIZAR CONTRATO
         public (int contratoActualizado, int cambioRegistrado) FinalizarContrato(int contratoId, string observaciones = null)
         {
             accesoSQLServer.AbrirConexion();
@@ -84,7 +85,7 @@ namespace capa_aplicacion.Servicios
             }
         }
 
-        // ✅ CONSULTAR CONTRATOS POR TRABAJADOR
+        // CONSULTAR CONTRATOS POR TRABAJADOR
         public List<Contrato> ConsultarContratosPorTrabajador(int trabajadorId)
         {
             accesoSQLServer.AbrirConexion();
@@ -127,9 +128,48 @@ namespace capa_aplicacion.Servicios
             }
         }
 
+        // OBTENER DATOS COMPLETOS PARA NUEVO CONTRATO
+        public DatosNuevoContrato ObtenerDatosParaNuevoContrato(int trabajadorId)
+        {
+            try
+            {
+                var datos = new DatosNuevoContrato();
 
+                var trabajadorService = new capa_aplicacion.sevicios.TrabajadorService();
+                var areaService = new capa_aplicacion.sevicios.AreaService();
+                var cargoService = new capa_aplicacion.sevicios.CargoService();
+                var pensionService = new capa_aplicacion.sevicios.PensionService();
 
+                var trabajadores = trabajadorService.ObtenerEmpleados();
+                datos.Trabajador = trabajadores.FirstOrDefault(t => t.TrabajadorId == trabajadorId);
+
+                if (datos.Trabajador == null)
+                    throw new Exception("No se encontró el trabajador con ID " + trabajadorId);
+
+                datos.Areas = areaService.ObtenerAreas();
+                datos.Cargos = cargoService.ObtenerCargos();
+                datos.Pensiones = pensionService.ObtenerSistemasPensiones();
+
+                datos.TiposJornada = new List<TipoJornada>();
+                datos.TiposSalario = new List<TipoSalario>();
+
+                return datos;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error obteniendo datos para nuevo contrato: " + ex.Message, ex);
+            }
+        }
+
+        // CLASE CONTENEDORA
+        public class DatosNuevoContrato
+        {
+            public Trabajador Trabajador { get; set; }
+            public List<Area> Areas { get; set; }
+            public List<Cargo> Cargos { get; set; }
+            public List<TipoPension> Pensiones { get; set; }
+            public List<TipoSalario> TiposSalario { get; set; }
+            public List<TipoJornada> TiposJornada { get; set; }
+        }
     }
-
-
 }

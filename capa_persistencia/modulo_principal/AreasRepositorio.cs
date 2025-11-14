@@ -23,10 +23,6 @@ namespace capa_persistencia.modulo_principal
 
             try
             {
-                System.Diagnostics.Debug.WriteLine("Obteniendo áreas...");
-
-                _accesoSQL.AbrirConexion();
-
                 var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_areas_trabajo");
 
                 using (var reader = comando.ExecuteReader())
@@ -35,20 +31,17 @@ namespace capa_persistencia.modulo_principal
                     {
                         areas.Add(new Area
                         {
-                            AreaId = Convert.ToInt32(reader["AreaId"]),
-                            AreaNombre = reader["NombreArea"].ToString()
+                            AreaId = Convert.ToInt32(reader["area_id"]),
+                            AreaNombre = reader["area_nombre"].ToString(),
+                            AreaDescripcion = reader["area_descripcion"].ToString(),
                         });
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("ERROR en ObtenerAreas: " + ex.Message);
-                throw; // opcional: relanzas el error a la capa superior
-            }
-            finally
-            {
-                _accesoSQL.CerrarConexion();
+                Console.WriteLine($"Error al obtener las áreas: {ex.Message}");
+                throw new Exception("Ocurrió un error al obtener las áreas de trabajo.", ex);
             }
 
             return areas;

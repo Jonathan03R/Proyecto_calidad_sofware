@@ -1,7 +1,6 @@
 ﻿using capa_aplicacion.Servicios;
 using capa_dominio.dto;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -16,12 +15,10 @@ namespace capa_presentacion.Controllers
             servicio = new ServicioContratos();
         }
 
-        // Página principal
         public ActionResult Index()
         {
             try
             {
-                // La data se carga vía AJAX
                 return View();
             }
             catch (Exception ex)
@@ -31,14 +28,14 @@ namespace capa_presentacion.Controllers
             }
         }
 
-        // ✅ Nuevo método para listar los contratos de trabajadores actvos
         [HttpGet]
         public JsonResult ListarActivos()
         {
             try
             {
-                var data = servicio.ListarContratosActivos(); // <- ahora existe
-                var resultado = data.Select(x => new {
+                var data = servicio.ListarContratosActivos();
+                var resultado = data.Select(x => new
+                {
                     EmpleadoNombre = x.EmpleadoNombre,
                     Documento = x.Documento,
                     CargoNombre = x.CargoNombre,
@@ -54,15 +51,14 @@ namespace capa_presentacion.Controllers
             }
         }
 
-        // ✅ Nuevo método para listar trabajdores sin contratos
-
         [HttpGet]
         public JsonResult ListarSinContrato()
         {
             try
             {
                 var data = servicio.ListarSinContratoActivo();
-                var resultado = data.Select(x => new {
+                var resultado = data.Select(x => new
+                {
                     TrabajadorId = x.TrabajadorId,
                     EmpleadoNombre = x.EmpleadoNombre,
                     Documento = x.Documento,
@@ -76,7 +72,18 @@ namespace capa_presentacion.Controllers
             }
         }
 
-
-
+        [HttpGet]
+        public JsonResult ObtenerDatosNuevoContrato(int trabajadorId)
+        {
+            try
+            {
+                var data = servicio.ObtenerDatosParaNuevoContrato(trabajadorId);
+                return Json(new { success = true, data = data }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, mensaje = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }
