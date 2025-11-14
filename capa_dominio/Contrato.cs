@@ -70,5 +70,28 @@ namespace capa_dominio
             return tipoSalario != null && tipoSalario.TipoSalarioNombre.ToLower().Contains("hora");
         }
 
+
+        // Asumimos 6 días laborales por semana
+        public decimal ObtenerJornadaDiaria()
+        {
+            if (!ContratoHorasSemanales.HasValue || ContratoHorasSemanales.Value <= 0)
+                throw new InvalidOperationException("El contrato no tiene configuradas las horas semanales.");
+
+            
+            return Math.Round(ContratoHorasSemanales.Value / 6m, 2);
+        }
+
+
+        // En Perú se usa 30 días por mes
+        public decimal ObtenerSueldoPorDia()
+        {
+            if (ContratoSalario <= 0)
+                throw new InvalidOperationException("El salario del contrato no está definido o es inválido.");
+
+           
+            return Math.Round(ContratoSalario / 30m, 2);
+        }
+
+
     }
 }

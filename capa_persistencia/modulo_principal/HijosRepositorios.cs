@@ -40,7 +40,7 @@ namespace capa_persistencia.modulo_principal
                             Estudia = Convert.ToBoolean(dr["hijo_estudia"]),
                             TieneDiscapacidad = Convert.ToBoolean(dr["hijo_tiene_discapacidad"]),
                             Estado = Convert.ToChar(dr["hijo_estado"]),
-                            FechaCreacion = Convert.ToDateTime(dr["hijo_fecha_creacion"])
+                            //FechaCreacion = Convert.ToDateTime(dr["hijo_fecha_creacion"])
                         };
                         hijos.Add(hijo);
                     }
