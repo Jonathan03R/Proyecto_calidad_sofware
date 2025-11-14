@@ -334,6 +334,7 @@
 
 
     // ===== Confirmar creación de contrato =====
+    // ===== Confirmar creación de contrato =====
     $(document).on('click', '#nc_confirmar', function () {
 
         const contrato = {
@@ -349,7 +350,7 @@
 
             Salario: $('#nc_remuneracion').val() ? parseFloat($('#nc_remuneracion').val()) : null,
             HorasSemanales: $('#nc_horas_semanales').val()
-                ? parseInt($('#nc_horas_semanales').val())
+                ? parseInt($('#nc_horas_semanales').val(), 10)
                 : null,
 
             TarifaHora: $('#nc_tarifa_hora').val()
@@ -361,7 +362,9 @@
             Observaciones: $('#nc_observaciones').val() || null
         };
 
-        // Validación básica
+        // ---------- VALIDACIONES EN CLIENTE ----------
+
+        // Campos obligatorios
         if (!contrato.TrabajadorId) {
             $('#nc_mensaje').text('Falta el trabajador.');
             return;
@@ -386,11 +389,29 @@
             $('#nc_mensaje').text('Ingrese la fecha de inicio.');
             return;
         }
-        if (!contrato.Salario || isNaN(contrato.Salario)) {
-            $('#nc_mensaje').text('Ingrese un salario válido.');
+
+        // Salario válido (> 0)
+        if (!contrato.Salario || isNaN(contrato.Salario) || contrato.Salario <= 0) {
+            $('#nc_mensaje').text('Ingrese un salario mayor a 0.');
             return;
         }
 
+        // Horas semanales válidas (> 0)
+        if (!contrato.HorasSemanales || isNaN(contrato.HorasSemanales) || contrato.HorasSemanales <= 0) {
+            $('#nc_mensaje').text('Ingrese las horas semanales (mayores a 0).');
+            return;
+        }
+
+        // Validar fechas (fin >= inicio si hay fecha fin)
+        const fIni = contrato.FechaInicio ? new Date(contrato.FechaInicio) : null;
+        const fFin = contrato.FechaFin ? new Date(contrato.FechaFin) : null;
+
+        if (fIni && fFin && fFin < fIni) {
+            $('#nc_mensaje').text('La fecha de fin no puede ser anterior a la fecha de inicio.');
+            return;
+        }
+
+        // --------------------------------------------
         $('#nc_mensaje').text('Guardando contrato...');
 
         $.ajax({
@@ -420,6 +441,7 @@
             }
         });
     });
+
 
     // ===== Click en "Nuevo Contrato" desde TAB SIN CONTRATO =====
     $(document).on('click', '#tbody-sin-contrato [data-trabid]', function () {
@@ -524,6 +546,7 @@
 
         const data = {
             ContratoId: contratoId,
+            TrabajadorId: Number($('#ec_trabajador_id').val()),
             Motivo: motivo,
 
             CargoId: $('#ec_cargo_id').val() ? Number($('#ec_cargo_id').val()) : null,
@@ -552,12 +575,33 @@
             Observaciones: $('#ec_observaciones').val() || null
         };
 
+        // ---------- VALIDACIONES EN CLIENTE (EDICIÓN) ----------
+
+        if (data.Salario == null || isNaN(data.Salario) || data.Salario <= 0) {
+            $('#ec_mensaje').text('Ingrese un salario mayor a 0.');
+            return;
+        }
+
+        if (data.HorasSemanales == null || isNaN(data.HorasSemanales) || data.HorasSemanales <= 0) {
+            $('#ec_mensaje').text('Ingrese las horas semanales (mayores a 0).');
+            return;
+        }
+
+        const fIni = data.FechaInicio ? new Date(data.FechaInicio) : null;
+        const fFin = data.FechaFin ? new Date(data.FechaFin) : null;
+
+        if (fIni && fFin && fFin < fIni) {
+            $('#ec_mensaje').text('La fecha de fin no puede ser anterior a la fecha de inicio.');
+            return;
+        }
+
+        // -------------------------------------------------------
         $('#ec_mensaje').text('Guardando cambios...');
 
         $.ajax({
             url: URLS.actualizarContrato,
             type: 'POST',
-            data: data, // form-urlencoded; MVC lo bindea a ContratoDTO + string motivo
+            data: data,
             success: function (resp) {
                 if (resp && resp.exito) {
                     $('#ec_mensaje').text('Contrato actualizado correctamente.');
@@ -579,6 +623,7 @@
             }
         });
     });
+
 
     function cargarResumenContratos() {
         $.get(URLS.resumenContratos, function (resp) {

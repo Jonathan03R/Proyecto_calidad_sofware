@@ -32,19 +32,41 @@ namespace capa_aplicacion.Servicios
                 var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
                     ? contrato.HorasSemanales.Value
                     : 48;
+
                 var entidad = new Contrato
                 {
+                    Trabajador = new Trabajador
+                    {
+                        TrabajadorId = contrato.TrabajadorId ?? 0
+                    },
+                    Cargo = new Cargo
+                    {
+                        CargoId = contrato.CargoId ?? 0
+                    },
+                    Area = new Area
+                    {
+                        AreaId = contrato.AreaId ?? 0
+                    },
+                    TipoPension = new TipoPension
+                    {
+                        TipoPensionId = contrato.TipoPensionId ?? 0
+                    },
+                    TipoSalario = new TipoSalario
+                    {
+                        TipoSalarioId = contrato.TipoSalarioId ?? 0
+                    },
                     ContratoFechaInicio = contrato.FechaInicio,
                     ContratoFechaFin = contrato.FechaFin,
                     ContratoSalario = contrato.Salario ?? 0,
-                    ContratoHorasSemanales = horas,             
-                    ContratoTarifaHora = contrato.TarifaHora ?? 0
+                    ContratoHorasSemanales = horas,
+                    ContratoTarifaHora = contrato.TarifaHora ?? 0  
                 };
 
-                entidad.ValidarParaCreacion(); 
+                entidad.ValidarParaCreacion();
 
                 contrato.HorasSemanales = entidad.ContratoHorasSemanales;
                 contrato.TarifaHora = entidad.ContratoTarifaHora;
+
                 return contratosRepo.CrearContratoEmpleado(contrato);
             }
             finally
@@ -52,6 +74,7 @@ namespace capa_aplicacion.Servicios
                 accesoSQLServer.CerrarConexion();
             }
         }
+
 
 
         // ACTUALIZAR CONTRATO
@@ -69,6 +92,45 @@ namespace capa_aplicacion.Servicios
                 if (string.IsNullOrWhiteSpace(motivo))
                     throw new ArgumentException("Debe indicar el motivo de la actualización.");
 
+                var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
+                    ? contrato.HorasSemanales.Value
+                    : 48;
+
+                var entidad = new Contrato
+                {
+                    Trabajador = new Trabajador
+                    {
+                        TrabajadorId = contrato.TrabajadorId ?? 0
+                    },
+                    Cargo = new Cargo
+                    {
+                        CargoId = contrato.CargoId ?? 0
+                    },
+                    Area = new Area
+                    {
+                        AreaId = contrato.AreaId ?? 0
+                    },
+                    TipoPension = new TipoPension
+                    {
+                        TipoPensionId = contrato.TipoPensionId ?? 0
+                    },
+                    TipoSalario = new TipoSalario
+                    {
+                        TipoSalarioId = contrato.TipoSalarioId ?? 0
+                    },
+
+                    ContratoFechaInicio = contrato.FechaInicio,
+                    ContratoFechaFin = contrato.FechaFin,
+                    ContratoSalario = contrato.Salario ?? 0,
+                    ContratoHorasSemanales = horas,
+                    ContratoTarifaHora = contrato.TarifaHora ?? 0 
+                };
+
+                entidad.ValidarParaCreacion();
+
+                contrato.HorasSemanales = entidad.ContratoHorasSemanales;
+                contrato.TarifaHora = entidad.ContratoTarifaHora;
+
                 contratosRepo.ActualizarContrato(contratoId, usuario, motivo, contrato);
             }
             finally
@@ -76,6 +138,7 @@ namespace capa_aplicacion.Servicios
                 accesoSQLServer.CerrarConexion();
             }
         }
+
 
 
         // FINALIZAR CONTRATO

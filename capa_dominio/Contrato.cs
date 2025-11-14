@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace capa_dominio
 {
     public class Contrato
     {
-
         private int contratoId;
         private Trabajador trabajador;
         private Cargo cargo;
         private Area area;
         private TipoPension tipoPension;
         private TipoSalario tipoSalario;
-        private TipoJornada tipoJornada; 
+        private TipoJornada tipoJornada;
         private int estadoiId;
         private DateTime contratoFechaInicio;
         private DateTime? contratoFechaFin;
@@ -39,17 +34,29 @@ namespace capa_dominio
         public DateTime ContratoFechaInicio { get => contratoFechaInicio; set => contratoFechaInicio = value; }
         public DateTime? ContratoFechaFin { get => contratoFechaFin; set => contratoFechaFin = value; }
         public int? ContratoHorasSemanales { get => contratoHorasSemanales; set => contratoHorasSemanales = value; }
-        public decimal ContratoTarifaHora { get => contratoTarifaHora; set => contratoTarifaHora = value; }
+
+        public decimal ContratoTarifaHora
+        {
+            get => contratoTarifaHora;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentException("La tarifa por hora no puede ser negativa.");
+                contratoTarifaHora = value;
+            }
+        }
+
         public decimal ContratoSalario
         {
             get => contratoSalario;
             set
             {
                 if (value < 0)
-                    throw new ArgumentException("El salario no puede ser negativo");
+                    throw new ArgumentException("El salario no puede ser negativo.");
                 contratoSalario = value;
             }
         }
+
         public string ContratoModoPago { get => contratoModoPago; set => contratoModoPago = value; }
         public string ContratoDocumentoUrl { get => contratoDocumentoUrl; set => contratoDocumentoUrl = value; }
         public string ContratoDescripcionFunciones { get => contratoDescripcionFunciones; set => contratoDescripcionFunciones = value; }
@@ -67,63 +74,67 @@ namespace capa_dominio
             if (!ContratoHorasSemanales.HasValue || ContratoHorasSemanales.Value <= 0)
                 throw new InvalidOperationException("El contrato no tiene configuradas las horas semanales.");
 
-
             return Math.Round(ContratoHorasSemanales.Value / 6m, 2);
         }
 
-
-        // En Perú se usa 30 días por mes
         public decimal ObtenerSueldoPorDia()
         {
             if (ContratoSalario <= 0)
                 throw new InvalidOperationException("El salario del contrato no está definido o es inválido.");
-
 
             return Math.Round(ContratoSalario / 30m, 2);
         }
 
         public void CalcularTarifaHora()
         {
-            if (contratoSalario <= 0)
-                throw new InvalidOperationException("el salario es inválido.");
+            if (ContratoSalario <= 0)
+                throw new InvalidOperationException("El salario es inválido.");
 
-            if (!contratoHorasSemanales.HasValue || contratoHorasSemanales.Value <= 0)
-                throw new InvalidOperationException("las horas semanales no están configuradas.");
+            if (!ContratoHorasSemanales.HasValue || ContratoHorasSemanales.Value <= 0)
+                throw new InvalidOperationException("Las horas semanales no están configuradas.");
 
-            var jornadaDiaria = contratoHorasSemanales.Value / 6m;
+            var jornadaDiaria = ContratoHorasSemanales.Value / 6m;
 
             if (jornadaDiaria <= 0)
-                throw new InvalidOperationException("la jornada diaria es inválida.");
+                throw new InvalidOperationException("La jornada diaria es inválida.");
 
-            contratoTarifaHora = Math.Round(
-                contratoSalario / (30m * jornadaDiaria),
+            ContratoTarifaHora = Math.Round(
+                ContratoSalario / (30m * jornadaDiaria),
                 2
             );
         }
 
         public void ValidarParaCreacion()
         {
+            if (Trabajador == null || Trabajador.TrabajadorId <= 0)
+                throw new InvalidOperationException("Debe seleccionar un trabajador.");
+
+            if (Cargo == null || Cargo.CargoId <= 0)
+                throw new InvalidOperationException("Debe seleccionar un cargo.");
+
+            if (Area == null || Area.AreaId <= 0)
+                throw new InvalidOperationException("Debe seleccionar un área.");
+
+            if (TipoPension == null || TipoPension.TipoPensionId <= 0)
+                throw new InvalidOperationException("Debe seleccionar el sistema de pensiones.");
+
+            if (TipoSalario == null || TipoSalario.TipoSalarioId <= 0)
+                throw new InvalidOperationException("Debe seleccionar el tipo de salario.");
+
             if (ContratoFechaInicio == DateTime.MinValue)
-                throw new InvalidOperationException("debe especificar una fecha de inicio válida.");
+                throw new InvalidOperationException("Debe especificar una fecha de inicio válida.");
 
             if (ContratoFechaFin.HasValue && ContratoFechaFin.Value < ContratoFechaInicio)
-                throw new InvalidOperationException("la fecha de fin no puede ser anterior a la fecha de inicio.");
+                throw new InvalidOperationException("La fecha de fin no puede ser anterior a la fecha de inicio.");
 
-            if (ContratoSalario <= 0 && ContratoTarifaHora <= 0)
-                throw new InvalidOperationException("debe especificar un salario o una tarifa por hora válida.");
-            else
-            {
-                if (ContratoSalario <= 0)
-                    throw new InvalidOperationException("para contratos mensuales el salario debe ser mayor a 0.");
+            if (ContratoSalario <= 0)
+                throw new InvalidOperationException("El salario debe ser mayor a 0.");
 
-                if (!ContratoHorasSemanales.HasValue || ContratoHorasSemanales.Value <= 0)
-                    throw new InvalidOperationException("las horas semanales deben estar configuradas.");
+            if (!ContratoHorasSemanales.HasValue || ContratoHorasSemanales.Value <= 0)
+                throw new InvalidOperationException("Las horas semanales deben ser mayores a 0.");
 
-                CalcularTarifaHora();
-            }
+            CalcularTarifaHora();
         }
-
-
 
 
     }

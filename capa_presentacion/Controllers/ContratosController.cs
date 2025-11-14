@@ -165,6 +165,7 @@ namespace capa_presentacion.Controllers
             return Json(tipos, JsonRequestBehavior.AllowGet);
         }
 
+        // ✅ Obtener tipos de jornadas
         [HttpGet]
         public JsonResult ObtenerTiposJornadas()
         {
@@ -179,12 +180,12 @@ namespace capa_presentacion.Controllers
             return Json(tipos, JsonRequestBehavior.AllowGet);
         }
 
+        // ✅ CRear Contrato
         [HttpPost]
         public JsonResult CrearContrato(ContratoDTO contrato)
         {
             try
             {
-                // llama a tu servicio
                 var nuevoId = servicio.CrearContrato(contrato);
 
                 return Json(new
@@ -195,16 +196,15 @@ namespace capa_presentacion.Controllers
             }
             catch (Exception ex)
             {
-                // Manda el mensaje al front para mostrarlo en el modal
                 return Json(new
                 {
                     exito = false,
-                    mensaje = ex.Message
+                    mensaje = ex.Message  
                 });
             }
-        
         }
 
+        // ✅ Actualizar Contrato
         [HttpPost]
         public JsonResult ActualizarContrato(ContratoDTO contrato, string motivo)
         {
@@ -216,10 +216,9 @@ namespace capa_presentacion.Controllers
                 if (string.IsNullOrWhiteSpace(motivo))
                     throw new Exception("Debes indicar el motivo de la actualización.");
 
-                // Usuario que hace el cambio (puedes ajustar esto a tu realidad)
                 var usuario = User?.Identity != null && User.Identity.IsAuthenticated
                     ? User.Identity.Name
-                    : Environment.UserName; // o un valor fijo tipo "sistema"
+                    : Environment.UserName; 
 
                 servicio.ActualizarContrato(contrato.ContratoId.Value, usuario, motivo, contrato);
 
