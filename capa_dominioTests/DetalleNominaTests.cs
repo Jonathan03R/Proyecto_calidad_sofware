@@ -130,12 +130,12 @@ namespace capa_dominio.Tests
             var detalle = CrearDetalleNominaBase();
             var tiposHorasExtras = CrearTiposHorasExtras();
 
-            var horaTrabajada = new HoraTrabajada
+            var horaTrabajada = new capa_dominio.HoraTrabajada
             {
                 Fecha = new DateTime(2025, 11, 10), // Lunes
                 HorasNormales = 8m,
                 HorasExtras = 2m,
-                TiposHorasExtras1 = tiposHorasExtras,
+                TiposHorasExtras = tiposHorasExtras,
                 Contrato = detalle.Contrato
             };
 
@@ -156,12 +156,12 @@ namespace capa_dominio.Tests
             var detalle = CrearDetalleNominaBase();
             var tiposHorasExtras = CrearTiposHorasExtras();
 
-            var horaTrabajada = new HoraTrabajada
+            var horaTrabajada = new capa_dominio.HoraTrabajada
             {
                 Fecha = new DateTime(2025, 11, 10), // Lunes
                 HorasNormales = 8m,
                 HorasExtras = 4m,
-                TiposHorasExtras1 = tiposHorasExtras,
+                TiposHorasExtras = tiposHorasExtras,
                 Contrato = detalle.Contrato
             };
 
@@ -187,12 +187,12 @@ namespace capa_dominio.Tests
             var detalle = CrearDetalleNominaBase();
             var tiposHorasExtras = CrearTiposHorasExtras();
 
-            var horaTrabajada = new HoraTrabajada
+            var horaTrabajada = new capa_dominio.HoraTrabajada
             {
                 Fecha = new DateTime(2025, 11, 15), // Sábado
                 HorasNormales = 4m,
                 HorasExtras = 2m,
-                TiposHorasExtras1 = tiposHorasExtras,
+                TiposHorasExtras = tiposHorasExtras,
                 Contrato = detalle.Contrato
             };
 
@@ -212,12 +212,12 @@ namespace capa_dominio.Tests
             var detalle = CrearDetalleNominaBase();
             var tiposHorasExtras = CrearTiposHorasExtras();
 
-            var horaTrabajada = new HoraTrabajada
+            var horaTrabajada = new capa_dominio.HoraTrabajada
             {
                 Fecha = new DateTime(2025, 11, 16), // Domingo
                 HorasNormales = 4m,
                 HorasExtras = 2m,
-                TiposHorasExtras1 = tiposHorasExtras,
+                TiposHorasExtras = tiposHorasExtras,
                 Contrato = detalle.Contrato
             };
 
@@ -236,12 +236,12 @@ namespace capa_dominio.Tests
             // Arrange
             var detalle = CrearDetalleNominaBase();
 
-            var horaTrabajada = new HoraTrabajada
+            var horaTrabajada = new capa_dominio.HoraTrabajada
             {
                 Fecha = new DateTime(2025, 11, 10),
                 HorasNormales = 8m,
                 HorasExtras = 2m,
-                TiposHorasExtras1 = null, // Sin tipos de horas extras
+                TiposHorasExtras = null, // Sin tipos de horas extras
                 Contrato = detalle.Contrato
             };
 
@@ -255,12 +255,12 @@ namespace capa_dominio.Tests
             // Arrange
             var tiposHorasExtras = CrearTiposHorasExtras();
 
-            var horaTrabajada = new HoraTrabajada
+            var horaTrabajada = new capa_dominio.HoraTrabajada
             {
                 Fecha = new DateTime(2025, 11, 10),
                 HorasNormales = 8m,
                 HorasExtras = 2m,
-                TiposHorasExtras1 = tiposHorasExtras,
+                TiposHorasExtras = tiposHorasExtras,
                 Contrato = null // Sin contrato
             };
 

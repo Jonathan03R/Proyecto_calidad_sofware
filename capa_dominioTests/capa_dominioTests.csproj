@@ -57,9 +57,12 @@
   <ItemGroup>
     <Compile Include="AdelantoSueldoTests.cs" />
     <Compile Include="DetalleNominaTests.cs" />
+    <Compile Include="HoraTrabajada.cs" />
     <Compile Include="NominaTests.cs" />
     <Compile Include="PeriodoTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TipoJornadaTests.cs" />
+    <Compile Include="TrabajadorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

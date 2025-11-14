@@ -29,6 +29,15 @@ namespace capa_dominio
         private string contratoObservaciones;
         private DateTime contratoFechaCreacion;
 
+        // 🔹 Propiedad privada para el valor hora calculado
+        private decimal valorHoraCalculado;
+        public decimal ValorHoraCalculado
+        {
+            get => valorHoraCalculado;
+            private set => valorHoraCalculado = value;
+        }
+
+
         // 🔹 Propiedades públicas (con acceso controlado)
         public int ContratoId { get => contratoId; set => contratoId = value; }
         public Trabajador Trabajador { get => trabajador; set => trabajador = value; }
@@ -64,11 +73,28 @@ namespace capa_dominio
             return EstadoiId == 1;
         }
 
-
         public bool EsPorHora()
         {
-            return tipoSalario != null && tipoSalario.TipoSalarioNombre.ToLower().Contains("hora");
+            return tipoSalario != null &&
+                   tipoSalario.TipoSalarioNombre.ToLower().Contains("hora");
         }
 
+
+        public void CalcularValorPorHora()
+        {
+            decimal resultado = 0m;
+
+            if (contratoTarifaHora > 0)
+            {
+                resultado = contratoTarifaHora;
+            }
+            else if (contratoSalario > 0)
+            {
+                // // Fórmula usada en tu BD → salario mensual / 240 horas
+                resultado = Math.Round(contratoSalario / 240m, 2);
+            }
+
+            ValorHoraCalculado = resultado;
+        }
     }
 }

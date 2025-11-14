@@ -1,5 +1,4 @@
 ﻿using capa_dominio;
-using capa_dominio.dto;
 using capa_persistencia.modulo_base;
 using System;
 using System.Collections.Generic;
@@ -17,27 +16,28 @@ namespace capa_persistencia.modulo_principal
             _accesoSQL = accesoSQL;
         }
 
-        public int CrearContratoEmpleado(ContratoDTO contrato)
+        // ✅ CREAR CONTRATO (ahora usa Contrato en lugar de ContratoDTO)
+        public int CrearContratoEmpleado(Contrato contrato)
         {
             try
             {
                 _accesoSQL.AbrirConexion();
                 var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_crear_contrato_empleado");
 
-                comando.Parameters.AddWithValue("@trabajadorid", contrato.TrabajadorId);
-                comando.Parameters.AddWithValue("@cargoid", contrato.CargoId);
-                comando.Parameters.AddWithValue("@areaid", contrato.AreaId);
-                comando.Parameters.AddWithValue("@tipopensionid", contrato.TipoPensionId);
-                comando.Parameters.AddWithValue("@tiposalarioid", contrato.TipoSalarioId);
-                comando.Parameters.AddWithValue("@tipojornadaid", contrato.TipoJornadaId);
-                comando.Parameters.AddWithValue("@fechainicio", contrato.FechaInicio);
-                comando.Parameters.AddWithValue("@fechafin", contrato.FechaFin ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@salario", contrato.Salario ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@tarifahora", contrato.TarifaHora ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@modopago", contrato.ModoPago ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@documentourl", contrato.DocumentoUrl ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@descripcionfunciones", contrato.DescripcionFunciones ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@observaciones", contrato.Observaciones ?? (object)DBNull.Value);
+                comando.Parameters.AddWithValue("@trabajadorid", contrato.Trabajador?.TrabajadorId ?? 0);
+                comando.Parameters.AddWithValue("@cargoid", contrato.Cargo?.CargoId ?? (object)DBNull.Value);
+                comando.Parameters.AddWithValue("@areaid", contrato.Area?.AreaId ?? (object)DBNull.Value);
+                comando.Parameters.AddWithValue("@tipopensionid", contrato.TipoPension?.TipoPensionId ?? (object)DBNull.Value);
+                comando.Parameters.AddWithValue("@tiposalarioid", contrato.TipoSalario?.TipoSalarioId ?? (object)DBNull.Value);
+                comando.Parameters.AddWithValue("@tipojornadaid", contrato.TipoJornada?.TipoJornadaId ?? (object)DBNull.Value);
+                comando.Parameters.AddWithValue("@fechainicio", contrato.ContratoFechaInicio);
+                comando.Parameters.AddWithValue("@fechafin", contrato.ContratoFechaFin ?? (object)DBNull.Value);
+                comando.Parameters.AddWithValue("@salario", contrato.ContratoSalario > 0 ? (object)contrato.ContratoSalario : DBNull.Value);
+                comando.Parameters.AddWithValue("@tarifahora", contrato.ContratoTarifaHora > 0 ? (object)contrato.ContratoTarifaHora : DBNull.Value);
+                comando.Parameters.AddWithValue("@modopago", contrato.ContratoModoPago ?? (object)DBNull.Value);
+                comando.Parameters.AddWithValue("@documentourl", contrato.ContratoDocumentoUrl ?? (object)DBNull.Value);
+                comando.Parameters.AddWithValue("@descripcionfunciones", contrato.ContratoDescripcionFunciones ?? (object)DBNull.Value);
+                comando.Parameters.AddWithValue("@observaciones", contrato.ContratoObservaciones ?? (object)DBNull.Value);
 
                 var result = comando.ExecuteScalar();
                 return Convert.ToInt32(result);
@@ -48,7 +48,7 @@ namespace capa_persistencia.modulo_principal
             }
         }
 
-
+        // ✅ FINALIZAR CONTRATO
         public (int contratoActualizado, int cambioRegistrado) FinalizarContrato(int contratoId, string observaciones = null)
         {
             try
@@ -77,7 +77,8 @@ namespace capa_persistencia.modulo_principal
             }
         }
 
-        public void ActualizarContrato(int contratoId, string usuario, string motivo, ContratoDTO contrato)
+        // ✅ ACTUALIZAR CONTRATO (ahora usa Contrato en lugar de ContratoDTO)
+        public void ActualizarContrato(int contratoId, string usuario, string motivo, Contrato contrato)
         {
             try
             {
@@ -87,11 +88,11 @@ namespace capa_persistencia.modulo_principal
                 comando.Parameters.AddWithValue("@contrato_id", contratoId);
                 comando.Parameters.AddWithValue("@usuario", usuario);
                 comando.Parameters.AddWithValue("@motivo", motivo);
-                comando.Parameters.AddWithValue("@observaciones", contrato.Observaciones ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@cargo_id", contrato.CargoId ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@tipo_salario_id", contrato.TipoSalarioId ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@contrato_salario", contrato.Salario ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@contrato_modo_pago", contrato.ModoPago ?? (object)DBNull.Value);
+                comando.Parameters.AddWithValue("@observaciones", contrato.ContratoObservaciones ?? (object)DBNull.Value);
+                comando.Parameters.AddWithValue("@cargo_id", contrato.Cargo?.CargoId ?? (object)DBNull.Value);
+                comando.Parameters.AddWithValue("@tipo_salario_id", contrato.TipoSalario?.TipoSalarioId ?? (object)DBNull.Value);
+                comando.Parameters.AddWithValue("@contrato_salario", contrato.ContratoSalario > 0 ? (object)contrato.ContratoSalario : DBNull.Value);
+                comando.Parameters.AddWithValue("@contrato_modo_pago", contrato.ContratoModoPago ?? (object)DBNull.Value);
 
                 comando.ExecuteNonQuery();
             }
@@ -101,13 +102,14 @@ namespace capa_persistencia.modulo_principal
             }
         }
 
-
+        // ✅ OBTENER CONTRATOS POR TRABAJADOR
         public List<Contrato> ObtenerContratosPorTrabajador(int trabajadorId)
         {
             var contratos = new List<Contrato>();
 
             try
             {
+                _accesoSQL.AbrirConexion();
                 var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_obtener_contratos_por_trabajador");
                 comando.Parameters.AddWithValue("@trabajador_id", trabajadorId);
 
@@ -138,7 +140,7 @@ namespace capa_persistencia.modulo_principal
                             EstadoiId = reader.GetInt32(reader.GetOrdinal("estado_contrato_id")),
                         };
 
-                        // ✅ Mapea solo el ID del tipo de pensión
+                        // Mapea TipoPension
                         if (!reader.IsDBNull(reader.GetOrdinal("tipo_pension_id")))
                         {
                             contrato.TipoPension = new TipoPension
@@ -158,14 +160,18 @@ namespace capa_persistencia.modulo_principal
                 System.Diagnostics.Debug.WriteLine($"Error al obtener contratos: {ex.Message}");
                 throw;
             }
+            finally
+            {
+                _accesoSQL.CerrarConexion();
+            }
 
             return contratos;
         }
 
-        // CONSULTAR TRABAJADORES CON CONTRATOS ACTVOS
-        public List<ContratoDTO> ListarConContratoActivo()
+        // ✅ LISTAR CONTRATOS ACTIVOS (devuelve Contrato en lugar de ContratoDTO)
+        public List<Contrato> ListarConContratoActivo()
         {
-            var lista = new List<ContratoDTO>();
+            var lista = new List<Contrato>();
             try
             {
                 _accesoSQL.AbrirConexion();
@@ -173,37 +179,60 @@ namespace capa_persistencia.modulo_principal
 
                 using (var dr = cmd.ExecuteReader())
                 {
+                    int iContratoId = dr.GetOrdinal("contrato_id");
                     int iPersonaNombre = dr.GetOrdinal("persona_nombre");
+                    int iPersonaApellido = dr.GetOrdinal("persona_apellido");
                     int iDocumento = dr.GetOrdinal("persona_identificacion");
+                    int iCargoId = dr.GetOrdinal("cargo_id");
                     int iCargoNombre = dr.GetOrdinal("cargo_nombre");
-                    int iEstadoContratoNombre = dr.GetOrdinal("estado_contrato_nombre");
+                    int iEstadoId = dr.GetOrdinal("estado_contrato_id");
+                    int iEstadoNombre = dr.GetOrdinal("estado_contrato_nombre");
                     int iFechaInicio = dr.GetOrdinal("contrato_fecha_inicio");
                     int iFechaFin = dr.GetOrdinal("contrato_fecha_fin");
+                    int iSalario = dr.GetOrdinal("contrato_salario");
+                    int iModoPago = dr.GetOrdinal("contrato_modo_pago");
+                    int iObservaciones = dr.GetOrdinal("contrato_observaciones");
 
                     while (dr.Read())
                     {
-                        lista.Add(new ContratoDTO
+                        var contrato = new Contrato
                         {
-                            EmpleadoNombre = dr.IsDBNull(iPersonaNombre) ? "" : dr.GetString(iPersonaNombre),
-                            Documento = dr.IsDBNull(iDocumento) ? "" : dr.GetString(iDocumento),
-                            CargoNombre = dr.IsDBNull(iCargoNombre) ? "" : dr.GetString(iCargoNombre),
-                            EstadoContratoNombre = dr.IsDBNull(iEstadoContratoNombre) ? "" : dr.GetString(iEstadoContratoNombre),
-                            FechaInicio = dr.IsDBNull(iFechaInicio) ? DateTime.MinValue : dr.GetDateTime(iFechaInicio),
-                            FechaFin = dr.IsDBNull(iFechaFin) ? (DateTime?)null : dr.GetDateTime(iFechaFin),
-                        });
+                            ContratoId = dr.IsDBNull(iContratoId) ? 0 : dr.GetInt32(iContratoId),
+                            Trabajador = new Trabajador
+                            {
+                                Nombres = dr.IsDBNull(iPersonaNombre) ? "" : dr.GetString(iPersonaNombre),
+                                Apellidos = dr.IsDBNull(iPersonaApellido) ? "" : dr.GetString(iPersonaApellido),
+                                Identificacion = dr.IsDBNull(iDocumento) ? "" : dr.GetString(iDocumento)
+                            },
+                            Cargo = new Cargo
+                            {
+                                CargoId = dr.IsDBNull(iCargoId) ? 0 : dr.GetInt32(iCargoId),
+                                CargoNombre = dr.IsDBNull(iCargoNombre) ? "" : dr.GetString(iCargoNombre)
+                            },
+                            EstadoiId = dr.IsDBNull(iEstadoId) ? 0 : dr.GetInt32(iEstadoId),
+                            ContratoFechaInicio = dr.IsDBNull(iFechaInicio) ? DateTime.MinValue : dr.GetDateTime(iFechaInicio),
+                            ContratoFechaFin = dr.IsDBNull(iFechaFin) ? (DateTime?)null : dr.GetDateTime(iFechaFin),
+                            ContratoSalario = dr.IsDBNull(iSalario) ? 0 : dr.GetDecimal(iSalario),
+                            ContratoModoPago = dr.IsDBNull(iModoPago) ? "" : dr.GetString(iModoPago),
+                            ContratoObservaciones = dr.IsDBNull(iObservaciones) ? "" : dr.GetString(iObservaciones)
+                        };
+
+                        lista.Add(contrato);
                     }
                 }
             }
-            finally { _accesoSQL.CerrarConexion(); }
+            finally
+            {
+                _accesoSQL.CerrarConexion();
+            }
 
             return lista;
         }
 
-
-        // CONSULTAR TRABAJADORES SIN CONTRATOS
-        public List<ContratoDTO> ListarSinContratoActivo()
+        // ✅ LISTAR TRABAJADORES SIN CONTRATO (devuelve Trabajador en lugar de ContratoDTO)
+        public List<Trabajador> ListarSinContratoActivo()
         {
-            var lista = new List<ContratoDTO>();
+            var lista = new List<Trabajador>();
             try
             {
                 _accesoSQL.AbrirConexion();
@@ -215,24 +244,23 @@ namespace capa_persistencia.modulo_principal
                     int iAp = dr.GetOrdinal("persona_apellido");
                     int iNom = dr.GetOrdinal("persona_nombre");
                     int iDoc = dr.GetOrdinal("persona_identificacion");
-                    int iEstado = dr.GetOrdinal("EstadoContrato"); 
 
                     while (dr.Read())
                     {
-                        string ap = dr.IsDBNull(iAp) ? "" : dr.GetString(iAp);
-                        string no = dr.IsDBNull(iNom) ? "" : dr.GetString(iNom);
-
-                        lista.Add(new ContratoDTO
+                        lista.Add(new Trabajador
                         {
-                            TrabajadorId = dr.IsDBNull(iTrabId) ? (int?)null : dr.GetInt32(iTrabId),
-                            EmpleadoNombre = (ap + " " + no).Trim(),
-                            Documento = dr.IsDBNull(iDoc) ? "" : dr.GetString(iDoc),
-                            EstadoContratoNombre = dr.IsDBNull(iEstado) ? "" : dr.GetString(iEstado)
+                            TrabajadorId = dr.IsDBNull(iTrabId) ? 0 : dr.GetInt32(iTrabId),
+                            Apellidos = dr.IsDBNull(iAp) ? "" : dr.GetString(iAp),
+                            Nombres = dr.IsDBNull(iNom) ? "" : dr.GetString(iNom),
+                            Identificacion = dr.IsDBNull(iDoc) ? "" : dr.GetString(iDoc)
                         });
                     }
                 }
             }
-            finally { _accesoSQL.CerrarConexion(); }
+            finally
+            {
+                _accesoSQL.CerrarConexion();
+            }
 
             return lista;
         }
