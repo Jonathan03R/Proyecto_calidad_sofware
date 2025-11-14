@@ -101,41 +101,61 @@ namespace capa_dominio.Tests
         /// Test para el método CalcularPagoHorasExtras
         /// </summary>
 
-        [TestMethod]
-        public void CalcularPagoHorasExtras_DiaNormalTest()
+        [TestMethod()]
+        public void CalcularPagoHorasExtras_SabadoTest()
         {
-            // Arrange
-            var contrato = new Contrato
-            {
-                ContratoTarifaHora = 10m
-            };
+            var contrato = new Contrato { ContratoTarifaHora = 10m };
 
             var tiposHorasExtras = new List<TipoHoraExtra>
-            {
-                new TipoHoraExtra { TiposHorasExtrasCodigo = "PRIMERAS2", TiposHorasExtrasMultiplicador = 0.25m, TiposHorasExtrasEstado = 'A' },
-                new TipoHoraExtra { TiposHorasExtrasCodigo = "ADICIONALES", TiposHorasExtrasMultiplicador = 0.35m,TiposHorasExtrasEstado = 'A' },
-                new TipoHoraExtra { TiposHorasExtrasCodigo = "SABADO", TiposHorasExtrasMultiplicador = 0.5m , TiposHorasExtrasEstado = 'A' },
-                new TipoHoraExtra { TiposHorasExtrasCodigo = "DOMINGO", TiposHorasExtrasMultiplicador = 2.00m ,TiposHorasExtrasEstado = 'A' }
-            };
+    {
+        new TipoHoraExtra { TiposHorasExtrasCodigo = "PRIMERAS2", TiposHorasExtrasMultiplicador = 0.25m, TiposHorasExtrasEstado = 'A' },
+        new TipoHoraExtra { TiposHorasExtrasCodigo = "ADICIONALES", TiposHorasExtrasMultiplicador = 0.35m, TiposHorasExtrasEstado = 'A' },
+        new TipoHoraExtra { TiposHorasExtrasCodigo = "SABADO", TiposHorasExtrasMultiplicador = 0.50m, TiposHorasExtrasEstado = 'A' },
+        new TipoHoraExtra { TiposHorasExtrasCodigo = "DOMINGO", TiposHorasExtrasMultiplicador = 1.0m, TiposHorasExtrasEstado = 'A' }
+    };
 
             var horaTrabajada = new HoraTrabajada
             {
                 Contrato = contrato,
-                Fecha = new DateTime(2025, 10, 2), // jueves
-                HorasNormales = 8,
-                HorasExtras = 3,
+                Fecha = new DateTime(2025, 10, 4), // sábado
+                HorasExtras = 1,
                 TiposHorasExtras = tiposHorasExtras
             };
 
-            // Act
             var pagoExtras = horaTrabajada.CalcularPagoHorasExtras();
 
-            // Assert
-            // Primeras 2: 2 * 10 * 0.25 = 5
-            // Adicionales: 1 * 10 * 0.35 = 3.5
-            // Total = 8.5
-            Assert.AreEqual(8.5m, pagoExtras);
+            // 1 hora * 10 * (1 + 0.5) = 15
+            Assert.AreEqual(15m, pagoExtras);
         }
+
+
+        [TestMethod()]
+        public void CalcularPagoHorasExtras_DomingoTest()
+        {
+            var contrato = new Contrato { ContratoTarifaHora = 10m };
+
+            var tiposHorasExtras = new List<TipoHoraExtra>
+    {
+        new TipoHoraExtra { TiposHorasExtrasCodigo = "PRIMERAS2", TiposHorasExtrasMultiplicador = 0.25m, TiposHorasExtrasEstado = 'A' },
+        new TipoHoraExtra { TiposHorasExtrasCodigo = "ADICIONALES", TiposHorasExtrasMultiplicador = 0.35m, TiposHorasExtrasEstado = 'A' },
+        new TipoHoraExtra { TiposHorasExtrasCodigo = "SABADO", TiposHorasExtrasMultiplicador = 0.50m, TiposHorasExtrasEstado = 'A' },
+        new TipoHoraExtra { TiposHorasExtrasCodigo = "DOMINGO", TiposHorasExtrasMultiplicador = 1.0m, TiposHorasExtrasEstado = 'A' }
+    };
+
+            var horaTrabajada = new HoraTrabajada
+            {
+                Contrato = contrato,
+                Fecha = new DateTime(2025, 10, 5), // domingo
+                HorasExtras = 2,
+                TiposHorasExtras = tiposHorasExtras
+            };
+
+            var pagoExtras = horaTrabajada.CalcularPagoHorasExtras();
+
+            // 2 horas * 10 * (1 + 1) = 40
+            Assert.AreEqual(40m, pagoExtras);
+        }
+
 
     }
 }
