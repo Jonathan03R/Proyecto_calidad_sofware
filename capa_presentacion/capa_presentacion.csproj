@@ -492,6 +492,7 @@
     <Content Include="Content\css\empleados.css" />
     <Content Include="Content\css\historial.css" />
     <Content Include="Content\css\layout.css" />
+    <Content Include="Content\css\listavigente.css" />
     <Content Include="Content\css\nomina.css" />
     <Content Include="Content\css\reporte.css" />
     <Content Include="Content\css\parametros.css" />

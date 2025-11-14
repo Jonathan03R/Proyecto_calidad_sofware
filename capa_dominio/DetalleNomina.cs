@@ -353,10 +353,6 @@ namespace capa_dominio
             System.Diagnostics.Trace.WriteLine(
                 $"TOTAL_INGRESOS: {totalIngresos} | TOTAL_DESCUENTOS: {totalDescuentos} | NETO_PAGAR: {netoPagar}"
             );
-        }
-
-
-
-        
+        }       
     }
 }

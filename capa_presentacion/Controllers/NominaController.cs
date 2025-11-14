@@ -23,8 +23,7 @@ namespace capa_presentacion.Controllers
 
         public ActionResult Index()
         {
-            var model = new NominaPeriodoVM(); // aunque esté vacío, debe existir
-            return View(model);
+            return View();
         }
         public ActionResult Historial()
         {
@@ -141,6 +140,29 @@ namespace capa_presentacion.Controllers
                     innerError = ex.InnerException?.Message
                 });
             }
+        }
+
+        [HttpGet]
+        public JsonResult ObtenerDetalleNominasProcesadas()
+        {
+            Boolean accionExitosa;
+            String mensajeRetorno;
+            List<NominasProcesadasDTO> listaDetalles = new List<NominasProcesadasDTO>();
+            try
+            {
+                listaDetalles = _servicio.ListarDetallesNominasProcesadas();
+                accionExitosa = true;
+                mensajeRetorno = "";
+            }
+            catch (Exception e)
+            {
+                listaDetalles = null;
+                accionExitosa = false;
+                mensajeRetorno = e.Message;
+            }
+
+            return Json(new { data = listaDetalles, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+
         }
 
     }

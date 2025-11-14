@@ -235,5 +235,29 @@ namespace capa_aplicacion.servicios
                 estado
             );
         }
+
+        public List<NominasProcesadasDTO> ListarDetallesNominasProcesadas(
+            int? trabajadorId = null,
+            int? nominaId = null,
+            int? periodoId = null,
+            string estadoNomina = null)
+        {
+            List<NominasProcesadasDTO> listaDetalles;
+            try
+            {
+                _conexion.AbrirConexion();
+                listaDetalles = _detalleNomina.ListarDetallesNominasProcesadas(
+                    trabajadorId,
+                    nominaId,
+                    periodoId,
+                    estadoNomina);
+                _conexion.CerrarConexion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return listaDetalles;
+        }
     }
 }
