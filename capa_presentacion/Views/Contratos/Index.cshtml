@@ -13,13 +13,17 @@
          data-url-obtener-pensiones="@Url.Action("ObtenerPensiones", "Contratos")"
          data-url-obtener-tipos-salarios="@Url.Action("ObtenerTiposSalarios", "Contratos")"
          data-url-obtener-jornadas="@Url.Action("ObtenerTiposJornadas", "Contratos")"
-         data-url-crear-contrato="@Url.Action("CrearContrato", "Contratos")">
+         data-url-crear-contrato="@Url.Action("CrearContrato", "Contratos")"
+         data-url-actualizar-contrato="@Url.Action("ActualizarContrato", "Contratos")"
+         data-url-resumen-contratos="@Url.Action("ResumenContratos", "Contratos")">
 
     @Html.Partial("_CardResumenContratos")
     @Html.Partial("_FiltrosContratos")
     @Html.Partial("_TablaActivos")
     @Html.Partial("_TablaSinContrato")
     @Html.Partial("_ModalNuevoContrato")
+    @Html.Partial("_ModalEditarContrato")
+
 
 </section>
 

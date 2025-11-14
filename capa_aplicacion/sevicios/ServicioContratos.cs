@@ -20,6 +20,7 @@ namespace capa_aplicacion.Servicios
         }
 
         // CREAR CONTRATO
+
         public int CrearContrato(ContratoDTO contrato)
         {
             accesoSQLServer.AbrirConexion();
@@ -28,14 +29,43 @@ namespace capa_aplicacion.Servicios
                 if (contrato == null)
                     throw new ArgumentNullException(nameof(contrato), "El contrato no puede ser nulo.");
 
-                if (contrato.FechaInicio == DateTime.MinValue)
-                    throw new ArgumentException("Debe especificar una fecha de inicio válida.");
+                var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
+                    ? contrato.HorasSemanales.Value
+                    : 48;
 
-                if (contrato.FechaFin.HasValue && contrato.FechaFin < contrato.FechaInicio)
-                    throw new ArgumentException("La fecha de fin no puede ser anterior a la fecha de inicio.");
+                var entidad = new Contrato
+                {
+                    Trabajador = new Trabajador
+                    {
+                        TrabajadorId = contrato.TrabajadorId ?? 0
+                    },
+                    Cargo = new Cargo
+                    {
+                        CargoId = contrato.CargoId ?? 0
+                    },
+                    Area = new Area
+                    {
+                        AreaId = contrato.AreaId ?? 0
+                    },
+                    TipoPension = new TipoPension
+                    {
+                        TipoPensionId = contrato.TipoPensionId ?? 0
+                    },
+                    TipoSalario = new TipoSalario
+                    {
+                        TipoSalarioId = contrato.TipoSalarioId ?? 0
+                    },
+                    ContratoFechaInicio = contrato.FechaInicio,
+                    ContratoFechaFin = contrato.FechaFin,
+                    ContratoSalario = contrato.Salario ?? 0,
+                    ContratoHorasSemanales = horas,
+                    ContratoTarifaHora = contrato.TarifaHora ?? 0  
+                };
 
-                if ((contrato.Salario ?? 0) <= 0 && (contrato.TarifaHora ?? 0) <= 0)
-                    throw new ArgumentException("Debe especificar un salario o una tarifa por hora válida.");
+                entidad.ValidarParaCreacion();
+
+                contrato.HorasSemanales = entidad.ContratoHorasSemanales;
+                contrato.TarifaHora = entidad.ContratoTarifaHora;
 
                 return contratosRepo.CrearContratoEmpleado(contrato);
             }
@@ -44,6 +74,8 @@ namespace capa_aplicacion.Servicios
                 accesoSQLServer.CerrarConexion();
             }
         }
+
+
 
         // ACTUALIZAR CONTRATO
         public void ActualizarContrato(int contratoId, string usuario, string motivo, ContratoDTO contrato)
@@ -60,6 +92,45 @@ namespace capa_aplicacion.Servicios
                 if (string.IsNullOrWhiteSpace(motivo))
                     throw new ArgumentException("Debe indicar el motivo de la actualización.");
 
+                var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
+                    ? contrato.HorasSemanales.Value
+                    : 48;
+
+                var entidad = new Contrato
+                {
+                    Trabajador = new Trabajador
+                    {
+                        TrabajadorId = contrato.TrabajadorId ?? 0
+                    },
+                    Cargo = new Cargo
+                    {
+                        CargoId = contrato.CargoId ?? 0
+                    },
+                    Area = new Area
+                    {
+                        AreaId = contrato.AreaId ?? 0
+                    },
+                    TipoPension = new TipoPension
+                    {
+                        TipoPensionId = contrato.TipoPensionId ?? 0
+                    },
+                    TipoSalario = new TipoSalario
+                    {
+                        TipoSalarioId = contrato.TipoSalarioId ?? 0
+                    },
+
+                    ContratoFechaInicio = contrato.FechaInicio,
+                    ContratoFechaFin = contrato.FechaFin,
+                    ContratoSalario = contrato.Salario ?? 0,
+                    ContratoHorasSemanales = horas,
+                    ContratoTarifaHora = contrato.TarifaHora ?? 0 
+                };
+
+                entidad.ValidarParaCreacion();
+
+                contrato.HorasSemanales = entidad.ContratoHorasSemanales;
+                contrato.TarifaHora = entidad.ContratoTarifaHora;
+
                 contratosRepo.ActualizarContrato(contratoId, usuario, motivo, contrato);
             }
             finally
@@ -67,6 +138,8 @@ namespace capa_aplicacion.Servicios
                 accesoSQLServer.CerrarConexion();
             }
         }
+
+
 
         // FINALIZAR CONTRATO
         public (int contratoActualizado, int cambioRegistrado) FinalizarContrato(int contratoId, string observaciones = null)
@@ -128,36 +201,16 @@ namespace capa_aplicacion.Servicios
             }
         }
 
-        // OBTENER DATOS COMPLETOS PARA NUEVO CONTRATO
-        public DatosNuevoContrato ObtenerDatosParaNuevoContrato(int trabajadorId)
+        public ResumenContratosDTO ObtenerResumen()
         {
+            accesoSQLServer.AbrirConexion();
             try
             {
-                var datos = new DatosNuevoContrato();
-
-                var trabajadorService = new capa_aplicacion.sevicios.TrabajadorService();
-                var areaService = new capa_aplicacion.sevicios.AreaService();
-                var cargoService = new capa_aplicacion.sevicios.CargoService();
-                var pensionService = new capa_aplicacion.sevicios.PensionService();
-
-                var trabajadores = trabajadorService.ObtenerEmpleados();
-                datos.Trabajador = trabajadores.FirstOrDefault(t => t.TrabajadorId == trabajadorId);
-
-                if (datos.Trabajador == null)
-                    throw new Exception("No se encontró el trabajador con ID " + trabajadorId);
-
-                datos.Areas = areaService.ObtenerAreas();
-                datos.Cargos = cargoService.ObtenerCargos();
-                datos.Pensiones = pensionService.ObtenerSistemasPensiones();
-
-                datos.TiposJornada = new List<TipoJornada>();
-                datos.TiposSalario = new List<TipoSalario>();
-
-                return datos;
+                return contratosRepo.ObtenerResumenContratos();
             }
-            catch (Exception ex)
+            finally
             {
-                throw new Exception("Error obteniendo datos para nuevo contrato: " + ex.Message, ex);
+                accesoSQLServer.CerrarConexion();
             }
         }
 

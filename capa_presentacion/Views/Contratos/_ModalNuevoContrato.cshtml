@@ -1,8 +1,4 @@
-﻿@* ======================================
-    PARCIAL: _ModalNuevoContrato.cshtml
-    Descripción: Formulario en modal para crear contrato
-    ====================================== *@
-
+﻿
 <div id="modal-nuevo-contrato" class="modal-contrato" aria-hidden="true" role="dialog">
     <div class="modal-backdrop"></div>
 
@@ -110,6 +106,12 @@
                         <label for="nc_remuneracion">Total de remuneración</label>
                         @* ESTE se mapea directamente a contrato.Salario *@
                         <input id="nc_remuneracion" name="Salario" type="number" step="0.01" min="0" placeholder="S/ 0.00" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nc_horas_semanales">Horas semanales</label>
+                        <input id="nc_horas_semanales" name="HorasSemanales"
+                               type="number" step="1" min="1" max="60" placeholder="48" />
                     </div>
 
                     <div class="form-field">
