@@ -12,7 +12,7 @@ namespace capa_dominio.dto
     /// </summary>
     public class ContratoDTO
     {
-        public int? ContratoId { get; set; }   // <-- nueva propiedad
+        public int? ContratoId { get; set; }   
         private int? trabajadorId;
         private int? cargoId;
         private int? areaId;

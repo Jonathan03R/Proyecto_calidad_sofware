@@ -8,8 +8,12 @@
 <section id="page-contratos" class="page-contratos"
          data-url-listar-activos="@Url.Action("ListarActivos","Contratos")"
          data-url-listar-sin="@Url.Action("ListarSinContrato","Contratos")"
-         data-url-cargos="@Url.Action("ObtenerCargos","Cargo")"
-         data-url-areas="@Url.Action("ObtenerAreas","Area")">
+         data-url-obtener-areas="@Url.Action("ObtenerAreas", "Contratos")"
+         data-url-obtener-cargos="@Url.Action("ObtenerCargos", "Contratos")"
+         data-url-obtener-pensiones="@Url.Action("ObtenerPensiones", "Contratos")"
+         data-url-obtener-tipos-salarios="@Url.Action("ObtenerTiposSalarios", "Contratos")"
+         data-url-obtener-jornadas="@Url.Action("ObtenerTiposJornadas", "Contratos")"
+         data-url-crear-contrato="@Url.Action("CrearContrato", "Contratos")">
 
     @Html.Partial("_CardResumenContratos")
     @Html.Partial("_FiltrosContratos")

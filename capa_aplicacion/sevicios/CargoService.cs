@@ -42,7 +42,7 @@ namespace capa_aplicacion.sevicios
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("Error en CargoService: " + ex.ToString());
-                throw; // mantiene el stack trace
+                throw;  
             }
             finally
             {
