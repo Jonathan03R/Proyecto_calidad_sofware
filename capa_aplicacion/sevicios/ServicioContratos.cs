@@ -18,8 +18,9 @@ namespace capa_aplicacion.Servicios
             contratosRepo = new ContratoRepositorio(accesoSQLServer);
         }
 
-        // CREAR CONTRATO (ahora usa Contrato, no ContratoDTO)
-        public int CrearContrato(Contrato contrato)
+
+        public int CrearContrato(ContratoDTO contrato)
+
         {
             accesoSQLServer.IniciarTransaccion();
             try
@@ -27,14 +28,43 @@ namespace capa_aplicacion.Servicios
                 if (contrato == null)
                     throw new ArgumentNullException(nameof(contrato), "El contrato no puede ser nulo.");
 
-                if (contrato.ContratoFechaInicio == DateTime.MinValue)
-                    throw new ArgumentException("Debe especificar una fecha de inicio válida.");
+                var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
+                    ? contrato.HorasSemanales.Value
+                    : 48;
 
-                if (contrato.ContratoFechaFin.HasValue && contrato.ContratoFechaFin < contrato.ContratoFechaInicio)
-                    throw new ArgumentException("La fecha de fin no puede ser anterior a la fecha de inicio.");
+                var entidad = new Contrato
+                {
+                    Trabajador = new Trabajador
+                    {
+                        TrabajadorId = contrato.TrabajadorId ?? 0
+                    },
+                    Cargo = new Cargo
+                    {
+                        CargoId = contrato.CargoId ?? 0
+                    },
+                    Area = new Area
+                    {
+                        AreaId = contrato.AreaId ?? 0
+                    },
+                    TipoPension = new TipoPension
+                    {
+                        TipoPensionId = contrato.TipoPensionId ?? 0
+                    },
+                    TipoSalario = new TipoSalario
+                    {
+                        TipoSalarioId = contrato.TipoSalarioId ?? 0
+                    },
+                    ContratoFechaInicio = contrato.FechaInicio,
+                    ContratoFechaFin = contrato.FechaFin,
+                    ContratoSalario = contrato.Salario ?? 0,
+                    ContratoHorasSemanales = horas,
+                    ContratoTarifaHora = contrato.TarifaHora ?? 0  
+                };
 
-                if (contrato.ContratoSalario <= 0 && contrato.ContratoTarifaHora <= 0)
-                    throw new ArgumentException("Debe especificar un salario o una tarifa por hora válida.");
+                entidad.ValidarParaCreacion();
+
+                contrato.HorasSemanales = entidad.ContratoHorasSemanales;
+                contrato.TarifaHora = entidad.ContratoTarifaHora;
 
                 int resultado = contratosRepo.CrearContratoEmpleado(contrato);
                 accesoSQLServer.TerminarTransaccion();
@@ -47,8 +77,8 @@ namespace capa_aplicacion.Servicios
             }
         }
 
-        // ✅ ACTUALIZAR CONTRATO (ahora usa Contrato, no ContratoDTO)
-        public void ActualizarContrato(int contratoId, string usuario, string motivo, Contrato contrato)
+        // ACTUALIZAR CONTRATO
+        public void ActualizarContrato(int contratoId, string usuario, string motivo, ContratoDTO contrato)
         {
             accesoSQLServer.AbrirConexion();
             try
@@ -62,8 +92,44 @@ namespace capa_aplicacion.Servicios
                 if (string.IsNullOrWhiteSpace(motivo))
                     throw new ArgumentException("Debe indicar el motivo de la actualización.");
 
-                if (contrato == null)
-                    throw new ArgumentNullException(nameof(contrato), "El contrato no puede ser nulo.");
+                var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
+                    ? contrato.HorasSemanales.Value
+                    : 48;
+
+                var entidad = new Contrato
+                {
+                    Trabajador = new Trabajador
+                    {
+                        TrabajadorId = contrato.TrabajadorId ?? 0
+                    },
+                    Cargo = new Cargo
+                    {
+                        CargoId = contrato.CargoId ?? 0
+                    },
+                    Area = new Area
+                    {
+                        AreaId = contrato.AreaId ?? 0
+                    },
+                    TipoPension = new TipoPension
+                    {
+                        TipoPensionId = contrato.TipoPensionId ?? 0
+                    },
+                    TipoSalario = new TipoSalario
+                    {
+                        TipoSalarioId = contrato.TipoSalarioId ?? 0
+                    },
+
+                    ContratoFechaInicio = contrato.FechaInicio,
+                    ContratoFechaFin = contrato.FechaFin,
+                    ContratoSalario = contrato.Salario ?? 0,
+                    ContratoHorasSemanales = horas,
+                    ContratoTarifaHora = contrato.TarifaHora ?? 0 
+                };
+
+                entidad.ValidarParaCreacion();
+
+                contrato.HorasSemanales = entidad.ContratoHorasSemanales;
+                contrato.TarifaHora = entidad.ContratoTarifaHora;
 
                 contratosRepo.ActualizarContrato(contratoId, usuario, motivo, contrato);
             }
@@ -72,6 +138,8 @@ namespace capa_aplicacion.Servicios
                 accesoSQLServer.CerrarConexion();
             }
         }
+
+
 
         // FINALIZAR CONTRATO
         public (int contratoActualizado, int cambioRegistrado) FinalizarContrato(int contratoId, string observaciones = null)
@@ -107,96 +175,44 @@ namespace capa_aplicacion.Servicios
             }
         }
 
-        // LISTAR ACTIVOS (devuelve objetos dinámicos para la vista)
-        public List<dynamic> ListarContratosActivos()
+
+        public List<ContratoDTO> ListarContratosActivos()
         {
-            var contratos = contratosRepo.ListarConContratoActivo();
-
-            // Convertir a objetos anónimos para la vista
-            return contratos.Select(c => new
-            {
-                ContratoId = c.ContratoId,
-                EmpleadoNombre = c.Trabajador != null ? $"{c.Trabajador.Nombres} {c.Trabajador.Apellidos}" : "",
-                Documento = c.Trabajador?.Identificacion ?? "",
-                CargoNombre = c.Cargo?.CargoNombre ?? "",
-                EstadoContratoNombre = ObtenerNombreEstado(c.EstadoiId),
-                FechaInicio = c.ContratoFechaInicio,
-                FechaFin = c.ContratoFechaFin,
-                CargoId = c.Cargo?.CargoId,
-                TipoSalarioId = c.TipoSalario?.TipoSalarioId,
-                Salario = c.ContratoSalario,
-                ModoPago = c.ContratoModoPago,
-                Observaciones = c.ContratoObservaciones
-            } as dynamic).ToList();
-        }
-
-        // LISTAR SIN CONTRATO
-        public List<dynamic> ListarSinContratoActivo()
-        {
-            var trabajadores = contratosRepo.ListarSinContratoActivo();
-
-            return trabajadores.Select(t => new
-            {
-                TrabajadorId = t.TrabajadorId,
-                EmpleadoNombre = $"{t.Nombres} {t.Apellidos}",
-                Documento = t.Identificacion,
-                EstadoContratoNombre = "Sin Contrato"
-            } as dynamic).ToList();
-        }
-
-        // Método auxiliar para nombres de estado
-        private string ObtenerNombreEstado(int estadoId)
-        {
-            switch (estadoId)
-            {
-                case 1: return "Activo";
-                case 2: return "Finalizado";
-                case 3: return "Suspendido";
-                case 4: return "Inactivo";
-                default: return "Desconocido";
-            }
-        }
-
-        // OBTENER DATOS COMPLETOS PARA NUEVO CONTRATO
-        public DatosNuevoContrato ObtenerDatosParaNuevoContrato(int trabajadorId)
-        {
+            accesoSQLServer.AbrirConexion();
             try
             {
-                var datos = new DatosNuevoContrato();
-
-                var trabajadorService = new capa_aplicacion.sevicios.TrabajadorService();
-                var areaService = new capa_aplicacion.sevicios.AreaService();
-                var cargoService = new capa_aplicacion.sevicios.CargoService();
-                var pensionService = new capa_aplicacion.sevicios.PensionService();
-                var tipoSalarioService = new capa_aplicacion.sevicios.Tipos_salarios.TipoSalarioServicio();
-                var tipoJornadaService = new capa_aplicacion.sevicios.TipoJornadaService();
-
-                var trabajadores = trabajadorService.ObtenerEmpleados();
-                datos.Trabajador = trabajadores.FirstOrDefault(t => t.TrabajadorId == trabajadorId);
-
-                if (datos.Trabajador == null)
-                    throw new Exception("No se encontró el trabajador con ID " + trabajadorId);
-
-                datos.Areas = areaService.ObtenerAreas();
-                datos.Cargos = cargoService.ObtenerCargos();
-                datos.Pensiones = pensionService.ObtenerSistemasPensiones();
-                datos.TiposSalario = tipoSalarioService.ObtenerTiposSalarios();
-                datos.TiposJornada = tipoJornadaService.ObtenerTiposJornadas()
-                    .Select(j => new capa_dominio.TipoJornada
-                    {
-                        TipoJornadaId = j.TipoJornadaId,
-                        TipoJornadaNombre = j.TipoJornadaNombre,
-                        TipoJornadaDescripcion = j.TipoJornadaDescripcion,
-                        TipoJornadaEstado = j.TipoJornadaEstado,
-                        TipoJornadaFechaCreacion = j.TipoJornadaFechaCreacion
-                    })
-                    .ToList();
-
-                return datos;
+                return contratosRepo.ListarConContratoActivo();
             }
-            catch (Exception ex)
+            finally
             {
-                throw new Exception("Error obteniendo datos para nuevo contrato: " + ex.Message, ex);
+                accesoSQLServer.CerrarConexion();
+            }
+        }
+
+        public List<ContratoDTO> ListarSinContratoActivo()
+        {
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                return contratosRepo.ListarSinContratoActivo();
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
+        }
+
+        public ResumenContratosDTO ObtenerResumen()
+        {
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+
+                return contratosRepo.ObtenerResumenContratos();
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
             }
         }
 

@@ -453,6 +453,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AreaController.cs" />
     <Compile Include="Controllers\CargoController.cs" />
     <Compile Include="Controllers\ContratosController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
@@ -491,6 +492,7 @@
     <Content Include="Content\css\empleados.css" />
     <Content Include="Content\css\historial.css" />
     <Content Include="Content\css\layout.css" />
+    <Content Include="Content\css\listavigente.css" />
     <Content Include="Content\css\nomina.css" />
     <Content Include="Content\css\reporte.css" />
     <Content Include="Content\css\parametros.css" />
@@ -499,6 +501,7 @@
     <Content Include="Content\css\_FiltrosContratos.css" />
     <Content Include="Content\css\_ModalNuevoContrato.css" />
     <Content Include="Content\css\_TablaContratos.css" />
+    <Content Include="Content\img\icons\calendar.svg" />
     <Content Include="Content\img\icons\Contrato.svg" />
     <Content Include="Content\img\icons\contrato_activo.svg" />
     <Content Include="Content\img\icons\contrato_alerta.svg" />
@@ -514,6 +517,7 @@
     <Content Include="Content\img\icons\Parametros.svg" />
     <Content Include="Content\img\icons\Reportes.svg" />
     <Content Include="Content\img\icons\TotalNomina.svg" />
+    <Content Include="Content\img\icons\user.svg" />
     <Content Include="Content\util.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -574,6 +578,7 @@
     <Content Include="Views\Contratos\Index.cshtml" />
     <Content Include="Views\Contratos\_TablaActivos.cshtml" />
     <Content Include="Views\Contratos\_TablaSinContrato.cshtml" />
+    <Content Include="Views\Contratos\_ModalEditarContrato.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

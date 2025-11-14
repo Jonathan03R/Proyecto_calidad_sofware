@@ -14,7 +14,8 @@ namespace capa_persistencia.modulo_principal
 
         public AreasRepositorio(AccesoSQLServer conexion)
         {
-            _accesoSQL = new AccesoSQLServer();
+            //_accesoSQL = new AccesoSQLServer();
+            _accesoSQL = conexion ?? throw new ArgumentNullException(nameof(conexion));
         }
 
         public List<Area> ObtenerAreas()
@@ -46,5 +47,6 @@ namespace capa_persistencia.modulo_principal
 
             return areas;
         }
+
     }
 }

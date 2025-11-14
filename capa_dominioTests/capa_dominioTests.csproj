@@ -55,9 +55,9 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="AdelantoSueldoTests.cs" />
     <Compile Include="DetalleNominaTests.cs" />
     <Compile Include="HoraTrabajada.cs" />
+    <Compile Include="HoraTrabajadaTests.cs" />
     <Compile Include="NominaTests.cs" />
     <Compile Include="PeriodoTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

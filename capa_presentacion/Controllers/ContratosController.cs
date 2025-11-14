@@ -1,7 +1,8 @@
 ﻿using capa_aplicacion.Servicios;
 using capa_aplicacion.sevicios;
 using capa_aplicacion.sevicios.Tipos_salarios;
-using capa_dominio;
+
+using capa_dominio.dto;
 using System;
 using System.Linq;
 using System.Web.Mvc;
@@ -46,13 +47,42 @@ namespace capa_presentacion.Controllers
             try
             {
                 var data = servicio.ListarContratosActivos();
-                return Json(new { consultaExitosa = true, data = data }, JsonRequestBehavior.AllowGet);
+
+                var resultado = data.Select(x => new
+                {
+                    // Para tabla
+                    ContratoId = x.ContratoId,
+                    TrabajadorId = x.TrabajadorId,
+                    EmpleadoNombre = x.EmpleadoNombre,
+                    Documento = x.Documento,
+                    CargoNombre = x.CargoNombre,
+                    EstadoContratoNombre = x.EstadoContratoNombre,
+                    FechaInicio = x.FechaInicio == DateTime.MinValue ? "" : x.FechaInicio.ToString("yyyy-MM-dd"),
+                    FechaFin = x.FechaFin.HasValue ? x.FechaFin.Value.ToString("yyyy-MM-dd") : "",
+
+                    // Para modal
+                    CargoId = x.CargoId,
+                    TipoSalarioId = x.TipoSalarioId,
+                    Salario = x.Salario,
+                    ModoPago = x.ModoPago,
+                    Observaciones = x.Observaciones,
+
+                    // Otros datos por si luego los usas
+                    AreaId = x.AreaId,
+                    TipoPensionId = x.TipoPensionId,
+                    TipoJornadaId = x.TipoJornadaId,
+                    TarifaHora = x.TarifaHora,
+                    HorasSemanales = x.HorasSemanales,
+                    DescripcionFunciones = x.DescripcionFunciones
+                });
+                return Json(new { consultaExitosa = true, data = resultado }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
                 return Json(new { consultaExitosa = false, mensaje = ex.ToString() }, JsonRequestBehavior.AllowGet);
             }
         }
+
 
         [HttpGet]
         public JsonResult ListarSinContrato()
@@ -67,7 +97,7 @@ namespace capa_presentacion.Controllers
                 return Json(new { consultaExitosa = false, mensaje = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
-
+        // ✅ Obtener Areas
         [HttpGet]
         public JsonResult ObtenerAreas()
         {
@@ -81,7 +111,7 @@ namespace capa_presentacion.Controllers
 
             return Json(areas, JsonRequestBehavior.AllowGet);
         }
-
+        // ✅ Obtener Cargos
         [HttpGet]
         public JsonResult ObtenerCargos()
         {
@@ -96,6 +126,7 @@ namespace capa_presentacion.Controllers
             return Json(cargos, JsonRequestBehavior.AllowGet);
         }
 
+        // ✅ Obtener sistemas de pensiones (AFP / ONP)
         [HttpGet]
         public JsonResult ObtenerPensiones()
         {
@@ -111,6 +142,7 @@ namespace capa_presentacion.Controllers
             return Json(pensiones, JsonRequestBehavior.AllowGet);
         }
 
+        // ✅ Obtener tipos de salario
         [HttpGet]
         public JsonResult ObtenerTiposSalarios()
         {
@@ -125,7 +157,9 @@ namespace capa_presentacion.Controllers
             return Json(tipos, JsonRequestBehavior.AllowGet);
         }
 
+        // ✅ Obtener tipos de jornadas
         [HttpGet]
+
         public JsonResult ObtenerTiposJornadas()
         {
             var tipos = _jornadaService.ObtenerTiposJornadas()
@@ -138,41 +172,88 @@ namespace capa_presentacion.Controllers
 
             return Json(tipos, JsonRequestBehavior.AllowGet);
         }
-
+        // ✅ CRear Contrato
         [HttpPost]
-        public JsonResult CrearContrato(ContratoCrearModel modelo)
+        public JsonResult CrearContrato(ContratoDTO contrato)
         {
             try
             {
-                var contrato = new Contrato
-                {
-                    Trabajador = new Trabajador { TrabajadorId = modelo.TrabajadorId },
-                    Cargo = modelo.CargoId.HasValue ? new Cargo { CargoId = modelo.CargoId.Value } : null,
-                    Area = modelo.AreaId.HasValue ? new Area { AreaId = modelo.AreaId.Value } : null,
-                    TipoPension = modelo.TipoPensionId.HasValue ? new TipoPension { TipoPensionId = modelo.TipoPensionId.Value } : null,
-                    TipoSalario = modelo.TipoSalarioId.HasValue ? new TipoSalario { TipoSalarioId = modelo.TipoSalarioId.Value } : null,
-                    TipoJornada = modelo.TipoJornadaId.HasValue 
-                        ? new capa_dominio.TipoJornada { TipoJornadaId = modelo.TipoJornadaId.Value } 
-                        : null,
-                    ContratoFechaInicio = modelo.FechaInicio,
-                    ContratoFechaFin = modelo.FechaFin,
-                    ContratoSalario = modelo.Salario ?? 0,
-                    ContratoTarifaHora = modelo.TarifaHora ?? 0,
-                    ContratoModoPago = modelo.ModoPago,
-                    ContratoDescripcionFunciones = modelo.DescripcionFunciones,
-                    ContratoObservaciones = modelo.Observaciones,
-                    EstadoiId = 1
-                };
-
                 var nuevoId = servicio.CrearContrato(contrato);
 
-                return Json(new { exito = true, contratoId = nuevoId });
+                return Json(new
+                {
+                    exito = true,
+                    contratoId = nuevoId
+                });
             }
             catch (Exception ex)
             {
-                return Json(new { exito = false, mensaje = ex.Message });
+                return Json(new
+                {
+                    exito = false,
+                    mensaje = ex.Message  
+                });
             }
         }
+
+        // ✅ Actualizar Contrato
+        [HttpPost]
+        public JsonResult ActualizarContrato(ContratoDTO contrato, string motivo)
+        {
+            try
+            {
+                if (!contrato.ContratoId.HasValue || contrato.ContratoId.Value <= 0)
+                    throw new Exception("El contrato a actualizar no es válido.");
+
+                if (string.IsNullOrWhiteSpace(motivo))
+                    throw new Exception("Debes indicar el motivo de la actualización.");
+
+                var usuario = User?.Identity != null && User.Identity.IsAuthenticated
+                    ? User.Identity.Name
+                    : Environment.UserName; 
+
+                servicio.ActualizarContrato(contrato.ContratoId.Value, usuario, motivo, contrato);
+
+                return Json(new
+                {
+                    exito = true,
+                    mensaje = "Contrato actualizado correctamente."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    exito = false,
+                    mensaje = ex.Message
+                });
+            }
+        }
+
+        [HttpGet]
+        public JsonResult ResumenContratos()
+        {
+            try
+            {
+                var resumen = servicio.ObtenerResumen();
+                return Json(new
+                {
+                    exito = true,
+                    data = resumen
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    exito = false,
+                    mensaje = ex.Message
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
+
     }
 
     public class ContratoCrearModel

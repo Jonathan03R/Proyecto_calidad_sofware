@@ -7,38 +7,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace capa_aplicacion.sevicios
+namespace capa_aplicacion.sevicios.Tipos_salarios
 {
-    public class AreaService
+    public class TipoSalarioServicio
     {
-        private readonly AreasRepositorio areaRepositorio;
         private readonly AccesoSQLServer conexion;
-        
+        private readonly TiposSalariosRepositorio tiposSalariosRepositorio;
 
-        public AreaService()
+        public TipoSalarioServicio()
         {
             conexion = new AccesoSQLServer();
-            areaRepositorio = new AreasRepositorio(conexion);
+            tiposSalariosRepositorio = new TiposSalariosRepositorio(conexion);
         }
 
-        public List<Area> ObtenerAreas()
+        public List<TipoSalario> ObtenerTiposSalarios()
         {
-            List<Area> listaAreas;
+            List<TipoSalario> tiposSalariosData;
             try
             {
                 conexion.AbrirConexion();
-                listaAreas = areaRepositorio.ObtenerAreas();
+
+                tiposSalariosData = tiposSalariosRepositorio.ObtenerTiposSalarios();
+
+                return tiposSalariosData;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error al obtener areas{ex.Message}");
-                throw ex;
+                throw new Exception("Error al obtener los tipos de salarios", ex);
             }
             finally
             {
                 conexion.CerrarConexion();
             }
-            return listaAreas;
         }
     }
 }

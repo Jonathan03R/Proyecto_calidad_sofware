@@ -1,28 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace capa_dominio.dto
 {
-
-    /// <summary>
-    /// / esto sirve para trasferencia de datos no para geter
-    /// </summary>
     public class ContratoDTO
     {
-        public int? ContratoId { get; set; }   // <-- nueva propiedad
+        public int? ContratoId { get; set; }
+
         private int? trabajadorId;
         private int? cargoId;
         private int? areaId;
         private int? tipoPensionId;
         private int? tipoSalarioId;
         private int? tipoJornadaId;
+
         private DateTime fechaInicio;
         private DateTime? fechaFin;
+
         private decimal? salario;
         private decimal? tarifaHora;
+
         private string modoPago;
         private string documentoUrl;
         private string descripcionFunciones;
@@ -34,17 +30,25 @@ namespace capa_dominio.dto
         public int? TipoPensionId { get => tipoPensionId; set => tipoPensionId = value; }
         public int? TipoSalarioId { get => tipoSalarioId; set => tipoSalarioId = value; }
         public int? TipoJornadaId { get => tipoJornadaId; set => tipoJornadaId = value; }
+
         public DateTime FechaInicio { get => fechaInicio; set => fechaInicio = value; }
         public DateTime? FechaFin { get => fechaFin; set => fechaFin = value; }
+
         public decimal? Salario { get => salario; set => salario = value; }
+
         public decimal? TarifaHora { get => tarifaHora; set => tarifaHora = value; }
+
+        public int? HorasSemanales { get; set; }
+
         public string ModoPago { get => modoPago; set => modoPago = value; }
         public string DocumentoUrl { get => documentoUrl; set => documentoUrl = value; }
         public string DescripcionFunciones { get => descripcionFunciones; set => descripcionFunciones = value; }
         public string Observaciones { get => observaciones; set => observaciones = value; }
-        public string EmpleadoNombre { get; set; }           // persona_nombre
-        public string Documento { get; set; }                // persona_identificacion
-        public string CargoNombre { get; set; }              // cargo_nombre
-        public string EstadoContratoNombre { get; set; }     // estado_contrato_nombre
+
+        // ------ CAMPOS PARA LISTADO ------
+        public string EmpleadoNombre { get; set; }
+        public string Documento { get; set; }
+        public string CargoNombre { get; set; }
+        public string EstadoContratoNombre { get; set; }
     }
 }

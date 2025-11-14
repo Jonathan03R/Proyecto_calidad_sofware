@@ -20,8 +20,6 @@ namespace capa_aplicacion.servicios
         private readonly TiposHorasExtrasRepositorio _tiposHorasExtras;
         private readonly PeriodosRepositorio _periodos;
 
-
-
         public NominasServicios()
         {
             _conexion = new AccesoSQLServer();
@@ -35,82 +33,48 @@ namespace capa_aplicacion.servicios
             _periodos = new PeriodosRepositorio(_conexion);
         }
 
-        /// <summary>
-        /// Procesa la nómina completa para un período específico, incluyendo la validación de existencia previa,
-        /// obtención de trabajadores con contratos activos, cálculo de detalles individuales y finalización de totales.
-        /// Este método es invocado por la capa de presentación para ejecutar el procesamiento automático de nóminas.
-        /// </summary>
-        /// <param name="periodoId">Identificador único del período para el cual se procesará la nómina. No puede ser nulo.</param>
-        /// <param name="tramos">Lista de tramos de impuesto a la renta vigentes, utilizados para calcular el impuesto correspondiente.</param>
-        /// <param name="parametroEssalud">Parámetro que contiene la configuración para el cálculo del aporte a Essalud.</param>
-        /// <param name="valorUIT">Valor actual de la Unidad Impositiva Tributaria (UIT), expresado en soles, utilizado en cálculos fiscales.</param>
-        /// <exception cref="ArgumentException">Se lanza si <paramref name="periodoId"/> es nulo.</exception>
-        /// <exception cref="InvalidOperationException">Se lanza si ya existe una nómina exitosa o en proceso para el período especificado.</exception>
-        /// <remarks>
-        /// El método opera dentro de una transacción de base de datos para asegurar la integridad de los datos.
-        /// En caso de error, la transacción se revierte y el estado de la nómina se actualiza a "Con Errores".
-        /// </remarks>
-        
         public void ProcesarNominaPorPeriodo(int? periodoId, List<ImpuestoRentaTramo> tramos, Parametro parametroEssalud, decimal valorUIT)
         {
             if (periodoId == null)
                 throw new ArgumentException("Selecciona un periodo.");
 
+              _conexion.IniciarTransaccion();
+         
+            var periodo = _periodos.ObtenerPeriodoPorId(periodoId.Value);
+            if (periodo == null)
+                throw new InvalidOperationException($"El periodo {periodoId.Value} no existe.");
+
             var nomina = new Nomina
             {
-                Periodo = new Periodo { PeriodoId = periodoId.Value },
+                Periodo = periodo,
                 Detalles = new List<DetalleNomina>()
             };
 
             try
             {
-                _conexion.IniciarTransaccion();
-
-                ValidarExistenciaNomina(periodoId.Value);
-
-                var (fechaInicio, fechaFin) = RangoFechasPeriodo(periodoId.Value);
-
+                ValidarExistenciaNomina(periodo.PeriodoId);
                 var trabajadores = ObtenerTrabajadoresConContratoActivo();
-
                 var tiposHorasExtras = _tiposHorasExtras.ObtenerTiposHorasExtrasActivos();
 
-                var nominaId = CrearCabeceraNomina(periodoId.Value);
+                var nominaId = CrearCabeceraNomina(periodo.PeriodoId);
                 nomina.NominaId = nominaId;
                 nomina.NominaEstado = "Procesando";
 
-                var huboErrores = ProcesarDetallesNomina(nomina, trabajadores, tramos, parametroEssalud, valorUIT , fechaInicio, fechaFin);
+                var huboErrores = ProcesarDetallesNomina(nomina, trabajadores, tramos, parametroEssalud, valorUIT);
 
                 FinalizarNomina(nomina, huboErrores);
 
                 _conexion.TerminarTransaccion();
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine("ERROR NOMINA: " + ex.Message);
-                System.Diagnostics.Debug.WriteLine("STACKTRACE: " + ex.StackTrace);
                 _conexion.CancelarTransaccion();
                 if (nomina.NominaId > 0)
                     _nominas.ActualizarEstado(nomina.NominaId, "Con Errores");
-
                 throw;
             }
-            finally
-            {
-                _conexion.CerrarConexion();
-            }
+            
         }
-
-
-        private (DateTime FechaInicio, DateTime FechaFin) RangoFechasPeriodo(int periodoId)
-        {
-            var periodo = _periodos.ObtenerPeriodoPorId(periodoId);
-
-            if (periodo == null)
-                throw new Exception($"El periodo {periodoId} no existe.");
-
-            return (periodo.PeriodoFechaInicio, periodo.PeriodoFechaFin);
-        }
-
 
         private void ValidarExistenciaNomina(int periodoId)
         {
@@ -118,13 +82,10 @@ namespace capa_aplicacion.servicios
             if (!nominas.Any()) return;
 
             var nomina = nominas.First();
-
             if (nomina.EsExitosa())
                 throw new InvalidOperationException($"La nómina ya fue procesada exitosamente para el periodo {periodoId}.");
-
             if (nomina.EstaProcesando())
                 throw new InvalidOperationException($"Ya existe una nómina en proceso para el periodo {periodoId}.");
-            
         }
 
         private List<Trabajador> ObtenerTrabajadoresConContratoActivo()
@@ -136,29 +97,27 @@ namespace capa_aplicacion.servicios
             {
                 var contratos = _contratos.ObtenerContratosPorTrabajador(trabajador.TrabajadorId);
                 var contratoActivo = contratos.FirstOrDefault(c => c.EsActivo());
+                if (contratoActivo == null) continue;
 
-                if (contratoActivo != null)
-                {
-                    trabajador.Contrato = contratoActivo;
-                    resultado.Add(trabajador);
-                }
+                trabajador.Contrato = contratoActivo;
+                resultado.Add(trabajador);
             }
 
             return resultado;
         }
+
         private int CrearCabeceraNomina(int periodoId)
         {
             return _nominas.IniciarProcesoPorPeriodo(periodoId, "Nómina generada automáticamente");
         }
 
+        // Nota: aquí ya NO pasamos fechaInicio/fechaFin sueltos.
         private bool ProcesarDetallesNomina(
             Nomina nomina,
             List<Trabajador> trabajadores,
             List<ImpuestoRentaTramo> tramos,
             Parametro parametroEssalud,
-            decimal valorUIT,
-            DateTime fechaInicio,
-            DateTime fechaFin)
+            decimal valorUIT)
         {
             bool algunError = false;
 
@@ -169,48 +128,52 @@ namespace capa_aplicacion.servicios
                 try
                 {
                     trabajador.Hijos = _hijos.ObtenerHijosPorTrabajador(trabajador.TrabajadorId);
+
                     var contrato = trabajador.Contrato;
                     if (contrato == null)
                         continue;
 
+                    // SIEMPRE tomar las fechas del objeto nomina.Periodo
                     var horasTrabajadas = _horasTrabajadas.ObtenerHorasTrabajadas(
                         contrato.ContratoId,
-                        fechaInicio,
-                        fechaFin
+                        nomina.Periodo.PeriodoFechaInicio,
+                        nomina.Periodo.PeriodoFechaFin
                     );
 
                     var detalle = new DetalleNomina
                     {
                         Nomina = nomina,
                         Contrato = contrato,
+                        SueldoBasico = contrato.ContratoSalario,
                         HorasTrabajadas = horasTrabajadas,
                         TiposHorasExtras = tiposHorasExtras,
                         BonosRegulares = 0,
                         OtrosIngresos = 0
                     };
 
-                    // 1) sueldo según asistencia (aquí se prorratea)
-                    detalle.CalcularSueldoSegunAsistencia(fechaInicio, fechaFin);
-
-                    // 2) asignación familiar
+                    // 1) Asignación familiar
                     detalle.CalculoAsignacionFamiliar(trabajador.TieneDerechoAsignacionFamiliar());
 
-                    // 3) horas extras
+                    // 2) Horas extras
                     detalle.CalcularPagoTotalHorasExtras();
 
-                    // 4) remuneración bruta
-                    detalle.CalcularRemuneracionBruta();
+                    // 3) Descuentos por tardanzas y faltas
+                    detalle.CalcularDescuentoTardanzas();
+                    detalle.CalcularDescuentoFaltas();
 
-                    // 5) pensiones
+                    // 4) Remuneración bruta
+                    detalle.calcularRemuneracionBruta(); // ← corrige el nombre del método
+
+                    // 5) Pensiones
                     detalle.CalcularSistemaPensiones();
 
                     // 6) Essalud
                     detalle.CalcularAporteEssalud(parametroEssalud);
 
-                    // 7) renta de quinta
+                    // 7) Renta de quinta
                     detalle.CalcularImpuestoRentaQuinta(tramos, valorUIT);
 
-                    // 8) totales
+                    // 8) Totales
                     detalle.CalcularTotales();
 
                     var dto = new DetalleNominaDTO(
@@ -226,16 +189,16 @@ namespace capa_aplicacion.servicios
                         detalle.AporteEssalud,
                         detalle.AporteONP,
                         detalle.DescuentoAFP,
-                        0, // RemuneraciónAcumuladaAnual
-                        0, // BaseImponibleAnual
-                        0, // ImpuestoRentaAnual
+                        0,      // remuneración acumulada anual
+                        0,      // base imponible anual
+                        0,      // impuesto renta anual
                         detalle.ImpuestoRentaMensual,
                         valorUIT,
-                        0,                         // Deducción7Uit
-                        0,                         // DescuentoTardanzas
-                        detalle.DescuentoFaltas,   // DescuentoFaltas
-                        detalle.DescuentoAdelantos,// DescuentoAdelantos
-                        0,                         // OtrosDescuentos
+                        0,      // deducción 7 UIT
+                        detalle.DescuentoTardanzas,
+                        detalle.DescuentoFaltas,
+                        detalle.DescuentoAdelantos,
+                        0,      // otros descuentos
                         detalle.TotalIngresos,
                         detalle.TotalDescuentos,
                         detalle.NetoPagar,
@@ -249,16 +212,13 @@ namespace capa_aplicacion.servicios
                 catch (Exception ex)
                 {
                     algunError = true;
-                    System.Diagnostics.Trace.WriteLine(
-                        $"Error procesando trabajador {trabajador.TrabajadorId}: {ex.Message}"
-                    );
+                    System.Diagnostics.Trace.WriteLine($"Error procesando trabajador {trabajador.TrabajadorId}: {ex.Message}");
                     throw;
                 }
             }
 
             return algunError;
         }
-
 
         private void FinalizarNomina(Nomina nomina, bool huboErrores)
         {
@@ -274,6 +234,30 @@ namespace capa_aplicacion.servicios
                 nomina.NominaTotalNeto,
                 estado
             );
+        }
+
+        public List<NominasProcesadasDTO> ListarDetallesNominasProcesadas(
+            int? trabajadorId = null,
+            int? nominaId = null,
+            int? periodoId = null,
+            string estadoNomina = null)
+        {
+            List<NominasProcesadasDTO> listaDetalles;
+            try
+            {
+                _conexion.AbrirConexion();
+                listaDetalles = _detalleNomina.ListarDetallesNominasProcesadas(
+                    trabajadorId,
+                    nominaId,
+                    periodoId,
+                    estadoNomina);
+                _conexion.CerrarConexion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return listaDetalles;
         }
     }
 }

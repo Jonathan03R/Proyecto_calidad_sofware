@@ -1,6 +1,4 @@
-﻿@model capa_presentacion.Models.ViewModels.NominaPeriodoVM
-
-@{
+﻿@{
     ViewBag.Title = "Procesar Nómina";
     ViewBag.PageTitle = "Procesar Nómina Vigentes";
     ViewBag.PageSubtitle = "Gestión de nómina - " + DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
@@ -9,6 +7,7 @@
 
 @section Head {
     <link rel="stylesheet" href="~/Content/css/nomina.css" />
+    <link rel="stylesheet" href="~/Content/css/listavigente.css" />
 }
 
 <div class="procesar-nomina">
@@ -89,7 +88,71 @@
 </div>
 
 @Html.Partial("_ModalConfirmarProcesamiento")
+
 @section Scripts {
+    @* ===== CONFIGURACIÓN DE URLs ===== *@
+    <script>
+        window.NominaConfig = {
+            urls: {
+                listarPeriodos: '@Url.Action("ListarPeriodos", "Nomina")',
+                procesarNomina: '@Url.Action("ProcesarNomina", "Nomina")',
+                obtenerDetallesNominas: '@Url.Action("ObtenerDetalleNominasProcesadas", "Nomina")',
+                diagnosticarTrabajadores: '@Url.Action("DiagnosticarTrabajadores", "Nomina")'
+            }
+        };
+        console.log('✅ NominaConfig cargado:', window.NominaConfig);
+    </script>
+
+    @* ===== JQUERY ===== *@
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    @* ===== DEBUG SIMPLE - PROBAR ENDPOINTS ===== *@
+    <script>
+        console.log('🔍 ====== INICIO DEBUG SIMPLE ======');
+
+        // Esperar 1 segundo para que jQuery esté listo
+        setTimeout(function () {
+            console.log('📡 Probando endpoint de empleados...');
+            console.log('URL:', '/Nomina/ObtenerDetalleNominasProcesadas');
+
+            $.ajax({
+                url: '/Nomina/ObtenerDetalleNominasProcesadas',
+                type: 'GET',
+                success: function (response) {
+                    console.log('✅ RESPUESTA EXITOSA:');
+                    console.log('📦 Respuesta completa:', response);
+                    console.log('📊 Tipo de respuesta:', typeof response);
+                    console.log('🔍 consultaExitosa:', response.consultaExitosa);
+                    console.log('💬 mensaje:', response.mensaje);
+                    console.log('📋 data existe:', !!response.data);
+                    console.log('📈 cantidad de datos:', response.data ? response.data.length : 'NO HAY DATA');
+
+                    if (response.data && response.data.length > 0) {
+                        console.log('👤 PRIMER EMPLEADO:', response.data[0]);
+                        console.log('   - Nombres:', response.data[0].Nombres);
+                        console.log('   - Apellidos:', response.data[0].Apellidos);
+                        console.log('   - SalarioBase:', response.data[0].SalarioBase);
+                        console.log('   - SalarioNeto:', response.data[0].SalarioNeto);
+                        console.log('   - NetoPagar:', response.data[0].NetoPagar);
+                    } else {
+                        console.warn('⚠️ NO HAY EMPLEADOS EN LA RESPUESTA');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('❌ ERROR EN LA PETICIÓN:');
+                    console.error('   Status HTTP:', xhr.status);
+                    console.error('   Estado:', status);
+                    console.error('   Error:', error);
+                    console.error('   Respuesta del servidor:', xhr.responseText);
+                }
+            });
+
+        }, 1000);
+
+        console.log('🔍 ====== FIN DEBUG SIMPLE ======');
+    </script>
+
+    @* ===== SCRIPTS DE NÓMINA ===== *@
     <script src="~/Scripts/nomina/nomina.validation.js"></script>
     <script src="~/Scripts/nomina/nomina.ui.js"></script>
 }
