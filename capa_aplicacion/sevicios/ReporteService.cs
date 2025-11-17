@@ -38,8 +38,6 @@ namespace capa_aplicacion.Servicios
             return listaReporte;
         }
 
-        // Puse Listar Pwriodos por aqui ya que no se si lo van a poner en otro servicio
-        // Por el momento lo dejo aqui
         public List<Periodo> ListarPeriodos(int? periodoId = null, string periodoNombre = null)
         {
             List<Periodo> listaPeriodo;

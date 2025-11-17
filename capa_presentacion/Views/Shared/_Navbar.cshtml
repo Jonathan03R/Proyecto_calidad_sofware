@@ -1,4 +1,5 @@
-﻿@model IEnumerable<capa_presentacion.Models.Mock.MenuItem>
+﻿
+@model IEnumerable<capa_presentacion.Models.Mock.MenuItem>
 @{
     var action = (string)ViewContext.RouteData.Values["action"];
     var controller = (string)ViewContext.RouteData.Values["controller"];
@@ -13,6 +14,7 @@
             <a href="@Url.Action("Index","Nomina")" class="navbar-brand2">Sistema de Nómina</a>
         </div>
     </div>
+
     <nav class="navbar-links">
         @foreach (var item in Model)
         {

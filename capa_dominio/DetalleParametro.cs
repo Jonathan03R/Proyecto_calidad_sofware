@@ -17,7 +17,6 @@ namespace capa_dominio
         private DateTime? detalleParametroAplicaHasta;
         private string detalleParametroObservaciones;
 
-        
         public int DetalleParametroId { get => detalleParametroId; set => detalleParametroId = value; }
         public Parametro Parametro { get => parametro; set => parametro = value; }
         public Trabajador Trabajador { get => trabajador; set => trabajador = value; }

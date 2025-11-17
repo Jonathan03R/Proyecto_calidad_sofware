@@ -6,10 +6,6 @@ using System.Threading.Tasks;
 
 namespace capa_dominio
 {
-
-    /// <summary>
-    ///revisar si hay proc para traer contactos de un trabajador
-    /// </summary>
     public class Contacto
     {
         private int contactoId;
