@@ -1,0 +1,12 @@
+﻿<div class="card mb-3">
+    <div class="card-body d-flex flex-wrap gap-4">
+        <div><strong>Período:</strong> @Model?.PeriodoNombre</div>
+        <div><strong>Tipo:</strong> @Model?.TipoPago</div>
+        <div>
+            <strong>Estado:</strong>
+            <span class="badge @(Model?.EstadoFinal == "Exitoso" ? "bg-success" : "bg-warning text-dark")">
+                @Model?.EstadoFinal
+            </span>
+        </div>
+    </div>
+</div>

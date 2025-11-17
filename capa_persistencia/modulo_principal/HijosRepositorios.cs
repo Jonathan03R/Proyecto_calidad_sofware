@@ -20,7 +20,7 @@ namespace capa_persistencia.modulo_principal
         public List<Hijo> ObtenerHijosPorTrabajador(int trabajadorId)
         {
             var hijos = new List<Hijo>();
-
+            System.Diagnostics.Debug.WriteLine($"Obteniendo hijos para trabajador ID: {trabajadorId}");
             try
             {
                 var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("personal.proc_obtener_hijos_por_trabajador");
@@ -40,7 +40,7 @@ namespace capa_persistencia.modulo_principal
                             Estudia = Convert.ToBoolean(dr["hijo_estudia"]),
                             TieneDiscapacidad = Convert.ToBoolean(dr["hijo_tiene_discapacidad"]),
                             Estado = Convert.ToChar(dr["hijo_estado"]),
-                            FechaCreacion = Convert.ToDateTime(dr["hijo_fecha_creacion"])
+                            //FechaCreacion = Convert.ToDateTime(dr["hijo_fecha_creacion"])
                         };
                         hijos.Add(hijo);
                     }
@@ -48,6 +48,7 @@ namespace capa_persistencia.modulo_principal
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Mensaje: {ex.Message}");
                 throw new Exception("Error al obtener los hijos del trabajador", ex);
             }
 

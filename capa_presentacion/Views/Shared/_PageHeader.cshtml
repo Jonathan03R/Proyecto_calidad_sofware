@@ -1,0 +1,30 @@
+﻿@{
+    var title = ViewBag.PageTitle as string ?? "Título";
+    var subtitle = ViewBag.PageSubtitle as string ?? "";
+    var periodo = ViewBag.PagePeriodo as string;
+    var actionsPartial = ViewBag.PageActionsPartial as string;
+    var avatarUrl = Url.Content("~/Content/img/icons/user.svg");
+}
+<div class="page-header">
+    <div class="ph-left">
+        <button id="btn-collapse" class="btn-amburguesa" aria-pressed="false" aria-label="Colapsar menú">☰</button>
+
+        <div class="fecha">
+            <h1>@title</h1>
+            @if (!string.IsNullOrWhiteSpace(subtitle))
+            {<p class="subtitle">@subtitle</p>}
+        </div>
+    </div>
+
+    <div class="ph-right">
+        @if (!string.IsNullOrWhiteSpace(periodo))
+        {<div class="pill">
+    <img src="~/Content/img/icons/calendar.svg"
+         alt="Calendario"   
+         style="width:18px; height:18px; margin-right:6px;" />@periodo
+    </div>}
+        @if (!string.IsNullOrWhiteSpace(actionsPartial))
+        {@Html.Partial("~/Views/Shared/" + actionsPartial + ".cshtml")}
+        <div class="avatar"><img src="@avatarUrl" alt="usuario" /></div>
+    </div>
+</div>

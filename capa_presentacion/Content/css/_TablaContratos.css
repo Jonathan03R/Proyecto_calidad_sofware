@@ -1,0 +1,137 @@
+﻿
+
+/* ===== Tabla base ===== */
+.tabla-contratos {
+    width: 100%;
+    border-collapse: separate; /* permite radios */
+    border-spacing: 0;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden; /* redondeado visible */
+    font-size: 14px;
+    padding: 10px;
+}
+
+    .tabla-contratos thead th {
+        background: #f9fafb;
+        color: #6b7280;
+        text-align: left;
+        font-weight: 600;
+        padding: 14px 16px;
+        border-bottom: 1px solid #e5e7eb;
+
+    }
+
+    .tabla-contratos tbody td {
+        padding: 16px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+        gap: 1rem;
+
+    }
+
+    .tabla-contratos tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Hover de fila */
+    .tabla-contratos tbody tr:hover {
+        background: #f9fbff;
+    }
+
+/* ===== Columna Empleado (avatar + nombre + correo) ===== */
+.td-empleado {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+}
+
+    .td-empleado .emp-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
+    }
+
+    .td-empleado .emp-name {
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 2px;
+    }
+
+    .td-empleado .emp-mail {
+        color: #6b7280;
+        font-size: 12.5px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 320px;
+    }
+
+/* ===== Columnas numéricas/fechas ===== */
+.td-center {
+    text-align: center;
+    color: #374151;
+}
+
+.td-right {
+    text-align: right;
+}
+
+/* ===== Columna Acciones ===== */
+.td-actions {
+    width: 220px;
+}
+
+    .td-actions .btn {
+        width: 100%;
+    }
+
+/* ===== Pie de tabla: total y paginación ===== */
+.tabla-paginacion, .tabla-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+    padding: 12px 14px;
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    background: #fff;
+}
+
+.tabla-total {
+    color: #6b7280;
+    font-size: 13px;
+    margin: 0;
+}
+
+/* Paginador simple (si usas <button>) */
+.tabla-paginas {
+    display: flex;
+    gap: 6px;
+}
+
+    .tabla-paginas .page-btn {
+        min-width: 36px;
+        height: 32px;
+        padding: 0 10px;
+        border: 1px solid #d1d5db;
+        background: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #374151;
+    }
+
+        .tabla-paginas .page-btn:hover {
+            background: #f3f4f6;
+        }
+
+    .tabla-paginas .is-active {
+        border-color: #2563eb;
+        background: #2563eb;
+        color: #fff;
+    }
+

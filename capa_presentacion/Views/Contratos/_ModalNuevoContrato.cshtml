@@ -1,0 +1,152 @@
+﻿
+<div id="modal-nuevo-contrato" class="modal-contrato" aria-hidden="true" role="dialog">
+    <div class="modal-backdrop"></div>
+
+    <div class="modal-dialog" role="document" aria-labelledby="modal-nuevo-contrato-title">
+        <div class="modal-header">
+            <div class="modal-title-wrap">
+                <div>
+                    <h3 id="modal-nuevo-contrato-title" class="modal-title">Nuevo contrato</h3>
+                    <p class="modal-subtitle">Creación de nuevo contrato</p>
+                </div>
+            </div>
+            <button type="button" class="modal-close" data-modal-close="modal-nuevo-contrato" aria-label="Cerrar">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="form-nuevo-contrato" class="form-contrato" autocomplete="off">
+                @* Este es el que se manda al SP *@
+                <input type="hidden" id="nc_trabajador_id" name="TrabajadorId" />
+
+                <!-- Fila 1: Datos del trabajador -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="nc_nombre">Nombre</label>
+                        <input id="nc_nombre" name="Nombre" type="text" placeholder="Nombre completo" readonly />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nc_dni">DNI</label>
+                        <input id="nc_dni" name="Dni" type="text" placeholder="Documento" readonly />
+                    </div>
+                </div>
+
+                <hr class="modal-sep" />
+
+                <!-- Fila 2: Cargo y Área -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="nc_cargo_id">Cargo</label>
+                        <select id="nc_cargo_id" name="CargoId">
+                            <option value="">Seleccione cargo</option>
+                            @* llenar vía JS *@
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nc_area_id">Área</label>
+                        <select id="nc_area_id" name="AreaId">
+                            <option value="">Seleccione área</option>
+                            @* llenar vía JS *@
+                        </select>
+                    </div>
+                </div>
+                <!-- Fila 3: Pensiones, tipo salario, jornada, modo pago -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="nc_tipo_pension_id">Tipo de pensión</label>
+                        <select id="nc_tipo_pension_id" name="TipoPensionId">
+                            <option value="">Seleccione</option>
+                            @* AFP / ONP via JS *@
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nc_tipo_salario_id">Tipo de salario</label>
+                        <select id="nc_tipo_salario_id" name="TipoSalarioId">
+                            <option value="">Seleccione</option>
+                            @* Mensual / Por hora *@
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nc_tipo_jornada_id">Jornada</label>
+                        <select id="nc_tipo_jornada_id" name="TipoJornadaId">
+                            <option value="">Seleccione</option>
+                            @* Tiempo completo / Medio tiempo / etc. *@
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nc_modo_pago">Modo de pago</label>
+                        <input id="nc_modo_pago"
+                               name="ModoPago"
+                               type="text"
+                               placeholder="Ej: Transferencia, Efectivo, Yape..." />
+                    </div>
+
+                </div>
+
+                <!-- Fila 4: Fechas y horario (si lo vas a usar solo visual) -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="nc_fecha_inicio">Fecha Inicio</label>
+                        <input id="nc_fecha_inicio" name="FechaInicio" type="date" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nc_fecha_fin">Fecha Fin</label>
+                        <input id="nc_fecha_fin" name="FechaFin" type="date" />
+                    </div>
+                </div>
+
+                <!-- Fila 5: Remuneración y tarifa por hora (calculada) -->
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="nc_remuneracion">Total de remuneración</label>
+                        @* ESTE se mapea directamente a contrato.Salario *@
+                        <input id="nc_remuneracion" name="Salario" type="number" step="0.01" min="0" placeholder="S/ 0.00" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nc_horas_semanales">Horas semanales</label>
+                        <input id="nc_horas_semanales" name="HorasSemanales"
+                               type="number" step="1" min="1" max="60" placeholder="48" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="nc_tarifa_hora">Tarifa por hora</label>
+                        <input id="nc_tarifa_hora" name="TarifaHora" type="number" step="0.0001" min="0" placeholder="S/ 0.00" readonly />
+                        @* lo calculas por JS según horas/jornada *@
+                    </div>
+                </div>
+
+                <!-- Fila 6: Descripción de funciones -->
+                <div class="form-row">
+                    <div class="form-field full">
+                        <label for="nc_descripcion_funciones">Descripción de funciones</label>
+                        <textarea id="nc_descripcion_funciones" name="DescripcionFunciones" rows="3"
+                                  placeholder="Funciones asignadas al cargo"></textarea>
+                    </div>
+                </div>
+
+                <!-- Fila 7: Observaciones -->
+                <div class="form-row">
+                    <div class="form-field full">
+                        <label for="nc_observaciones">Observaciones</label>
+                        <textarea id="nc_observaciones" name="Observaciones" rows="2"
+                                  placeholder="Observaciones del contrato (opcional)"></textarea>
+                    </div>
+                </div>
+
+                <!-- Mensajes/errores -->
+                <div id="nc_mensaje" class="form-mensaje" aria-live="polite"></div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-modal-close="modal-nuevo-contrato">Cancelar</button>
+            <button type="button" class="btn btn-primary" id="nc_confirmar" data-action="confirmar-contrato">Confirmar</button>
+        </div>
+    </div>
+</div>

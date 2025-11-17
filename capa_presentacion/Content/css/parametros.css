@@ -1,0 +1,124 @@
+﻿.modal-parametros {
+    position: fixed;
+    inset: 0;
+    display: none; /* oculto por defecto */
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    background-color: #F9FAFB;
+}
+    .modal-parametros.is-open {
+        display: flex; /* se muestra cuando agregamos la clase */
+    }
+    .modal-parametros .modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+    }
+    .modal-parametros .modal-content {
+        position: relative;
+        z-index: 1;
+        max-width: 960px;
+        max-height: 90vh;
+        overflow: auto;
+        background-color: #FFFFFF;
+        border-radius: 10px;
+        padding: 20px 24px;
+        box-shadow: 0 25px 50px rgba(15,23,42,.35);
+    }
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 10px;
+}
+
+#tituloPeriodo {
+    margin: 10px 0px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+}
+
+.modal-header .close {
+    border: 0;
+    background: transparent;
+    font-size: 20px;
+    line-height: 1;
+    color: #6B7280;
+    cursor: pointer;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFFFF;
+    justify-content: center;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.modal-body {
+    display: flex;
+    gap: 30px;
+}
+
+.modal-content h3 {
+    color: #2563EB;
+    font-size: 15px;
+}
+
+.modal-body dt, dd {
+    font-size: 14px;
+}
+
+.kv-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 100px;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 10px;
+}
+
+.kv-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+/* --- TABLA COTIZACIÓN PREVISIONAL --- */
+.tabla-previsional {
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    font-size: 14px;
+}
+
+    .tabla-previsional thead th {
+        text-align: left;
+        padding: 10px 12px;
+        font-weight: 600;
+        background-color: #f8f9fc;
+    }
+
+    .tabla-previsional tbody td {
+        padding: 9px 12px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .tabla-previsional tbody tr:nth-child(even) {
+        background-color: #f8f9fc;
+    }
+
+    .tabla-previsional tbody tr:hover {
+        background-color: #E5E7EB;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+.modal-body-full {
+    width: 100%;
+}

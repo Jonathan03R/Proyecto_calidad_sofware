@@ -1,0 +1,50 @@
+﻿@* Tabla para empleados procesados *@
+<div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+    <h5 style="margin: 0 0 15px 0; font-size: 16px; font-weight: 600; color: #333;">Lista de Empleados Vigentes</h5>
+    <div style="background: white; border-radius: 8px; padding: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+        <div style="margin-bottom: 15px;">
+            <div style="position: relative; display: inline-block;">
+                <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999; font-size: 12px;"></i>
+                <input type="text" id="txtBuscarEmpleado" placeholder="Buscar empleado..."
+                       style="padding: 8px 12px 8px 35px; border: 1px solid #ddd; border-radius: 20px; font-size: 13px; width: 300px; outline: none;">
+            </div>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="tabla-empleados" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <thead style="background-color: #f8f9fa;">
+                    <tr>
+                        <th style="padding: 10px 12px; text-align: left; font-weight: 600; color: #666; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e0e0e0;">Nombre</th>
+                        <th style="padding: 10px 12px; text-align: left; font-weight: 600; color: #666; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e0e0e0;">Apellido</th>
+                        <th style="padding: 10px 12px; text-align: center; font-weight: 600; color: #666; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e0e0e0;">Estado</th>
+                        <th style="padding: 10px 12px; text-align: center; font-weight: 600; color: #666; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e0e0e0;">Contrato</th>
+                        <th style="padding: 10px 12px; text-align: right; font-weight: 600; color: #666; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e0e0e0;">Salario Base</th>
+                        <th style="padding: 10px 12px; text-align: right; font-weight: 600; color: #666; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e0e0e0;">Asig Familiar</th>
+                        <th style="padding: 10px 12px; text-align: right; font-weight: 600; color: #666; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e0e0e0;">H. Extras</th>
+                        <th style="padding: 10px 12px; text-align: right; font-weight: 600; color: #666; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e0e0e0;">Salario Bruto</th>
+                        <th style="padding: 10px 12px; text-align: right; font-weight: 600; color: #666; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e0e0e0;">Descuentos</th>
+                        <th style="padding: 10px 12px; text-align: right; font-weight: 600; color: #666; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e0e0e0;">Salario Neto</th>
+                        <th style="padding: 10px 12px; text-align: center; font-weight: 600; color: #666; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid #e0e0e0;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tblVigentesBody">
+                    <tr>
+                        <td colspan="12" style="padding: 50px; text-align: center; color: #999;">Sin datos</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Detalle de Empleado -->
+<div id="modalDetalleEmpleado" class="modal-overlay">
+    <div class="modal-content" style="max-width: 800px;">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #e0e0e0;">
+            <h3 style="margin: 0; font-size: 18px; color: #333;">Detalle del Cálculo</h3>
+            <button class="btn-close" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <!-- El contenido se cargará dinámicamente aquí -->
+        </div>
+    </div>
+</div>

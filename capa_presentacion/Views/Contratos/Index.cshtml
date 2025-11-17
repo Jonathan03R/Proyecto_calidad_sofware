@@ -1,70 +1,40 @@
 ﻿@{
-    ViewBag.Title = "Gestión de Contratos";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Contratos";
+    ViewBag.PageTitle = "Gestión de Contratos";
+    ViewBag.PageSubtitle = "Crear Contratos - " + DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
+    ViewBag.PagePeriodo = DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
 }
 
-<div class="container mt-4">
-    <h2 class="text-center mb-4">Gestión de Contratos</h2>
+<section id="page-contratos" class="page-contratos"
+         data-url-listar-activos="@Url.Action("ListarActivos","Contratos")"
+         data-url-listar-sin="@Url.Action("ListarSinContrato","Contratos")"
+         data-url-obtener-areas="@Url.Action("ObtenerAreas", "Contratos")"
+         data-url-obtener-cargos="@Url.Action("ObtenerCargos", "Contratos")"
+         data-url-obtener-pensiones="@Url.Action("ObtenerPensiones", "Contratos")"
+         data-url-obtener-tipos-salarios="@Url.Action("ObtenerTiposSalarios", "Contratos")"
+         data-url-obtener-jornadas="@Url.Action("ObtenerTiposJornadas", "Contratos")"
+         data-url-crear-contrato="@Url.Action("CrearContrato", "Contratos")"
+         data-url-actualizar-contrato="@Url.Action("ActualizarContrato", "Contratos")"
+         data-url-resumen-contratos="@Url.Action("ResumenContratos", "Contratos")">
 
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-primary text-white">
-                    Trabajadores
-                </div>
-                <div class="card-body">
-                    <p>Listado de trabajadores registrados en el sistema.</p>
-                    <button class="btn btn-outline-primary btn-sm">Ver lista</button>
-                </div>
-            </div>
-        </div>
+    @Html.Partial("_CardResumenContratos")
+    @Html.Partial("_FiltrosContratos")
+    @Html.Partial("_TablaActivos")
+    @Html.Partial("_TablaSinContrato")
+    @Html.Partial("_ModalNuevoContrato")
+    @Html.Partial("_ModalEditarContrato")
 
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-success text-white">
-                    Áreas
-                </div>
-                <div class="card-body">
-                    <p>Consulta de áreas disponibles en la empresa.</p>
-                    <button class="btn btn-outline-success btn-sm">Ver lista</button>
-                </div>
-            </div>
-        </div>
 
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-warning text-white">
-                    Cargos
-                </div>
-                <div class="card-body">
-                    <p>Consulta de cargos o puestos disponibles.</p>
-                    <button class="btn btn-outline-warning btn-sm">Ver lista</button>
-                </div>
-            </div>
-        </div>
+</section>
 
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-info text-white">
-                    Tipos de Pensión
-                </div>
-                <div class="card-body">
-                    <p>Listado de tipos de pensión configurados.</p>
-                    <button class="btn btn-outline-info btn-sm">Ver lista</button>
-                </div>
-            </div>
-        </div>
+<link rel="stylesheet" href="~/Content/css/contratos.css" />
+<link rel="stylesheet" href="~/Content/css/_CardResumenContratos.css" />
+<link rel="stylesheet" href="~/Content/css/_FiltrosContratos.css" />
+<link rel="stylesheet" href="~/Content/css/_TablaContratos.css" />
+<link rel="stylesheet" href="~/Content/css/_ModalNuevoContrato.css" />
 
-        <div class="col-md-12 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-secondary text-white">
-                    Estados de Contrato
-                </div>
-                <div class="card-body">
-                    <p>Consulta de los estados posibles de un contrato (activo, inactivo, finalizado, etc.).</p>
-                    <button class="btn btn-outline-secondary btn-sm">Ver lista</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+@section Scripts{
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script> <!-- importante -->
+
+    <script src="~/Scripts/contrato/contratos.js"></script>
+}

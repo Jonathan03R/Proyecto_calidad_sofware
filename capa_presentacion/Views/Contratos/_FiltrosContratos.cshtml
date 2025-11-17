@@ -1,0 +1,42 @@
+﻿@* ======================================
+    PARCIAL: _FiltrosContratos.cshtml
+    Descripción: Barra de búsqueda y división de contratos
+    ====================================== *@
+
+<div class="filtros-contratos-container">
+
+    <!-- 🔹 Tabs de Contratos -->
+    <div class="tabs-contratos">
+        <button type="button" class="tab-btn is-active" data-tab="activos">Contratos Activos</button>
+        <button type="button" class="tab-btn" data-tab="sin">Sin Contratos</button>
+    </div>
+
+    <!-- 🔹 Formulario de Filtros -->
+    <form id="form-filtros-contratos" class="filtros-contratos" role="search">
+        <!-- Buscar -->
+        <div class="filtro-item filtro-busqueda">
+            <label for="fc_query" class="sr-only">Buscar</label>
+            <input id="fc_query"
+                   name="query"
+                   type="text"
+                   placeholder="Buscar por empleado, documento..."
+                   autocomplete="off" />
+        </div>
+
+
+    <!-- Sección avanzada opcional -->
+    <div id="filtros-avanzados" class="filtros-avanzados" hidden>
+        <div class="filtro-item">
+            <label for="fc_fecha_inicio">Inicio desde</label>
+            <input id="fc_fecha_inicio" name="fechaInicioDesde" type="date" />
+        </div>
+        <div class="filtro-item">
+            <label for="fc_fecha_fin">Fin hasta</label>
+            <input id="fc_fecha_fin" name="fechaFinHasta" type="date" />
+        </div>
+        <div class="filtro-item">
+            <label for="fc_cargo">Cargo</label>
+            <input id="fc_cargo" name="cargo" type="text" placeholder="Cargo" />
+        </div>
+    </div>
+</div>

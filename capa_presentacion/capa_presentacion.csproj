@@ -240,8 +240,8 @@
     <Reference Include="System.Buffers, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.6.0\lib\net462\System.Buffers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Collections.Immutable, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.5.0.0\lib\net461\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Collections.Immutable, Version=9.0.0.10, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.9.0.10\lib\net462\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ComponentModel.Annotations.5.0.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
@@ -249,7 +249,6 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Console, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Console.4.3.0\lib\net46\System.Console.dll</HintPath>
-      <Private>True</Private>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Data" />
@@ -309,12 +308,11 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Reflection.Metadata, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.Metadata.5.0.0\lib\net461\System.Reflection.Metadata.dll</HintPath>
+    <Reference Include="System.Reflection.Metadata, Version=9.0.0.10, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reflection.Metadata.9.0.10\lib\net462\System.Reflection.Metadata.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
-      <Private>True</Private>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -322,7 +320,6 @@
     </Reference>
     <Reference Include="System.Runtime.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.Extensions.4.3.0\lib\net462\System.Runtime.Extensions.dll</HintPath>
-      <Private>True</Private>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.InteropServices, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -342,7 +339,6 @@
     <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
       <Private>True</Private>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
@@ -356,7 +352,6 @@
     </Reference>
     <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
-      <Private>True</Private>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Security.Cryptography.Xml, Version=8.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -429,7 +424,6 @@
     <Reference Include="System.Xml.ReaderWriter, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
       <Private>True</Private>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.XmlDocument, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Xml.XmlDocument.4.3.0\lib\net46\System.Xml.XmlDocument.dll</HintPath>
@@ -459,12 +453,22 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AreaController.cs" />
+    <Compile Include="Controllers\CargoController.cs" />
     <Compile Include="Controllers\ContratosController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MenuController.cs" />
+    <Compile Include="Controllers\NominaController.cs" />
     <Compile Include="Controllers\GenerarReporteController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Mock\DemoBuilders.cs" />
+    <Compile Include="Models\Mock\DemoData.cs" />
+    <Compile Include="Models\Mock\MenuItem.cs" />
+    <Compile Include="Models\ViewModels\EmpleadoResultadoVM.cs" />
+    <Compile Include="Models\ViewModels\NominaPeriodoVM.cs" />
+    <Compile Include="Models\ViewModels\ParametrosOficialesVM.cs" />
+    <Compile Include="Models\ViewModels\ProcesarNominaResultadoVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -484,6 +488,37 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\css\contratos.css" />
+    <Content Include="Content\css\empleados.css" />
+    <Content Include="Content\css\historial.css" />
+    <Content Include="Content\css\layout.css" />
+    <Content Include="Content\css\listavigente.css" />
+    <Content Include="Content\css\nomina.css" />
+    <Content Include="Content\css\reporte.css" />
+    <Content Include="Content\css\parametros.css" />
+    <Content Include="Content\css\procesar.css" />
+    <Content Include="Content\css\_CardResumenContratos.css" />
+    <Content Include="Content\css\_FiltrosContratos.css" />
+    <Content Include="Content\css\_ModalNuevoContrato.css" />
+    <Content Include="Content\css\_TablaContratos.css" />
+    <Content Include="Content\img\icons\calendar.svg" />
+    <Content Include="Content\img\icons\Contrato.svg" />
+    <Content Include="Content\img\icons\contrato_activo.svg" />
+    <Content Include="Content\img\icons\contrato_alerta.svg" />
+    <Content Include="Content\img\icons\contrato_total.svg" />
+    <Content Include="Content\img\icons\contrato_vencer.svg" />
+    <Content Include="Content\img\icons\Dashboard.svg" />
+    <Content Include="Content\img\icons\Empleados.svg" />
+    <Content Include="Content\img\icons\empleadosInactivos.svg" />
+    <Content Include="Content\img\icons\LogoPrincipal.svg" />
+    <Content Include="Content\img\icons\Nomina.svg" />
+    <Content Include="Content\img\icons\nominasPendientes.svg" />
+    <Content Include="Content\img\icons\nominasProcesadas.svg" />
+    <Content Include="Content\img\icons\Parametros.svg" />
+    <Content Include="Content\img\icons\Reportes.svg" />
+    <Content Include="Content\img\icons\TotalNomina.svg" />
+    <Content Include="Content\img\icons\user.svg" />
+    <Content Include="Content\util.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -494,6 +529,7 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
+    <Content Include="Scripts\contrato\contratos.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
     <Content Include="Scripts\jquery-3.7.1.slim.js" />
@@ -504,6 +540,10 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\nomina\nomina.ui.js" />
+    <Content Include="Scripts\nomina\nomina.validation.js" />
+    <Content Include="Scripts\reporte\generarReporte.js" />
+    <Content Include="Scripts\reporte\reporte.alerta.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -515,16 +555,35 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-
+    <Content Include="Views\Nomina\Index.cshtml" />
+    <Content Include="Views\Nomina\Procesar.cshtml" />
+    <Content Include="Views\Nomina\Historial.cshtml" />
+    <Content Include="Views\Nomina\_TablaVigentes.cshtml" />
+    <Content Include="Views\Nomina\_TablaErrores.cshtml" />
+    <Content Include="Views\Nomina\_TablaResumen.cshtml" />
+    <Content Include="Views\Nomina\_CardPeriodo.cshtml" />
+    <Content Include="Views\Nomina\_ModalParametros.cshtml" />
+    <Content Include="Views\Nomina\_ModalConfirmarProcesamiento.cshtml" />
+    <Content Include="Views\Nomina\_Toast.cshtml" />
+    <Content Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <Content Include="Views\Shared\_PageHeader.cshtml" />
+    <Content Include="Views\GenerarReporte\Index.cshtml" />
+    <Content Include="Views\Shared\_Navbar.cshtml" />
+    <Content Include="Views\GenerarReporte\_Alertas.cshtml" />
+    <Content Include="Views\GenerarReporte\_EstadoVacio.cshtml" />
+    <Content Include="Views\GenerarReporte\_DetallesTrabajador.cshtml" />
+    <Content Include="Views\Contratos\_CardResumenContratos.cshtml" />
+    <Content Include="Views\Contratos\_ModalNuevoContrato.cshtml" />
+    <Content Include="Views\Contratos\_FiltrosContratos.cshtml" />
     <Content Include="Views\Contratos\Index.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\GenerarReporte\GenerarReporte.cshtml" />
+    <Content Include="Views\Contratos\_TablaActivos.cshtml" />
+    <Content Include="Views\Contratos\_TablaSinContrato.cshtml" />
+    <Content Include="Views\Contratos\_ModalEditarContrato.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
+    <Folder Include="Content\img\placeholders\" />
+    <Folder Include="Views\Menu\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -564,10 +623,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
-    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\capa_aplicacion\capa_aplicacion.csproj">
       <Project>{09538358-01e5-47b3-9ea6-c86f800970ec}</Project>
       <Name>capa_aplicacion</Name>
@@ -580,6 +635,10 @@
       <Project>{1074a41c-3310-4b11-b5a2-64a8f8a02308}</Project>
       <Name>capa_persistencia</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+    <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.3.3.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

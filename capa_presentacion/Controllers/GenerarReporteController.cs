@@ -19,7 +19,7 @@ namespace capa_presentacion.Controllers
         }
 
         // GET: Reporte
-        public ActionResult GenerarReporte()
+        public ActionResult Index()
         {
             return View();
         }

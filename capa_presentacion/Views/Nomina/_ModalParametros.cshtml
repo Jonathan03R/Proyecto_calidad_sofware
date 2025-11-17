@@ -1,0 +1,142 @@
+﻿<!-- 🔹 Modal Parámetros (versión Bootstrap 5 funcional) -->
+<div class="modal fade" id="modalParametros" tabindex="-1" aria-labelledby="tituloPeriodo" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <!-- Header -->
+            <div class="modal-header">
+                @{
+                    var fecha = DateTime.Now;
+                    var titulo = fecha.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE")).ToUpper();
+                }
+                <h2 class="modal-title" id="tituloPeriodo">@titulo</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body parametros-body">
+                <link rel="stylesheet" href="@Url.Content("~/Content/css/parametros.css")" />
+
+                <div class="row">
+                    <!-- Columna izquierda -->
+                    <div class="col-md-6">
+                        <h3>Sueldo Mínimo</h3>
+                        <dl class="kv-list">
+                            <div class="kv-row">
+                                <dt>al 01 Septiembre</dt>
+                                <dd><strong>S/ 1025.00</strong></dd>
+                            </div>
+                        </dl>
+
+                        <h3>UIT</h3>
+                        <dl class="kv-list">
+                            <div class="kv-row">
+                                <dt>al 01 Septiembre</dt>
+                                <dd><strong>S/ 5350.00</strong></dd>
+                            </div>
+                        </dl>
+
+                        <h3>Asignación Familiar</h3>
+                        <dl class="kv-list">
+                            <div class="kv-row">
+                                <dt>De la Remuneración Mínima Vital</dt>
+                                <dd><strong>10%</strong></dd>
+                            </div>
+                        </dl>
+
+                        <h3>Deducción anual</h3>
+                        <dl class="kv-list">
+                            <div class="kv-row">
+                                <dt>7 UIT</dt>
+                                <dd><strong>S/ 37,450.00</strong></dd>
+                            </div>
+                        </dl>
+                    </div>
+
+                    <!-- Columna derecha -->
+                    <div class="col-md-6">
+                        <h3>EPS / EsSalud</h3>
+                        <dl class="kv-list">
+                            <div class="kv-row">
+                                <dt>EsSalud</dt>
+                                <dd><strong>9.0%</strong></dd>
+                            </div>
+                            <div class="kv-row">
+                                <dt>EsSalud aplicable si EPS</dt>
+                                <dd><strong>6.75%</strong></dd>
+                            </div>
+                            <div class="kv-row">
+                                <dt>Vigente desde</dt>
+                                <dd><strong>1/06/2025</strong></dd>
+                            </div>
+                        </dl>
+
+                        <h3>Tasas AFP / ONP</h3>
+                        <dl class="kv-list">
+                            <div class="kv-row">
+                                <dt>AFP</dt>
+                                <dd><strong>10.0%</strong></dd>
+                            </div>
+                            <div class="kv-row">
+                                <dt>ONP</dt>
+                                <dd><strong>13.0% (sin tope de remuneración)</strong></dd>
+                            </div>
+                            <div class="kv-row">
+                                <dt>Vigente desde</dt>
+                                <dd><strong>1/06/2025</strong></dd>
+                            </div>
+                        </dl>
+
+                        <h3>Cotización Previsional</h3>
+                        <table class="tabla-previsional table table-sm table-bordered align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>AFP</th>
+                                    <th>Comisión (Flujo)</th>
+                                    <th>Comisión (Saldo)</th>
+                                    <th>Seguro</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Habitat</td><td>1.47%</td><td>0.00%</td><td>1.84%</td></tr>
+                                <tr><td>Integra</td><td>1.55%</td><td>0.00%</td><td>1.84%</td></tr>
+                                <tr><td>Prima</td><td>1.60%</td><td>0.00%</td><td>1.84%</td></tr>
+                                <tr><td>ProFuturo</td><td>1.69%</td><td>0.00%</td><td>1.84%</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bloque ancho completo -->
+                <div class="mt-4">
+                    <h3>Tasas de Impuesto Categoría</h3>
+                    <table class="tabla-previsional table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tramo</th>
+                                <th>Límite Bajo (UIT)</th>
+                                <th>Límite Alto (UIT)</th>
+                                <th>Límite Inferior (S/.)</th>
+                                <th>Límite Superior (S/.)</th>
+                                <th>Tasa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>0</td><td>Deducción fija</td><td>7 UIT</td><td>S/ 0.00</td><td>S/ 37,450.00</td><td>-</td></tr>
+                            <tr><td>1</td><td>0</td><td>5 UIT</td><td>S/ 0.00</td><td>S/ 26,750.01</td><td>8%</td></tr>
+                            <tr><td>2</td><td>&gt; 5 UIT</td><td>20 UIT</td><td>S/ 26,750.01</td><td>S/ 107,000.00</td><td>14%</td></tr>
+                            <tr><td>3</td><td>&gt; 20 UIT</td><td>35 UIT</td><td>S/ 107,000.01</td><td>S/ 187,250.00</td><td>17%</td></tr>
+                            <tr><td>4</td><td>&gt; 35 UIT</td><td>45 UIT</td><td>S/ 187,250.01</td><td>S/ 240,750.00</td><td>20%</td></tr>
+                            <tr><td>5</td><td>&gt; 45 UIT</td><td>En adelante</td><td>S/ 240,750.01</td><td>-</td><td>30%</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

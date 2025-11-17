@@ -32,31 +32,50 @@ namespace capa_dominio
         public string NominaObservaciones { get => nominaObservaciones; set => nominaObservaciones = value; }
         public List<DetalleNomina> Detalles { get => detalles; set => detalles = value; }
 
-        
-        public bool EstaProcesando()
-        {
-            return nominaEstado == "Procesando";
-        }
 
-        public bool EsExitosa()
-        {
-            return nominaEstado == "Exitoso";
-        }
-
-        public bool TieneErrores()
-        {
-            return nominaEstado == "Con Errores";
-        }
+        public bool EstaProcesando() => nominaEstado == "Procesando";
+        public bool EsExitosa() => nominaEstado == "Exitoso";
+        public bool TieneErrores() => nominaEstado == "Con Errores";
 
         public void CalcularTotales()
         {
             if (detalles == null || detalles.Count == 0)
+            {
+                System.Diagnostics.Debug.WriteLine("⚠️ No hay detalles para calcular totales.");
                 return;
+            }
 
+            // Muestra cada total individual antes de sumar
+            foreach (var d in detalles)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"Empleado ID: {d.Contrato?.Trabajador?.TrabajadorId ?? 0} | " +
+                    $"TotalIngresos: {d.TotalIngresos:F2} | " +
+                    $"TotalDescuentos: {d.TotalDescuentos:F2} | " +
+                    $"RemuneracionBruta: {d.RemuneracionBruta:F2}"
+                );
+            }
+
+            // Suma con depuración
             nominaTotalEmpleados = detalles.Count;
             nominaTotalBruto = detalles.Sum(d => d.TotalIngresos);
             nominaTotalDescuentos = detalles.Sum(d => d.TotalDescuentos);
             nominaTotalNeto = detalles.Sum(d => d.RemuneracionBruta);
+
+            System.Diagnostics.Debug.WriteLine($"📊 Total empleados: {nominaTotalEmpleados}");
+            System.Diagnostics.Debug.WriteLine($"💰 Suma TotalIngresos: {nominaTotalBruto:F2}");
+            System.Diagnostics.Debug.WriteLine($"💸 Suma TotalDescuentos: {nominaTotalDescuentos:F2}");
+            System.Diagnostics.Debug.WriteLine($"🧾 Suma RemuneracionBruta: {nominaTotalNeto:F2}");
+        }
+        public static bool ExisteEnPeriodo(List<Nomina> nominas, int periodoId)
+        {
+            if (nominas == null || nominas.Count == 0)
+                return false;
+
+            return nominas.Any(n =>
+                n.Periodo != null &&
+                n.Periodo.PeriodoId == periodoId &&
+                (n.nominaEstado == "Procesando" || n.nominaEstado == "Exitoso"));
         }
     }
 }

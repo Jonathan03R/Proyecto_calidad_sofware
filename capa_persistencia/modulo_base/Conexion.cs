@@ -12,7 +12,9 @@ namespace capa_persistencia.modulo_base
 
         // Configuración de conexión para Azure SQL
         private readonly string servidor = "nominas02calidad.database.windows.net";
-        private readonly string baseDatos = "bdProcesarNomina";
+        private readonly string baseDatos = "nominas02_calidad";
+        //private readonly string baseDatos = "bdProcesarNomina";
+
 
         private readonly string usuario = "nominas02@nominas02calidad";
         private readonly string contrasena = "Grupo02_2025";
@@ -147,7 +149,14 @@ namespace capa_persistencia.modulo_base
         {
             try
             {
+                if (conexion == null)
+                    throw new InvalidOperationException("La conexión es nula. Debes llamar a AbrirConexion() antes de usar ObtenerComandoDeProcedimiento.");
+
+                if (conexion.State != ConnectionState.Open)
+                    throw new InvalidOperationException("La conexión no está abierta. Llama a AbrirConexion() primero.");
+
                 SqlCommand comandoSQL = conexion.CreateCommand();
+
                 if (transaccion != null)
                     comandoSQL.Transaction = transaccion;
 
@@ -161,5 +170,6 @@ namespace capa_persistencia.modulo_base
                 throw new Exception("Error al obtener comando de procedimiento.", err);
             }
         }
+
     }
 }

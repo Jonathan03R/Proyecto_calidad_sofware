@@ -1,0 +1,188 @@
+﻿@model IEnumerable<capa_presentacion.Models.ViewModels.NominaPeriodoVM>
+
+@{
+    ViewBag.Title = "Historial de Nóminas";
+    ViewBag.PageTitle = "Historial de Nóminas";
+    ViewBag.PageSubtitle = "Revisa y gestiona las ejecuciones anteriores de nómina";
+    ViewBag.PagePeriodo = ""; // pon "Enero 2025" si quieres mostrar el chip del periodo
+
+    // Utilitarios para llenar combos
+    var periodos = (Model ?? Enumerable.Empty<capa_presentacion.Models.ViewModels.NominaPeriodoVM>())
+                   .Select(p => p.PeriodoNombre)
+                   .Distinct()
+                   .OrderBy(x => x)
+                   .ToList();
+
+    var tipos = new[] { "Mensual", "Quincenal" };
+}
+
+@*/* =====================  HEAD (estilos específicos de la vista) ===================== */*@
+@section Head {
+    <link rel="stylesheet" href="~/Content/css/historial.css" />
+}
+
+@*/* =====================  CONTENIDO  ===================== */*@
+<div class="historial-wrapper">
+    <!-- Filtros -->
+    <div class="filter-bar">
+        <div class="filter-item">
+            <label for="fSearch">Buscar</label>
+            <div class="input-icon">
+                <input id="fSearch" type="text" placeholder="Buscar por período o usuario..." />
+            </div>
+        </div>
+
+        <div class="filter-item">
+            <label for="fPeriodo">Fecha</label>
+            <select id="fPeriodo">
+                <option value="">Todos los períodos</option>
+                @foreach (var per in periodos)
+                {
+                    <option value="@per">@per</option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-item">
+            <label for="fTipo">Tipo</label>
+            <select id="fTipo">
+                <option value="">Todos los tipos</option>
+                @foreach (var t in tipos)
+                {
+                    <option value="@t">@t</option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-item">
+            <label for="fEstado">Estado</label>
+            <select id="fEstado">
+                <option value="">Todos los estados</option>
+                <option value="si">Procesado</option>
+                <option value="no">No procesado</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="historial">
+        <table class="tabla-historial" id="tblHistorial">
+            <thead>
+                <tr>
+                    <th colspan="7" class="text-left">
+                        <h2 class="mb-3">Ejecuciones de Nómina</h2>
+                    </th>
+                </tr>
+                <tr>
+                    <th>Período</th>
+                    <th>Tipo</th>
+                    <th>Fecha de Ejecución</th>
+                    <th>Ejecutado Por</th>
+                    <th class="t-center">Empleados</th>
+                    <th>Estado</th>
+                    <th class="t-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var p in Model)
+                    {
+                        <tr data-periodo="@p.PeriodoNombre"
+                            data-tipo="@p.TipoPago"
+                            data-estado="@(p.YaProcesado ? "si" : "no")">
+                            <td class="nowrap">@p.PeriodoNombre</td>
+                            <td><span class="pill">@p.TipoPago</span></td>
+
+                            <!-- Placeholders: puedes llenarlos luego por JS -->
+                            <td class="muted" data-fecha="-">—</td>
+                            <td class="muted" data-user="-">—</td>
+                            <td class="t-center muted" data-empl="-">—</td>
+
+                            <td>
+                                @if (p.YaProcesado)
+                                {
+                                    <span class="status ok">● Exitoso</span>
+                                }
+                                else
+                                {
+                                    <span class="status pending">● Pendiente</span>
+                                }
+                            </td>
+
+                            <td class="t-center actions">
+                                <button type="button" class="btn-mini primary">Ver Detalles</button>
+                                <button type="button" class="btn-mini slate">Re-exportar</button>
+                                <button type="button" class="btn-mini warn">Auditoría</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="7" class="t-center">Sin datos</td></tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Footer/paginación (UI mock) -->
+        <div class="hist-footer">
+            <div class="muted">Mostrando @((Model?.Count() ?? 0)) de @((Model?.Count() ?? 0)) registros</div>
+            <div class="pager">
+                <button class="pg prev" disabled>‹ Anterior</button>
+                <button class="pg current">1</button>
+                <button class="pg">2</button>
+                <button class="pg">3</button>
+                <button class="pg next">Siguiente ›</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*/* =====================  SCRIPTS (va al final del Layout)  ===================== */*@
+@section Scripts {
+    <script>
+        // Filtro simple en cliente
+        (function () {
+            const $ = (s) => document.querySelector(s);
+            const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+            const inp = $('#fSearch');
+            const selPeriodo = $('#fPeriodo');
+            const selTipo = $('#fTipo');
+            const selEstado = $('#fEstado');
+            const rows = () => $$('#tblHistorial tbody tr');
+
+            function normalizar(s) {
+                return (s || '').toString()
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '');
+            }
+
+            function aplicaFiltros() {
+                const q = normalizar(inp.value);
+                const periodo = selPeriodo.value;
+                const tipo = selTipo.value;
+                const estado = selEstado.value;
+
+                rows().forEach(tr => {
+                    const per = tr.getAttribute('data-periodo');
+                    const tip = tr.getAttribute('data-tipo');
+                    const est = tr.getAttribute('data-estado'); // si | no
+                    const textoFila = normalizar(tr.innerText);
+
+                    const okSearch = !q || textoFila.includes(q);
+                    const okPeriodo = !periodo || per === periodo;
+                    const okTipo = !tipo || tip === tipo;
+                    const okEstado = !estado || est === estado;
+
+                    tr.style.display = (okSearch && okPeriodo && okTipo && okEstado) ? '' : 'none';
+                });
+            }
+
+            [inp, selPeriodo, selTipo, selEstado].forEach(el => el && el.addEventListener('input', aplicaFiltros));
+            [selPeriodo, selTipo, selEstado].forEach(el => el && el.addEventListener('change', aplicaFiltros));
+        })();
+    </script>
+}

@@ -14,7 +14,6 @@ namespace capa_dominio
         private string tiposHorasExtrasNombre;
         private decimal tiposHorasExtrasMultiplicador;
         private char tiposHorasExtrasEstado;
-        private DateTime tiposHorasExtrasFechaCreacion;
 
         
         public int TipoHoraExtraId { get => tipoHoraExtraId; set => tipoHoraExtraId = value; }
@@ -22,7 +21,6 @@ namespace capa_dominio
         public string TiposHorasExtrasNombre { get => tiposHorasExtrasNombre; set => tiposHorasExtrasNombre = value; }
         public decimal TiposHorasExtrasMultiplicador { get => tiposHorasExtrasMultiplicador; set => tiposHorasExtrasMultiplicador = value; }
         public char TiposHorasExtrasEstado { get => tiposHorasExtrasEstado; set => tiposHorasExtrasEstado = value; }
-        public DateTime TiposHorasExtrasFechaCreacion { get => tiposHorasExtrasFechaCreacion; set => tiposHorasExtrasFechaCreacion = value; }
 
     }
 }

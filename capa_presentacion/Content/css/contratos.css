@@ -1,0 +1,35 @@
+﻿/* ===============================
+   CONTRATOS INDEX GENERAL
+   =============================== */
+.page-contratos {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 2rem;
+}
+
+/*.page-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+    .page-header h1 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .page-header p {
+        font-size: 0.95rem;
+        color: #6b7280;
+    }*/
+
+/* para responsive */
+/*@media (max-width: 768px) {
+    .filtros-contratos,
+    .tabla-contratos,
+    .card-resumen-container {
+        flex-direction: column;
+    }
+}*/

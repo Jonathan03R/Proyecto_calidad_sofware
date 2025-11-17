@@ -16,6 +16,8 @@ namespace capa_presentacion
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            //AreaRegistration.RegisterAllAreas();
+            //RouteConfig.RegisterRoutes(System.Web.Routing.RouteTable.Routes);
         }
     }
 }

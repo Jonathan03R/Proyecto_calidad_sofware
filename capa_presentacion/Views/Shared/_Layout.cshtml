@@ -1,45 +1,85 @@
-﻿<!DOCTYPE html>
-<html>
+﻿@* Views/Shared/_Layout.cshtml *@
+<!DOCTYPE html>
+<html lang="es">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Sistema de Gestión de Contratos</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - Sistema de Nómina</title>
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/layout.css")?v=@DateTime.Now.Ticks" />
+    @RenderSection("Head", required: false)
 </head>
+
 <body>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
-        <div class="container">
-            @Html.ActionLink("Gestión de Contratos", "Index", "Contratos", new { area = "" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                    title="Alternar navegación" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    @{
+        var action = (string)ViewContext.RouteData.Values["action"];
+        var controller = (string)ViewContext.RouteData.Values["controller"];
+    }
+    @Html.Action("Navbar", "Menu")
+    <script>
+        (function () {
+            document.querySelectorAll('.nav-sub').forEach(sub => {
+                const btn = sub.querySelector('.nav-sub-toggle');
+                const menu = sub.querySelector('.nav-sub-menu');
+                if (!btn || !menu) return;
+                function toggle(open) {
+                    menu.classList.toggle('show', open);
+                    sub.classList.toggle('open', open);
+                    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                }
+                btn.addEventListener('click', () => toggle(!menu.classList.contains('show')));
+                document.addEventListener('click', e => { if (!sub.contains(e.target)) toggle(false); });
+                menu.addEventListener('click', e => { if (e.target.closest('a')) toggle(false); });
+            });
+        })();
+        (function () {
+            const KEY = 'sidebar-collapsed';
+            const btn = document.getElementById('btn-collapse');
+            const saved = localStorage.getItem(KEY);
+            if (saved === '1') { document.body.classList.add('sidebar-collapsed'); if (btn) btn.setAttribute('aria-pressed', 'true'); }
+            btn && btn.addEventListener('click', () => {
+                const collapsed = document.body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem(KEY, collapsed ? '1' : '0');
+                btn.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+            });
+        })();
+    </script>
 
-            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Inicio", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Trabajadores", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Áreas", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Cargos", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Tipos de Pensión", "Index", "Contratos", new { area = "" }, new { @class = "nav-link" })</li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container body-content">
+    @RenderSection("PageActions", required: false)
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+        @Html.Partial("~/Views/Shared/_PageHeader.cshtml")
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Sistema de Gestión de Contratos</p>
-        </footer>
-    </div>
+    </main>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
+    <footer class="footer">
+        @*<p>© @DateTime.Now.Year - Sistema de Nómina | Desarrollado por el equipo número 2</p>*@
+    </footer>
+    <script>
+        (function () {
+            const KEY = 'sidebar-collapsed';
+            const btn = document.getElementById('btn-collapse');
+
+            // Restaurar estado
+            const saved = localStorage.getItem(KEY);
+            if (saved === '1') {
+                document.body.classList.add('sidebar-collapsed');
+                if (btn) btn.setAttribute('aria-pressed', 'true');
+            }
+
+            // Toggle
+            btn && btn.addEventListener('click', () => {
+                const collapsed = document.body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem(KEY, collapsed ? '1' : '0');
+                btn.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+            });
+        })();
+    </script>
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

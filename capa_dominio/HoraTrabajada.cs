@@ -1,64 +1,116 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace capa_dominio
 {
     public class HoraTrabajada
     {
-        private int horaTrabajadaId;
-        private DateTime horaTrabajadaFecha;
-        private TimeSpan? horaTrabajadaHoraEntrada;
-        private TimeSpan? horaTrabajadaHoraSalida;
-        private decimal horasTrabajadas;
-        private int horasExtra; // va a ser dinero
-        private decimal valorHoraExtra;
-        private decimal horaTrabajadaDescanso;
-        private string horaTrabajadaObservaciones;
-        private DateTime registroFechaCreacion;
-        private Trabajador trabajador;
+        private DateTime fecha;
+        private decimal horasNormales;
+        private decimal horasExtras;
+        private decimal horasDescanso;
+        private decimal totalDiaTrabajado;
+        private Contrato contrato;
+        private List<TipoHoraExtra> tiposHorasExtras;
 
-        public Trabajador Trabajador { get => trabajador; set => trabajador = value; }
-        public int HoraTrabajadaId { get => horaTrabajadaId; set => horaTrabajadaId = value; }
-        public DateTime HoraTrabajadaFecha { get => horaTrabajadaFecha; set => horaTrabajadaFecha = value; }
-        public TimeSpan? HoraTrabajadaHoraEntrada { get => horaTrabajadaHoraEntrada; set => horaTrabajadaHoraEntrada = value; }
-        public TimeSpan? HoraTrabajadaHoraSalida { get => horaTrabajadaHoraSalida; set => horaTrabajadaHoraSalida = value; }
-        public int HorasExtra { get => horasExtra; set => horasExtra = value; }
-        public decimal HorasTrabajadas { get => horasTrabajadas; set => horasTrabajadas = value; }
-        public decimal ValorHoraExtra { get => valorHoraExtra; set => valorHoraExtra = value; }
-        public decimal HoraTrabajadaDescanso { get => horaTrabajadaDescanso; set => horaTrabajadaDescanso = value; }
-        public string HoraTrabajadaObservaciones { get => horaTrabajadaObservaciones; set => horaTrabajadaObservaciones = value; }
-        public DateTime RegistroFechaCreacion { get => registroFechaCreacion; set => registroFechaCreacion = value; }
+        public DateTime Fecha { get => fecha; set => fecha = value; }
+        public decimal HorasNormales { get => horasNormales; set => horasNormales = value; }
+        public decimal HorasExtras { get => horasExtras; set => horasExtras = value; }
+        public decimal HorasDescanso { get => horasDescanso; set => horasDescanso = value; }
+        public decimal TotalDiaTrabajado { get => totalDiaTrabajado; set => totalDiaTrabajado = value; }
+        public Contrato Contrato { get => contrato; set => contrato = value; }
+        public List<TipoHoraExtra> TiposHorasExtras { get => tiposHorasExtras; set => tiposHorasExtras = value; }
 
-        public decimal CalcularHorasTotales()
+        public decimal CalcularPagoHorasExtras()
         {
-            return horasTrabajadas + horasExtra - horaTrabajadaDescanso;
+            if (Contrato == null)
+                throw new InvalidOperationException("Contrato nulo.");
+
+            if (TiposHorasExtras == null || TiposHorasExtras.Count == 0)
+                throw new InvalidOperationException("Tipos de horas extras no cargadas.");
+
+            decimal tarifaHora = Contrato.ContratoTarifaHora;
+            decimal pagoExtras = 0m;
+
+            decimal recPrimeras2 = ObtenerMultiplicador("PRIMERAS2");     // 0.25
+            decimal recAdicionales = ObtenerMultiplicador("ADICIONALES"); // 0.35
+            decimal recSabado = ObtenerMultiplicador("SABADO");           // 0.50
+            decimal recDomingo = ObtenerMultiplicador("DOMINGO");         // 1.00
+
+            var dia = Fecha.DayOfWeek;
+
+            // DOMINGO -> TODO lo extra se paga 100% adicional
+            if (dia == DayOfWeek.Sunday)
+            {
+                decimal tarifaConRecargo = tarifaHora * (1 + recDomingo);
+                pagoExtras = HorasExtras * tarifaConRecargo;
+                return Math.Round(pagoExtras, 2);
+            }
+
+            // SÁBADO -> todas las extras con recargo SABADO
+            if (dia == DayOfWeek.Saturday)
+            {
+                decimal tarifaConRecargo = tarifaHora * (1 + recSabado);
+                pagoExtras = HorasExtras * tarifaConRecargo;
+                return Math.Round(pagoExtras, 2);
+            }
+
+            // LUNES A VIERNES -> primeras 2 y adicionales
+            if (HorasExtras > 0)
+            {
+                decimal primerasDos = Math.Min(HorasExtras, 2);
+                decimal adicionales = Math.Max(HorasExtras - 2, 0);
+
+                decimal pagoP2 = primerasDos * tarifaHora * (1 + recPrimeras2);
+                decimal pagoAdi = adicionales * tarifaHora * (1 + recAdicionales);
+
+                pagoExtras = pagoP2 + pagoAdi;
+            }
+
+            return Math.Round(pagoExtras, 2);
         }
 
-        public decimal CalculoPagoHorasExtras() 
-        {
-            decimal tarifaPorHora = trabajador.Contrato.ContratoTarifaHora ;
-            decimal tarifaHoraNormal = 10.0m; 
-            decimal tarifaHoraExtra = tarifaHoraNormal * 1.5m;
-            return horasExtra * tarifaHoraExtra;
-        }
-
-        public bool EsDiaLaboral()
-        {
-            return horaTrabajadaFecha.DayOfWeek != DayOfWeek.Sunday;
-        }
 
 
-        /// <summary>
-        /// El cálculo de las horas extras se basa en horasTrabajadas.
-        /// Se calcula el tiempo entre la hora de entrada y salida.
-        /// Si supera las horasTrabajadas, lo restante son horas extras.
-        /// </summary>
-        public void CalcularHorasTrabajadas()
+
+        private decimal ObtenerMultiplicador(string codigo)
         {
-             TimeSpan HorasTrabajadas = horaTrabajadaHoraSalida.Value - horaTrabajadaHoraEntrada.Value;
+            var tipo = TiposHorasExtras.FirstOrDefault(t =>
+                t.TiposHorasExtrasCodigo.Equals(codigo, StringComparison.OrdinalIgnoreCase)
+                && t.TiposHorasExtrasEstado == 'A');
+
+            if (tipo == null)
+                throw new InvalidOperationException($"Falta el tipo de hora extra '{codigo}' (o está inactivo).");
+
+            return tipo.TiposHorasExtrasMultiplicador;
         }
+
+
+
+        public decimal CalcularDescuentoTardanza()
+        {
+            if (contrato == null)
+                throw new InvalidOperationException("El contrato no puede ser nulo para calcular descuentos.");
+
+            decimal jornada_diaria = contrato.ObtenerJornadaDiaria();
+            decimal sueldo_por_dia = contrato.ObtenerSueldoPorDia();
+
+            if (jornada_diaria <= 0)
+                return 0;
+
+            // si no trabajó nada, no contar como tardanza
+            if (HorasNormales == 0)
+                return 0;
+
+            if (HorasNormales >= jornada_diaria)
+                return 0;
+
+            decimal horas_tardanza = jornada_diaria - HorasNormales;
+            decimal descuento_por_hora = sueldo_por_dia / jornada_diaria;
+
+            return horas_tardanza * descuento_por_hora;
+        }
+
     }
 }

@@ -1,67 +1,93 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace capa_dominio.dto
 {
     public class DetalleNominaDTO
     {
-        private int nominaId;
-        private int trabajadorId;
-        private decimal remuneracionBruta;
-        private decimal sueldoBasico;
-        private decimal asignacionFamiliar;
-        private decimal horasExtras;
-        private decimal bonosRegulares;
-        private decimal otrosIngresos;
-        private string sistemaPensionAplicado;
-        private decimal aporteEssalud;
-        private decimal aporteOnp;
-        private decimal descuentoAfp;
-        private decimal remuneracionAcumuladaAnual;
-        private decimal baseImponibleAnual;
-        private decimal impuestoRentaAnual;
-        private decimal impuestoRentaMensual;
-        private decimal uitValor;
-        private decimal deduccion7Uit;
-        private decimal descuentoTardanzas;
-        private decimal descuentoFaltas;
-        private decimal descuentoAdelantos;
-        private decimal otrosDescuentos;
-        private decimal totalIngresos;
-        private decimal totalDescuentos;
-        private decimal netoPagar;
-        private bool tieneErrores;
-        private string mensajeError;
+        public int NominaId { get; set; }
+        public int TrabajadorId { get; set; }
+        public decimal RemuneracionBruta { get; set; }
+        public decimal SueldoBasico { get; set; }
+        public decimal AsignacionFamiliar { get; set; }
+        public decimal HorasExtras { get; set; }
+        public decimal BonosRegulares { get; set; }
+        public decimal OtrosIngresos { get; set; }
+        public string SistemaPensionAplicado { get; set; }
+        public decimal AporteEssalud { get; set; }
+        public decimal AporteOnp { get; set; }
+        public decimal DescuentoAfp { get; set; }
+        public decimal RemuneracionAcumuladaAnual { get; set; }
+        public decimal BaseImponibleAnual { get; set; }
+        public decimal ImpuestoRentaAnual { get; set; }
+        public decimal ImpuestoRentaMensual { get; set; }
+        public decimal UitValor { get; set; }
+        public decimal Deduccion7Uit { get; set; }
+        public decimal DescuentoTardanzas { get; set; }
+        public decimal DescuentoFaltas { get; set; }
+        public decimal DescuentoAdelantos { get; set; }
+        public decimal OtrosDescuentos { get; set; }
+        public decimal TotalIngresos { get; set; }
+        public decimal TotalDescuentos { get; set; }
+        public decimal NetoPagar { get; set; }
+        public bool TieneErrores { get; set; }
+        public string MensajeError { get; set; }
 
-        public int NominaId { get => nominaId; set => nominaId = value; }
-        public int TrabajadorId { get => trabajadorId; set => trabajadorId = value; }
-        public decimal RemuneracionBruta { get => remuneracionBruta; set => remuneracionBruta = value; }
-        public decimal SueldoBasico { get => sueldoBasico; set => sueldoBasico = value; }
-        public decimal AsignacionFamiliar { get => asignacionFamiliar; set => asignacionFamiliar = value; }
-        public decimal HorasExtras { get => horasExtras; set => horasExtras = value; }
-        public decimal BonosRegulares { get => bonosRegulares; set => bonosRegulares = value; }
-        public decimal OtrosIngresos { get => otrosIngresos; set => otrosIngresos = value; }
-        public string SistemaPensionAplicado { get => sistemaPensionAplicado; set => sistemaPensionAplicado = value; }
-        public decimal AporteEssalud { get => aporteEssalud; set => aporteEssalud = value; }
-        public decimal AporteOnp { get => aporteOnp; set => aporteOnp = value; }
-        public decimal DescuentoAfp { get => descuentoAfp; set => descuentoAfp = value; }
-        public decimal RemuneracionAcumuladaAnual { get => remuneracionAcumuladaAnual; set => remuneracionAcumuladaAnual = value; }
-        public decimal BaseImponibleAnual { get => baseImponibleAnual; set => baseImponibleAnual = value; }
-        public decimal ImpuestoRentaAnual { get => impuestoRentaAnual; set => impuestoRentaAnual = value; }
-        public decimal ImpuestoRentaMensual { get => impuestoRentaMensual; set => impuestoRentaMensual = value; }
-        public decimal UitValor { get => uitValor; set => uitValor = value; }
-        public decimal Deduccion7Uit { get => deduccion7Uit; set => deduccion7Uit = value; }
-        public decimal DescuentoTardanzas { get => descuentoTardanzas; set => descuentoTardanzas = value; }
-        public decimal DescuentoFaltas { get => descuentoFaltas; set => descuentoFaltas = value; }
-        public decimal DescuentoAdelantos { get => descuentoAdelantos; set => descuentoAdelantos = value; }
-        public decimal OtrosDescuentos { get => otrosDescuentos; set => otrosDescuentos = value; }
-        public decimal TotalIngresos { get => totalIngresos; set => totalIngresos = value; }
-        public decimal TotalDescuentos { get => totalDescuentos; set => totalDescuentos = value; }
-        public decimal NetoPagar { get => netoPagar; set => netoPagar = value; }
-        public bool TieneErrores { get => tieneErrores; set => tieneErrores = value; }
-        public string MensajeError { get => mensajeError; set => mensajeError = value; }
+        public DetalleNominaDTO(
+            int nominaId,
+            int trabajadorId,
+            decimal remuneracionBruta,
+            decimal sueldoBasico,
+            decimal asignacionFamiliar,
+            decimal horasExtras,
+            decimal bonosRegulares,
+            decimal otrosIngresos,
+            string sistemaPensionAplicado,
+            decimal aporteEssalud,
+            decimal aporteOnp,
+            decimal descuentoAfp,
+            decimal remuneracionAcumuladaAnual,
+            decimal baseImponibleAnual,
+            decimal impuestoRentaAnual,
+            decimal impuestoRentaMensual,
+            decimal uitValor,
+            decimal deduccion7Uit,
+            decimal descuentoTardanzas,
+            decimal descuentoFaltas,
+            decimal descuentoAdelantos,
+            decimal otrosDescuentos,
+            decimal totalIngresos,
+            decimal totalDescuentos,
+            decimal netoPagar,
+            bool tieneErrores,
+            string mensajeError)
+        {
+            NominaId = nominaId;
+            TrabajadorId = trabajadorId;
+            RemuneracionBruta = remuneracionBruta;
+            SueldoBasico = sueldoBasico;
+            AsignacionFamiliar = asignacionFamiliar;
+            HorasExtras = horasExtras;
+            BonosRegulares = bonosRegulares;
+            OtrosIngresos = otrosIngresos;
+            SistemaPensionAplicado = sistemaPensionAplicado ?? throw new ArgumentNullException(nameof(sistemaPensionAplicado));
+            AporteEssalud = aporteEssalud;
+            AporteOnp = aporteOnp;
+            DescuentoAfp = descuentoAfp;
+            RemuneracionAcumuladaAnual = remuneracionAcumuladaAnual;
+            BaseImponibleAnual = baseImponibleAnual;
+            ImpuestoRentaAnual = impuestoRentaAnual;
+            ImpuestoRentaMensual = impuestoRentaMensual;
+            UitValor = uitValor;
+            Deduccion7Uit = deduccion7Uit;
+            DescuentoTardanzas = descuentoTardanzas;
+            DescuentoFaltas = descuentoFaltas;
+            DescuentoAdelantos = descuentoAdelantos;
+            OtrosDescuentos = otrosDescuentos;
+            TotalIngresos = totalIngresos;
+            TotalDescuentos = totalDescuentos;
+            NetoPagar = netoPagar;
+            TieneErrores = tieneErrores;
+            MensajeError = mensajeError ?? string.Empty;
+        }
     }
 }
