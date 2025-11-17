@@ -184,21 +184,21 @@ const NominaUI = (function () {
             type: 'GET',
             dataType: 'json',
             success: function (response) {
-                if (!response.consultaExitosa) {
-                    console.error('❌ Consulta no exitosa:', response.mensaje);
-                    Alertas.error('Error al consultar: ' + response.mensaje);
-                    mostrarEstadoVacio();
-                    elements.btnProcesar.prop('disabled', true);
-                    return;
-                }
+                //if (!response.consultaExitosa) {
+                //    console.error('❌ Consulta no exitosa:', response.mensaje);
+                //    Alertas.error('Error al consultar: ' + response.mensaje);
+                //    mostrarEstadoVacio();
+                //    elements.btnProcesar.prop('disabled', true);
+                //    return;
+                //}
 
-                if (!response.data || response.data.length === 0) {
-                    console.warn('⚠️ No hay empleados vigentes');
-                    Alertas.info('No se encontraron empleados vigentes');
-                    mostrarEstadoVacio();
-                    elements.btnProcesar.prop('disabled', true);
-                    return;
-                }
+                //if (!response.data || response.data.length === 0) {
+                //    console.warn('⚠️ No hay empleados vigentes');
+                //    Alertas.info('No se encontraron empleados vigentes');
+                //    mostrarEstadoVacio();
+                //    elements.btnProcesar.prop('disabled', true);
+                //    return;
+                //}
 
                 console.log(`✅ Empleados cargados: ${response.data.length}`);
                 datosEmpleadosVigentes = response.data;

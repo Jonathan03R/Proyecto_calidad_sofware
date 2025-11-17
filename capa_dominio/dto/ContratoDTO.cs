@@ -30,22 +30,15 @@ namespace capa_dominio.dto
         public int? TipoPensionId { get => tipoPensionId; set => tipoPensionId = value; }
         public int? TipoSalarioId { get => tipoSalarioId; set => tipoSalarioId = value; }
         public int? TipoJornadaId { get => tipoJornadaId; set => tipoJornadaId = value; }
-
         public DateTime FechaInicio { get => fechaInicio; set => fechaInicio = value; }
         public DateTime? FechaFin { get => fechaFin; set => fechaFin = value; }
-
         public decimal? Salario { get => salario; set => salario = value; }
-
         public decimal? TarifaHora { get => tarifaHora; set => tarifaHora = value; }
-
         public int? HorasSemanales { get; set; }
-
         public string ModoPago { get => modoPago; set => modoPago = value; }
         public string DocumentoUrl { get => documentoUrl; set => documentoUrl = value; }
         public string DescripcionFunciones { get => descripcionFunciones; set => descripcionFunciones = value; }
         public string Observaciones { get => observaciones; set => observaciones = value; }
-
-        // ------ CAMPOS PARA LISTADO ------
         public string EmpleadoNombre { get; set; }
         public string Documento { get; set; }
         public string CargoNombre { get; set; }

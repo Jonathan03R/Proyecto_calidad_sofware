@@ -28,7 +28,6 @@ namespace capa_aplicacion.sevicios
 
             try
             {
-                // 🔹 IMPORTANTE: abrir conexión
                 conexion.AbrirConexion();
 
                 listaCargo = cargosDAO.ObtenerCargos();
@@ -46,7 +45,6 @@ namespace capa_aplicacion.sevicios
             }
             finally
             {
-                // 🔹 IMPORTANTE: cerrar conexión
                 conexion.CerrarConexion();
             }
 

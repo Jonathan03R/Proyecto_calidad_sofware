@@ -52,7 +52,7 @@ namespace capa_dominio
         {
             System.Diagnostics.Debug.WriteLine($"Verificando derecho a asignación familiar para trabajador ID: {trabajadorId}");
             return hijos.Any(h =>
-                h.Estado == 'a' &&
+                h.Estado == 'A' &&
                 (h.FechaNacimiento > DateTime.Now.AddYears(-18) ||
                  h.TieneDiscapacidad ||
                  h.Estudia));

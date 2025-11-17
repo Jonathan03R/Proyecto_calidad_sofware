@@ -330,12 +330,9 @@ namespace capa_dominio
             impuestoRentaMensual = Math.Round(impuestoAnual / 12, 2, MidpointRounding.AwayFromZero);
         }
 
-
         // =========================
         // TOTALES
         // =========================
-
-       
 
         public void CalcularTotales()
         {

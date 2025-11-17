@@ -32,7 +32,6 @@ namespace capa_dominio.dto
         public bool TieneErrores { get; set; }
         public string MensajeError { get; set; }
 
-        // 🔒 Constructor requerido (obliga a pasar todos los datos)
         public DetalleNominaDTO(
             int nominaId,
             int trabajadorId,

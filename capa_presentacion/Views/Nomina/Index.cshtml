@@ -8,6 +8,7 @@
 @section Head {
     <link rel="stylesheet" href="~/Content/css/nomina.css" />
     <link rel="stylesheet" href="~/Content/css/listavigente.css" />
+    <link href="~/Content/css/reporte.css?v=@DateTime.Now.Ticks" rel="stylesheet" />
 }
 
 <div class="procesar-nomina">
@@ -75,9 +76,6 @@
         <div class="col-lg-8">
             @Html.Partial("_TablaVigentes")
         </div>
-        <div class="col-lg-4">
-            @Html.Partial("_TablaResumen")
-        </div>
     </div>
 
     <div class="row mt-4">
@@ -85,9 +83,18 @@
             @Html.Partial("_TablaErrores")
         </div>
     </div>
+    <button type="button"
+            class="btn-secondary"
+            data-bs-toggle="modal"
+            data-bs-target="#modalParametros">
+        ⚙️ Parámetros
+    </button>
+
 </div>
 
 @Html.Partial("_ModalConfirmarProcesamiento")
+
+@Html.Partial("_ModalParametros")
 
 @section Scripts {
     @* ===== CONFIGURACIÓN DE URLs ===== *@
