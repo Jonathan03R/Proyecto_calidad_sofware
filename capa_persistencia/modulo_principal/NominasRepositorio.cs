@@ -93,23 +93,12 @@ namespace capa_persistencia.modulo_principal
 
             try
             {
-                var comando = _accesoSQL.ObtenerComandoSQL(@"
-                    select 
-                        nomina_id,
-                        periodo_id,
-                        nomina_fecha,
-                        nomina_fecha_procesamiento,
-                        nomina_estado,
-                        nomina_total_empleados,
-                        nomina_total_bruto,
-                        nomina_total_descuentos,
-                        nomina_total_neto,
-                        nomina_observaciones
-                    from nomina.nominas
-                    where periodo_id = @periodo_id
-                    order by nomina_fecha desc"
+                var comando = _accesoSQL.ObtenerComandoDeProcedimiento(
+                    "nomina.proc_obtener_nominas_por_periodo"
                 );
+
                 comando.Parameters.AddWithValue("@periodo_id", periodoId);
+
                 using (var reader = comando.ExecuteReader())
                 {
                     while (reader.Read())
@@ -117,11 +106,20 @@ namespace capa_persistencia.modulo_principal
                         var nomina = new Nomina
                         {
                             NominaId = reader.GetInt32(reader.GetOrdinal("nomina_id")),
-                            Periodo = new Periodo { PeriodoId = reader.GetInt32(reader.GetOrdinal("periodo_id")) },
-                            NominaFecha = reader.GetDateTime(reader.GetOrdinal("nomina_fecha")),
+                            Periodo = new Periodo
+                            {
+                                PeriodoId = reader.GetInt32(reader.GetOrdinal("periodo_id"))
+                            },
+
+                            // 👇 Aquí evitamos reventar si nomina_fecha viene NULL
+                            NominaFecha = reader.IsDBNull(reader.GetOrdinal("nomina_fecha"))
+                                ? DateTime.MinValue
+                                : reader.GetDateTime(reader.GetOrdinal("nomina_fecha")),
+
                             NominaFechaProcesamiento = reader.IsDBNull(reader.GetOrdinal("nomina_fecha_procesamiento"))
                                 ? DateTime.MinValue
                                 : reader.GetDateTime(reader.GetOrdinal("nomina_fecha_procesamiento")),
+
                             NominaEstado = reader.GetString(reader.GetOrdinal("nomina_estado")),
                             NominaTotalEmpleados = reader.GetInt32(reader.GetOrdinal("nomina_total_empleados")),
                             NominaTotalBruto = reader.GetDecimal(reader.GetOrdinal("nomina_total_bruto")),
@@ -138,11 +136,14 @@ namespace capa_persistencia.modulo_principal
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error obteniendo nóminas del periodo {periodoId}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine(
+                    $"Error obteniendo nóminas del periodo {periodoId}: {ex.Message}"
+                );
             }
 
             return nominas;
         }
+
 
     }
 }

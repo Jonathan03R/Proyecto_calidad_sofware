@@ -462,9 +462,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Mock\DemoBuilders.cs" />
-    <Compile Include="Models\Mock\DemoData.cs" />
-    <Compile Include="Models\Mock\MenuItem.cs" />
+    <Compile Include="Models\Menu\MenuItem.cs" />
     <Compile Include="Models\ViewModels\EmpleadoResultadoVM.cs" />
     <Compile Include="Models\ViewModels\NominaPeriodoVM.cs" />
     <Compile Include="Models\ViewModels\ParametrosOficialesVM.cs" />
@@ -556,13 +554,10 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Nomina\Index.cshtml" />
-    <Content Include="Views\Nomina\Procesar.cshtml" />
     <Content Include="Views\Nomina\Historial.cshtml" />
     <Content Include="Views\Nomina\_TablaVigentes.cshtml" />
     <Content Include="Views\Nomina\_TablaErrores.cshtml" />
-    <Content Include="Views\Nomina\_TablaResumen.cshtml" />
     <Content Include="Views\Nomina\_CardPeriodo.cshtml" />
-    <Content Include="Views\Nomina\_ModalParametros.cshtml" />
     <Content Include="Views\Nomina\_ModalConfirmarProcesamiento.cshtml" />
     <Content Include="Views\Nomina\_Toast.cshtml" />
     <Content Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
@@ -579,6 +574,10 @@
     <Content Include="Views\Contratos\_TablaActivos.cshtml" />
     <Content Include="Views\Contratos\_TablaSinContrato.cshtml" />
     <Content Include="Views\Contratos\_ModalEditarContrato.cshtml" />
+    <Content Include="Views\Nomina\Procesando.cshtml" />
+    <Content Include="Views\Nomina\_Kpis.cshtml" />
+    <Content Include="Views\Nomina\_FormProcesarNomina.cshtml" />
+    <Content Include="Views\Nomina\_ModalDetalleEmpleado.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
