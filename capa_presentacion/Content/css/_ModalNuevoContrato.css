@@ -34,7 +34,10 @@
     padding: 1.5rem 2rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     animation: fadeIn 0.25s ease-in;
+    max-height: 90vh; /* altura máxima del modal */
+    overflow-y: auto; /* scroll interno vertical */
 }
+
 
 .modal-header,
 .modal-footer {
