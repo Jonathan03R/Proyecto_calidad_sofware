@@ -183,14 +183,10 @@ namespace capa_dominio
         }
 
 
-        public void calcularRemuneracionBruta() 
+        public void CalcularRemuneracionBruta() 
         {
             remuneracionBruta = contrato.ContratoSalario + horasExtras + asignacionFamiliar + bonosRegulares;
         }
-
-
-
-
 
         // =========================
         // ASIGNACIÓN FAMILIAR
@@ -329,6 +325,20 @@ namespace capa_dominio
 
             impuestoRentaMensual = Math.Round(impuestoAnual / 12, 2, MidpointRounding.AwayFromZero);
         }
+        //public void CalcularDescuentoAdelantos()
+        //{
+        //    if (AdelantoSueldo == null)
+        //    {
+        //        descuentoAdelantos = 0;
+        //        return;
+        //    }
+
+        //    descuentoAdelantos = Math.Round(AdelantoSueldo.Monto, 2, MidpointRounding.AwayFromZero);
+
+        //    System.Diagnostics.Trace.WriteLine(
+        //        $"ADELANTOS -> Monto: {descuentoAdelantos:F2}"
+        //    );
+        //}
 
         // =========================
         // TOTALES
@@ -336,20 +346,21 @@ namespace capa_dominio
 
         public void CalcularTotales()
         {
-            // Sumar todos los ingresos
-            totalIngresos = remuneracionBruta;
+            // Ingresos = Remuneración bruta + otros ingresos (si aplica)
+            totalIngresos = remuneracionBruta + otrosIngresos;
 
             totalDescuentos = aporteONP +
                               descuentoAFP +
                               impuestoRentaMensual +
                               descuentoFaltas +
                               descuentoAdelantos;
-            // Calcular neto
+
             netoPagar = totalIngresos - totalDescuentos;
 
             System.Diagnostics.Trace.WriteLine(
                 $"TOTAL_INGRESOS: {totalIngresos} | TOTAL_DESCUENTOS: {totalDescuentos} | NETO_PAGAR: {netoPagar}"
             );
-        }       
+        }
+
     }
 }

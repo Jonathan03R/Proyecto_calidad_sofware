@@ -45,28 +45,38 @@ namespace capa_dominio
                 return;
             }
 
-            // Muestra cada total individual antes de sumar
-            foreach (var d in detalles)
+            // === Debug opcional por cada trabajador ===
+            foreach (var det in detalles)
             {
                 System.Diagnostics.Debug.WriteLine(
-                    $"Empleado ID: {d.Contrato?.Trabajador?.TrabajadorId ?? 0} | " +
-                    $"TotalIngresos: {d.TotalIngresos:F2} | " +
-                    $"TotalDescuentos: {d.TotalDescuentos:F2} | " +
-                    $"RemuneracionBruta: {d.RemuneracionBruta:F2}"
+                    $"Empleado ID: {det.Contrato?.Trabajador?.TrabajadorId ?? 0} | " +
+                    $"Bruto: {det.RemuneracionBruta:F2} | " +
+                    $"Ingresos: {det.TotalIngresos:F2} | " +
+                    $"Descuentos: {det.TotalDescuentos:F2} | " +
+                    $"Neto: {det.NetoPagar:F2}"
                 );
             }
 
-            // Suma con depuración
+            // === Totales correctos de una nómina ===
             nominaTotalEmpleados = detalles.Count;
-            nominaTotalBruto = detalles.Sum(d => d.TotalIngresos);
-            nominaTotalDescuentos = detalles.Sum(d => d.TotalDescuentos);
-            nominaTotalNeto = detalles.Sum(d => d.RemuneracionBruta);
 
+            // Bruto = suma de remuneración bruta de cada trabajador
+            nominaTotalBruto = detalles.Sum(det => det.RemuneracionBruta);
+
+            // Descuentos totales
+            nominaTotalDescuentos = detalles.Sum(det => det.TotalDescuentos);
+
+            // Neto a pagar (Bruto - Descuentos) o suma de netos individuales
+            nominaTotalNeto = detalles.Sum(det => det.NetoPagar);
+
+            // === Debug del total ===
             System.Diagnostics.Debug.WriteLine($"📊 Total empleados: {nominaTotalEmpleados}");
-            System.Diagnostics.Debug.WriteLine($"💰 Suma TotalIngresos: {nominaTotalBruto:F2}");
-            System.Diagnostics.Debug.WriteLine($"💸 Suma TotalDescuentos: {nominaTotalDescuentos:F2}");
-            System.Diagnostics.Debug.WriteLine($"🧾 Suma RemuneracionBruta: {nominaTotalNeto:F2}");
+            System.Diagnostics.Debug.WriteLine($"💰 Total Bruto: {nominaTotalBruto:F2}");
+            System.Diagnostics.Debug.WriteLine($"💸 Total Descuentos: {nominaTotalDescuentos:F2}");
+            System.Diagnostics.Debug.WriteLine($"🧾 Total Neto: {nominaTotalNeto:F2}");
         }
+
+
         public static bool ExisteEnPeriodo(List<Nomina> nominas, int periodoId)
         {
             if (nominas == null || nominas.Count == 0)
