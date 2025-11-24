@@ -162,7 +162,7 @@ namespace capa_aplicacion.servicios
                     detalle.CalcularDescuentoFaltas();
 
                     // 4) Remuneración bruta
-                    detalle.calcularRemuneracionBruta(); // ← corrige el nombre del método
+                    detalle.calcularRemuneracionBruta();
 
                     // 5) Pensiones
                     detalle.CalcularSistemaPensiones();

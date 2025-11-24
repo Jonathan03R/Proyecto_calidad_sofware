@@ -248,7 +248,13 @@ namespace capa_dominio
                 case 3:
                 case 4:
                 case 5:
-                    descuentoAFP = Math.Round(remuneracionBruta * 0.10m, 2, MidpointRounding.AwayFromZero);
+                    var aporteObligatorio = remuneracionBruta * 0.10m;
+
+                    var comision = 0m;
+                    if (Contrato.TipoPension.ComisionSobreFlujo != null)
+                        comision = remuneracionBruta * (decimal)Contrato.TipoPension.ComisionSobreFlujo;
+
+                    descuentoAFP = Math.Round(aporteObligatorio + comision, 2, MidpointRounding.AwayFromZero);
                     break;
 
                 case 6:
