@@ -1,0 +1,72 @@
+﻿@model capa_presentacion.Models.ViewModels.ProcesarNominaResultadoVM
+
+
+@{
+    ViewBag.Title = "Procesando Nómina";
+}
+
+@section Estilos {
+    <link rel="stylesheet" href="~/Content/css/procesar.css" />
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Procesando Nómina</h2>
+
+    @* Tarjeta con datos del período *@
+    @Html.Partial("Partials/_CardPeriodo", Model)
+
+    @* Barra de progreso *@
+    <div class="progress my-3" style="height: 20px;">
+        <div id="progreso" class="progress-bar" role="progressbar"
+             style="width: 1%;"
+             aria-valuenow="1" aria-valuemin="0" aria-valuemax="100">
+            1%
+        </div>
+    </div>
+
+    <div class="row">
+        @* Tabla de empleados procesados *@
+        <div class="col-md-8">
+            <h5>Empleados procesados</h5>
+            @* Usamos la misma tabla de vigentes, que se puede llenar por JS *@
+            @Html.Partial("Partials/_TablaVigentes")
+        </div>
+
+        @* Panel de resumen simple (sin usar Model.Resumen) *@
+        <div class="col-md-4">
+            <h5>Resumen</h5>
+            <div class="panel-resumen">
+                <p><strong>Período:</strong> @Model.PeriodoNombre</p>
+                <p><strong>Tipo de pago:</strong> @Model.TipoPago</p>
+                <p>
+                    <strong>Estado final:</strong>
+                    <span class="badge @(Model.EstadoFinal == "Exitoso" ? "bg-success" : "bg-warning text-dark")">
+                        @Model.EstadoFinal
+                    </span>
+                </p>
+                @* Aquí luego puedes agregar más datos que tenga tu VM *@
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        @* Tabla de errores *@
+        <div class="col-md-8">
+            <h5>Errores</h5>
+            @Html.Partial("Partials/_TablaErrores")
+        </div>
+
+        @* Log del proceso *@
+        <div class="col-md-4">
+            <label class="form-label">Registro del proceso</label>
+            <textarea id="log" class="form-control" rows="10" readonly>[INFO] Preparando...</textarea>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("Partials/_Toast")
+
+@section Scripts {
+    <script src="~/Scripts/nomina/nomina.validation.js"></script>
+    <script src="~/Scripts/nomina/nomina.ui.js"></script>
+}

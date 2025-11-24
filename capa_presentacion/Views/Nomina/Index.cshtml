@@ -1,77 +1,26 @@
 ﻿@{
     ViewBag.Title = "Procesar Nómina";
     ViewBag.PageTitle = "Procesar Nómina Vigentes";
-    ViewBag.PageSubtitle = "Gestión de nómina - " + DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
+    ViewBag.PageSubtitle = "Gestión de nómina - " +
+        DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
     ViewBag.PagePeriodo = DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
 }
 
 @section Head {
     <link rel="stylesheet" href="~/Content/css/nomina.css" />
-    <link rel="stylesheet" href="~/Content/css/listavigente.css" />
-    <link href="~/Content/css/reporte.css?v=@DateTime.Now.Ticks" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/css/listavigente.css?v=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/Content/css/reporte.css?v=@DateTime.Now.Ticks" />
 }
 
 <div class="procesar-nomina">
-    @* ===== KPIs (cards) ===== *@
-    <section class="kpis">
-        <!-- Nóminas Pendientes -->
-        <article class="kpi-card">
-            <div class="kpi-meta">
-                <div class="kpi-label">Nóminas Pendientes</div>
-                <div class="kpi-value" id="kpiPendientes">—</div>
-            </div>
-            <div class="kpi-icon kpi-warn">
-                <img src="~/Content/img/icons/nominasPendientes.svg" alt="Nóminas Pendientes" />
-            </div>
-        </article>
 
-        <!-- Nóminas Procesadas -->
-        <article class="kpi-card">
-            <div class="kpi-meta">
-                <div class="kpi-label">Nóminas Procesadas</div>
-                <div class="kpi-value" id="kpiProcesadas">—</div>
-            </div>
-            <div class="kpi-icon kpi-ok">
-                <img src="~/Content/img/icons/nominasProcesadas.svg" alt="Nóminas Procesadas" />
-            </div>
-        </article>
+    <!-- KPIs -->
+    @Html.Partial("_Kpis")
 
-        <!-- Empleados Inactivos -->
-        <article class="kpi-card">
-            <div class="kpi-meta">
-                <div class="kpi-label">Empleados Inactivos</div>
-                <div class="kpi-value" id="kpiInactivos">—</div>
-            </div>
-            <div class="kpi-icon kpi-danger">
-                <img src="~/Content/img/icons/empleadosInactivos.svg" alt="Empleados Inactivos" />
-            </div>
-        </article>
+    <!-- ================= FORMULARIO ================ -->
+    @Html.Partial("_FormProcesarNomina")
 
-        <!-- Total Nómina -->
-        <article class="kpi-card kpi-right">
-            <div class="kpi-meta">
-                <div class="kpi-label">Total Nómina</div>
-                <div class="kpi-value money" id="kpiTotalNomina">—</div>
-            </div>
-            <div class="kpi-icon kpi-primary">
-                <img src="~/Content/img/icons/TotalNomina.svg" alt="Total Nómina" />
-            </div>
-        </article>
-    </section>
-
-    <form id="frmNomina" class="form-nomina">
-        <div class="form-group">
-            <label for="ddlPeriodo">Período</label>
-            <select id="ddlPeriodo">
-                <option value="">-- Cargando períodos... --</option>
-            </select>
-        </div>
-
-        <div class="form-actions">
-            <button id="btnProcesar" type="button" class="btn-primary">▶ Procesar Nómina</button>
-        </div>
-    </form>
-
+    <!-- ================= TABLAS ================ -->
     <div class="row">
         <div class="col-lg-8">
             @Html.Partial("_TablaVigentes")
@@ -83,21 +32,15 @@
             @Html.Partial("_TablaErrores")
         </div>
     </div>
-    <button type="button"
-            class="btn-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#modalParametros">
-        ⚙️ Parámetros
-    </button>
 
 </div>
 
+<!-- ================= PARTIALS ================= -->
 @Html.Partial("_ModalConfirmarProcesamiento")
-
-@Html.Partial("_ModalParametros")
+@*@Html.Partial("_ModalParametros")*@
+@Html.Partial("_Toast")
 
 @section Scripts {
-    @* ===== CONFIGURACIÓN DE URLs ===== *@
     <script>
         window.NominaConfig = {
             urls: {
@@ -107,59 +50,9 @@
                 diagnosticarTrabajadores: '@Url.Action("DiagnosticarTrabajadores", "Nomina")'
             }
         };
-        console.log('✅ NominaConfig cargado:', window.NominaConfig);
     </script>
 
-    @* ===== JQUERY ===== *@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    @* ===== DEBUG SIMPLE - PROBAR ENDPOINTS ===== *@
-    <script>
-        console.log('🔍 ====== INICIO DEBUG SIMPLE ======');
-
-        // Esperar 1 segundo para que jQuery esté listo
-        setTimeout(function () {
-            console.log('📡 Probando endpoint de empleados...');
-            console.log('URL:', '/Nomina/ObtenerDetalleNominasProcesadas');
-
-            $.ajax({
-                url: '/Nomina/ObtenerDetalleNominasProcesadas',
-                type: 'GET',
-                success: function (response) {
-                    console.log('✅ RESPUESTA EXITOSA:');
-                    console.log('📦 Respuesta completa:', response);
-                    console.log('📊 Tipo de respuesta:', typeof response);
-                    console.log('🔍 consultaExitosa:', response.consultaExitosa);
-                    console.log('💬 mensaje:', response.mensaje);
-                    console.log('📋 data existe:', !!response.data);
-                    console.log('📈 cantidad de datos:', response.data ? response.data.length : 'NO HAY DATA');
-
-                    if (response.data && response.data.length > 0) {
-                        console.log('👤 PRIMER EMPLEADO:', response.data[0]);
-                        console.log('   - Nombres:', response.data[0].Nombres);
-                        console.log('   - Apellidos:', response.data[0].Apellidos);
-                        console.log('   - SalarioBase:', response.data[0].SalarioBase);
-                        console.log('   - SalarioNeto:', response.data[0].SalarioNeto);
-                        console.log('   - NetoPagar:', response.data[0].NetoPagar);
-                    } else {
-                        console.warn('⚠️ NO HAY EMPLEADOS EN LA RESPUESTA');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('❌ ERROR EN LA PETICIÓN:');
-                    console.error('   Status HTTP:', xhr.status);
-                    console.error('   Estado:', status);
-                    console.error('   Error:', error);
-                    console.error('   Respuesta del servidor:', xhr.responseText);
-                }
-            });
-
-        }, 1000);
-
-        console.log('🔍 ====== FIN DEBUG SIMPLE ======');
-    </script>
-
-    @* ===== SCRIPTS DE NÓMINA ===== *@
     <script src="~/Scripts/nomina/nomina.validation.js"></script>
     <script src="~/Scripts/nomina/nomina.ui.js"></script>
 }
