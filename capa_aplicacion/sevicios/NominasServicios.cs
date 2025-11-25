@@ -221,7 +221,7 @@ namespace capa_aplicacion.servicios
                     // ⚠ Aquí registramos el error sin romper el constructor del DTO
                     var dtoError = new DetalleNominaDTO(
                         nomina.NominaId,
-                        trabajador.TrabajadorId,
+                        trabajador.Contrato.ContratoId,
                         ex.Message
                     );
 

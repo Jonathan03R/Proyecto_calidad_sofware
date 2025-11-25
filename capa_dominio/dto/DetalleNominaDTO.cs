@@ -89,10 +89,10 @@ namespace capa_dominio.dto
             TieneErrores = tieneErrores;
             MensajeError = mensajeError ?? string.Empty;
         }
-        public DetalleNominaDTO(int nominaId, int trabajadorId, string mensajeError)
+        public DetalleNominaDTO(int nominaId, int contratoId, string mensajeError)
         {
             NominaId = nominaId;
-            TrabajadorId = trabajadorId;
+            ContratoId = ContratoId;
             SistemaPensionAplicado = "SIN_CALCULAR";
             TieneErrores = true;
             MensajeError = mensajeError;
