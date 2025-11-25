@@ -14,12 +14,14 @@ namespace capa_aplicacion.Servicios
     public class ReporteService
     {
         private readonly ReporteNomina reporteNomina;
+        private readonly PeriodosRepositorio periodosRepositorio;
         private readonly AccesoSQLServer conexion;
 
         public ReporteService()
         {
             conexion = new AccesoSQLServer();
             reporteNomina = new ReporteNomina(conexion);
+            periodosRepositorio = new PeriodosRepositorio(conexion);    
         }
 
         public List<ReporteNominaDTO> ConsultarNominaPorPeriodo(int periodoId, int? cargoId = null)
@@ -44,7 +46,7 @@ namespace capa_aplicacion.Servicios
             try
             {
                 conexion.AbrirConexion();
-                listaPeriodo = reporteNomina.ListarPeriodos(periodoId, periodoNombre);
+                listaPeriodo = periodosRepositorio.ListarTodosPeriodos(periodoId, periodoNombre);
                 conexion.CerrarConexion();
             }
             catch (Exception ex)

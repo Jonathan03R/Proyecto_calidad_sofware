@@ -119,42 +119,43 @@ namespace capa_persistencia.modulo_principal
         /// <summary>
         /// Lista los períodos disponibles de nómina.
         /// </summary>
-        public List<Periodo> ListarPeriodos(int? periodoId = null, string periodoNombre = null)
-        {
-            List<Periodo> lista = new List<Periodo>();
+        //public List<Periodo> ListarPeriodos(int? periodoId = null, string periodoNombre = null)
+        //{
+        //    List<Periodo> lista = new List<Periodo>();
 
-            try
-            {
-                SqlCommand cmd = conexion.ObtenerComandoDeProcedimiento("proc_Listar_Periodos");
-                cmd.Parameters.AddWithValue("@PeriodoID", periodoId.HasValue ? (object)periodoId.Value : DBNull.Value);
-                cmd.Parameters.AddWithValue("@PeriodoNombre", !string.IsNullOrEmpty(periodoNombre) ? (object)periodoNombre : DBNull.Value);
+        //    try
+        //    {
+        //        SqlCommand cmd = conexion.ObtenerComandoDeProcedimiento("proc_Listar_Periodos");
+        //        cmd.Parameters.AddWithValue("@PeriodoID", periodoId.HasValue ? (object)periodoId.Value : DBNull.Value);
+        //        cmd.Parameters.AddWithValue("@PeriodoNombre", !string.IsNullOrEmpty(periodoNombre) ? (object)periodoNombre : DBNull.Value);
 
-                using (SqlDataReader dr = cmd.ExecuteReader())
-                {
-                    while (dr.Read())
-                    {
-                        Periodo periodo = new Periodo
-                        {
-                            PeriodoId = Convert.ToInt32(dr["periodo_id"]),
-                            PeriodoNombre = dr["periodo_nombre"].ToString(),
-                            PeriodoFechaInicio = Convert.ToDateTime(dr["periodo_fecha_inicio"]),
-                            PeriodoFechaFin = Convert.ToDateTime(dr["periodo_fecha_fin"]),
-                            PeriodoEstado = dr["periodo_estado"].ToString()
-                        };
-                        lista.Add(periodo);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al listar períodos de nómina.", ex);
-            }
-            finally
-            {
-                conexion.CerrarConexion();
-            }
+        //        using (SqlDataReader dr = cmd.ExecuteReader())
+        //        {
+        //            while (dr.Read())
+        //            {
+        //                Periodo periodo = new Periodo
+        //                {
+        //                    PeriodoId = Convert.ToInt32(dr["periodo_id"]),
+        //                    PeriodoNombre = dr["periodo_nombre"].ToString(),
+        //                    PeriodoFechaInicio = Convert.ToDateTime(dr["periodo_fecha_inicio"]),
+        //                    PeriodoFechaFin = Convert.ToDateTime(dr["periodo_fecha_fin"]),
+        //                    EstadoId = Convert.ToInt32(dr["periodo_estado_id"]),
+        //                    EstadoNombre = dr["estado_nombre"].ToString(),
+        //                };
+        //                lista.Add(periodo);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Error al listar períodos de nómina.", ex);
+        //    }
+        //    finally
+        //    {
+        //        conexion.CerrarConexion();
+        //    }
 
-            return lista;
-        }
+        //    return lista;
+        //}
     }
 }
