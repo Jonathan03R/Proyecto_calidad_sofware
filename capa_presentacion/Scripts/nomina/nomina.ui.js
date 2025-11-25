@@ -183,40 +183,25 @@ const NominaUI = (function () {
             url: window.NominaConfig.urls.obtenerDetallesNominas,
             type: 'GET',
             dataType: 'json',
+            data: {
+                periodoId: periodoSeleccionado   // 👈 enviar el periodo
+            },
             success: function (response) {
-                //if (!response.consultaExitosa) {
-                //    console.error('❌ Consulta no exitosa:', response.mensaje);
-                //    Alertas.error('Error al consultar: ' + response.mensaje);
-                //    mostrarEstadoVacio();
-                //    elements.btnProcesar.prop('disabled', true);
-                //    return;
-                //}
-
-                //if (!response.data || response.data.length === 0) {
-                //    console.warn('⚠️ No hay empleados vigentes');
-                //    Alertas.info('No se encontraron empleados vigentes');
-                //    mostrarEstadoVacio();
-                //    elements.btnProcesar.prop('disabled', true);
-                //    return;
-                //}
-
                 console.log(`✅ Empleados cargados: ${response.data.length}`);
                 datosEmpleadosVigentes = response.data;
                 datosFiltrados = response.data;
                 renderizarTabla(response.data);
                 actualizarResumen(response.data);
+                cargarKPIsDesdeEmpleados(response.data);
                 elements.btnProcesar.prop('disabled', false);
 
                 Alertas.exito(`Se encontraron ${response.data.length} empleados vigentes`);
             },
-            error: function (xhr, status, error) {
-                console.error('❌ Error cargando empleados:', error);
-                Alertas.error('Error de conexión al cargar empleados');
-                mostrarEstadoVacio();
-                elements.btnProcesar.prop('disabled', true);
-            }
-        });
+            ...
+    });
+
     }
+
 
     function cargarKPIs() {
         // Valores iniciales
@@ -324,9 +309,10 @@ const NominaUI = (function () {
     }
 
     function actualizarResumen(empleados) {
-        if (!elements.tblResumenBody || elements.tblResumenBody.length === 0) {
-            return;
-        }
+        <table>
+            <tbody id="tblResumenBody"></tbody>
+        </table>
+
 
         const totalEmpleados = empleados.length;
         const totalBruto = empleados.reduce((sum, e) => sum + (e.SalarioBruto || e.TotalHaberesBruto || 0), 0);
@@ -775,6 +761,24 @@ const NominaUI = (function () {
     };
 
 })();
+function cargarKPIsDesdeEmpleados(empleados) {
+    if (!empleados || empleados.length === 0) {
+        elements.kpiPendientes.text('0');
+        elements.kpiProcesadas.text('0');
+        elements.kpiInactivos.text('0');
+        elements.kpiTotalNomina.text('S/ 0.00');
+        return;
+    }
+
+    const total = empleados.length;
+    const inactivos = empleados.filter(e => (e.Estado || '').toUpperCase() !== 'ACTIVO').length;
+    const totalNeto = empleados.reduce((sum, e) => sum + (e.NetoPagar || 0), 0);
+
+    elements.kpiPendientes.text('0');         // si luego manejas “pendientes” de otra forma
+    elements.kpiProcesadas.text(total);
+    elements.kpiInactivos.text(inactivos);
+    elements.kpiTotalNomina.text('S/ ' + formatearMoneda(totalNeto));
+}
 
 // ============================================
 // SISTEMA DE ALERTAS

@@ -38,8 +38,8 @@ namespace capa_aplicacion.servicios
             if (periodoId == null)
                 throw new ArgumentException("Selecciona un periodo.");
 
-              _conexion.IniciarTransaccion();
-         
+            _conexion.IniciarTransaccion();
+
             var periodo = _periodos.ObtenerPeriodoPorId(periodoId.Value);
             if (periodo == null)
                 throw new InvalidOperationException($"El periodo {periodoId.Value} no existe.");
@@ -58,7 +58,7 @@ namespace capa_aplicacion.servicios
             {
                 ValidarExistenciaNomina(periodo.PeriodoId);
                 var trabajadores = ObtenerTrabajadoresConContratoActivo();
-                var tiposHorasExtras = _tiposHorasExtras.ObtenerTiposHorasExtrasActivos();
+                //var tiposHorasExtras = _tiposHorasExtras.ObtenerTiposHorasExtrasActivos();
 
                 var nominaId = CrearCabeceraNomina(periodo.PeriodoId);
                 nomina.NominaId = nominaId;
@@ -78,7 +78,7 @@ namespace capa_aplicacion.servicios
                     _nominas.ActualizarEstado(nomina.NominaId, "Con Errores");
                 throw;
             }
-            
+
         }
 
         private void ValidarExistenciaNomina(int periodoId)
@@ -117,6 +117,7 @@ namespace capa_aplicacion.servicios
         }
 
         // Nota: aquí ya NO pasamos fechaInicio/fechaFin sueltos.
+        // Nota: aquí ya NO pasamos fechaInicio/fechaFin sueltos.
         private bool ProcesarDetallesNomina(
             Nomina nomina,
             List<Trabajador> trabajadores,
@@ -125,7 +126,6 @@ namespace capa_aplicacion.servicios
             decimal valorUIT)
         {
             bool algunError = false;
-
             var tiposHorasExtras = _tiposHorasExtras.ObtenerTiposHorasExtrasActivos();
 
             foreach (var trabajador in trabajadores)
@@ -167,8 +167,7 @@ namespace capa_aplicacion.servicios
                     detalle.CalcularDescuentoFaltas();
 
                     // 4) Remuneración bruta
-                    detalle.calcularRemuneracionBruta();
-
+                    detalle.CalcularRemuneracionBruta();
                     // 5) Pensiones
                     detalle.CalcularSistemaPensiones();
 
@@ -218,13 +217,22 @@ namespace capa_aplicacion.servicios
                 catch (Exception ex)
                 {
                     algunError = true;
-                    System.Diagnostics.Trace.WriteLine($"Error procesando trabajador {trabajador.TrabajadorId}: {ex.Message}");
-                    throw;
+
+                    // ⚠ Aquí registramos el error sin romper el constructor del DTO
+                    var dtoError = new DetalleNominaDTO(
+                        nomina.NominaId,
+                        trabajador.TrabajadorId,
+                        ex.Message
+                    );
+
+                    _detalleNomina.InsertarDetalleNomina(dtoError);
+
                 }
             }
 
             return algunError;
         }
+
 
         private void FinalizarNomina(Nomina nomina, bool huboErrores)
         {

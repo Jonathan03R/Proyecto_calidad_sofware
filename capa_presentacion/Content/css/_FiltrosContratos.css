@@ -7,10 +7,6 @@
 }
 
 .filtros-contratos {
-/*    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 1rem;*/
     padding:0.5rem ;
 }
 
@@ -89,7 +85,7 @@
     display: flex;
     gap: 1rem;
     margin-bottom: 1rem;
-    border-bottom: 1px solid #d1d5db; /* ← línea más gruesa */
+    border-bottom: 1px solid #d1d5db;
 }
 
 .tab-btn {
@@ -104,7 +100,7 @@
 
     .tab-btn:hover {
         background: #ffff;
-        border-bottom: 1px solid #2563eb; /* ← línea más gruesa */
+        border-bottom: 1px solid #2563eb; 
 
         color: #2563eb;
     }

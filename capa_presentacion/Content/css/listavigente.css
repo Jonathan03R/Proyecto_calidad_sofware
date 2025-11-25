@@ -207,7 +207,6 @@
     gap: 15px;
     align-items: flex-end;
     margin-bottom: 30px;
-    padding: 20px;
     background: #f8f9fa;
     border-radius: 8px;
 }
@@ -416,8 +415,6 @@ input[type="text"]#txtBuscarEmpleado {
     width:100%;
     flex: 0 0 66.666667%;
     max-width: 66.666667%;
-    padding-left: 15px;
-    padding-right: 15px;
 }
 
 .col-lg-4 {
@@ -498,21 +495,9 @@ select {
         background: #555;
     }
 
-/* ===== ANIMACIONES DE ENTRADA ===== */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 .procesar-nomina {
     animation: fadeIn 0.3s ease-out;
+    padding: 1.5rem 2rem;
 }
 
 /* ===== MEJORAS DE ACCESIBILIDAD ===== */
