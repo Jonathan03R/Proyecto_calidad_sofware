@@ -1,4 +1,6 @@
 ﻿@*@model IEnumerable<capa_presentacion.Models.ViewModels.NominaHistorialItemVM>*@
+@model IEnumerable<capa_dominio.dto.NominasProcesadasDTO>
+
 
 @{
     ViewBag.Title = "Historial de Nóminas";
@@ -20,21 +22,26 @@
                 {
                     foreach (var p in Model)
                     {
-                        <tr data-periodo="@p.PeriodoNombre"
-                            data-tipo="@p.TipoPago"
-                            data-estado="@(p.YaProcesado ? "si" : "no")">
-                            @* aquí van las celdas que ya tenías *@
+                        <tr data-periodo="@p.PeriodoId"
+                            data-tipo="@p.EstadoContratoNombre"
+                            data-estado="@p.NominaEstado">
+
+                            @* agrega aquí tus celdas reales *@
+
                         </tr>
                     }
                 }
                 else
                 {
-                    <tr><td colspan="7" class="t-center">Sin datos</td></tr>
+                    <tr>
+                        <td colspan="7" class="t-center">Sin datos</td>
+                    </tr>
                 }
             </tbody>
         </table>
     </div>
 </div>
+
 
 @section Scripts {
     <script src="~/Scripts/nomina/nomina.historial.js"></script>

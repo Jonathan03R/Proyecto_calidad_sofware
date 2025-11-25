@@ -1,5 +1,6 @@
 ﻿using capa_aplicacion.servicios;
 using capa_aplicacion.Servicios;
+using capa_dominio;
 using capa_dominio.dto;
 using capa_persistencia.modulo_principal;
 using System;
@@ -12,12 +13,14 @@ public class NominaController : Controller
     private readonly NominasServicios _servicio;
     private readonly ImpuestoRenta _repoImpuestoRenta;
     private readonly Parametros _repoParametros;
+    private readonly ReporteService _reporteService;
 
     public NominaController()
     {
         _servicio = new NominasServicios();
         _repoImpuestoRenta = new ImpuestoRenta();
         _repoParametros = new Parametros();
+        _reporteService = new ReporteService();
     }
 
     public ActionResult Index()
@@ -32,16 +35,53 @@ public class NominaController : Controller
     }
 
     // ========== PERIODOS =============
+    //public JsonResult ListarPeriodos()
+    //{
+    //    var srv = new ReporteService();
+    //    var lista = srv.ListarPeriodos();
+
+    //    return Json(lista.Select(x => new PeriodoDTO
+    //    {
+    //        Id = x.PeriodoId,
+    //        Nombre = x.PeriodoNombre
+    //    }), JsonRequestBehavior.AllowGet);
+    //}
+
+    [HttpGet]
     public JsonResult ListarPeriodos()
     {
-        var srv = new ReporteService();
-        var lista = srv.ListarPeriodos();
+        bool accionExitosa;
+        string mensajeRetorno;
+        List<Periodo> listaPeriodos = new List<Periodo>();
 
-        return Json(lista.Select(x => new PeriodoDTO
+        try
         {
-            Id = x.PeriodoId,
-            Nombre = x.PeriodoNombre
-        }), JsonRequestBehavior.AllowGet);
+            System.Diagnostics.Debug.WriteLine("[ListarPeriodos] Inicio de consulta");
+
+            listaPeriodos = _reporteService.ListarPeriodos();
+
+            System.Diagnostics.Debug.WriteLine("[ListarPeriodos] Cantidad de periodos obtenidos: " + (listaPeriodos?.Count ?? 0));
+
+            accionExitosa = true;
+            mensajeRetorno = "";
+        }
+        catch (Exception e)
+        {
+            System.Diagnostics.Debug.WriteLine("[ListarPeriodos] ERROR: " + e.Message);
+
+            listaPeriodos = null;
+            accionExitosa = false;
+            mensajeRetorno = e.Message;
+        }
+
+        System.Diagnostics.Debug.WriteLine("[ListarPeriodos] Fin de consulta");
+
+        return Json(new
+        {
+            data = listaPeriodos,
+            consultaExitosa = accionExitosa,
+            mensaje = mensajeRetorno
+        }, JsonRequestBehavior.AllowGet);
     }
 
     // ========== PROCESAR NÓMINA =============

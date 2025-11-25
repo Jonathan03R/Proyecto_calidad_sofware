@@ -1,7 +1,4 @@
-﻿// ============================================
-// MÓDULO DE UI PARA GESTIÓN DE NÓMINA
-// ============================================
-
+﻿// nomina.ui.js
 const NominaUI = (function () {
     'use strict';
 
@@ -76,21 +73,15 @@ const NominaUI = (function () {
     }
 
     function bindEvents() {
-        // Cambio de período
         elements.ddlPeriodo.on('change', onPeriodoChange);
-
-        // Procesar nómina
         elements.btnProcesar.on('click', onProcesarClick);
 
-        // Búsqueda de empleados
         if (elements.txtBuscarEmpleado.length > 0) {
             elements.txtBuscarEmpleado.on('input', onBuscarInput);
         }
 
-        // Ver detalle (delegación de eventos)
         $(document).on('click', '.btn-ver-detalle', onVerDetalleClick);
 
-        // Cerrar modales
         $('.btn-close, .btn-cancelar').on('click', cerrarModales);
         $('.modal-overlay').on('click', onModalOverlayClick);
         $(document).on('keydown', onEscapeKey);
@@ -111,10 +102,16 @@ const NominaUI = (function () {
     }
 
     function onProcesarClick() {
+        if (window.NominaValidate && !window.NominaValidate.validarPeriodo()) {
+            Alertas.validacion('Debe seleccionar un período');
+            return;
+        }
+
         if (!periodoSeleccionado) {
             Alertas.validacion('Debe seleccionar un período');
             return;
         }
+
         mostrarModalConfirmacion();
     }
 
@@ -144,73 +141,68 @@ const NominaUI = (function () {
     function cargarDatosIniciales() {
         console.log('📊 Cargando datos iniciales...');
         cargarPeriodos();
-        cargarKPIs();
+        NominaKPIs.init(elements);
         cargarEmpleadosVigentes();
     }
 
-    setTimeout(function () {
-        console.log('🔍 Estado actual:');
-        console.log('   - Empleados cargados:', datosEmpleadosVigentes.length);
-        console.log('   - Período seleccionado:', periodoSeleccionado);
-        console.log('   - Botón procesar disabled:', elements.btnProcesar.prop('disabled'));
-    }, 3000);
-
     function cargarPeriodos() {
-        console.log('📅 Cargando períodos...');
-
-        $.ajax({
-            url: window.NominaConfig.urls.listarPeriodos,
-            type: 'GET',
-            dataType: 'json',
-            success: function (periodos) {
-                console.log(`✅ Períodos recibidos: ${periodos.length}`);
-                renderizarSelectPeriodos(periodos);
-            },
-            error: function (xhr, status, error) {
-                console.error('❌ Error cargando períodos:', error);
-                Alertas.error('Error al cargar períodos');
-                elements.ddlPeriodo.html('<option value="">Error al cargar períodos</option>');
-            }
-        });
+        NominaService
+            .listarPeriodos()
+            .done(function (response) {
+                if (response.consultaExitosa) {
+                    renderizarSelectPeriodos(response.data);
+                    Alertas.exito('Períodos cargados correctamente');
+                } else {
+                    Alertas.error('Error al cargar períodos: ' + (response.mensaje || ''));
+                }
+            })
+            .fail(function (xhr, status, error) {
+                console.error('Error:', error);
+                Alertas.error('Error de conexión al cargar períodos');
+            });
     }
 
     function cargarEmpleadosVigentes() {
         console.log('👥 Cargando empleados vigentes...');
 
+        if (!periodoSeleccionado) {
+            console.warn('⚠ No hay periodo seleccionado, no se cargan empleados');
+            limpiarTablaVigentes();
+            elements.btnProcesar.prop('disabled', true);
+            return;
+        }
+
         mostrarCargando();
 
-        $.ajax({
-            url: window.NominaConfig.urls.obtenerDetallesNominas,
-            type: 'GET',
-            dataType: 'json',
-            data: {
-                periodoId: periodoSeleccionado   // 👈 enviar el periodo
-            },
-            success: function (response) {
-                console.log(`✅ Empleados cargados: ${response.data.length}`);
-                datosEmpleadosVigentes = response.data;
-                datosFiltrados = response.data;
-                renderizarTabla(response.data);
-                actualizarResumen(response.data);
-                cargarKPIsDesdeEmpleados(response.data);
-                elements.btnProcesar.prop('disabled', false);
+        NominaService
+            .obtenerEmpleadosVigentes(periodoSeleccionado)
+            .done(function (response) {
+                const empleados = (response && response.data) || [];
 
-                Alertas.exito(`Se encontraron ${response.data.length} empleados vigentes`);
-            },
-            ...
-    });
+                console.log(`✅ Empleados cargados: ${empleados.length}`);
 
-    }
+                datosEmpleadosVigentes = empleados;
+                datosFiltrados = empleados;
 
+                renderizarTabla(empleados);
+                actualizarResumen(empleados);
+                NominaKPIs.desdeEmpleados(empleados, elements, formatearMoneda);
 
-    function cargarKPIs() {
-        // Valores iniciales
-        elements.kpiPendientes.text('—');
-        elements.kpiProcesadas.text('—');
-        elements.kpiInactivos.text('—');
-        elements.kpiTotalNomina.text('—');
+                elements.btnProcesar.prop('disabled', empleados.length === 0);
 
-        // TODO: Implementar endpoint de KPIs si existe
+                if (empleados.length > 0) {
+                    Alertas.exito(`Se encontraron ${empleados.length} empleados vigentes`);
+                } else {
+                    Alertas.info('No se encontraron empleados para este período');
+                }
+            })
+            .fail(function (xhr, status, error) {
+                console.error('❌ Error cargando empleados:', error);
+                Alertas.error('Error al cargar empleados');
+
+                limpiarTablaVigentes();
+                elements.btnProcesar.prop('disabled', true);
+            });
     }
 
     // ===== RENDERIZADO =====
@@ -232,7 +224,6 @@ const NominaUI = (function () {
             );
         });
 
-        // Auto-seleccionar el primer período
         if (periodos.length > 0) {
             const primerPeriodo = periodos[0].Id || periodos[0].PeriodoId;
             elements.ddlPeriodo.val(primerPeriodo).trigger('change');
@@ -271,28 +262,28 @@ const NominaUI = (function () {
         const estadoBadge = crearBadgeEstado(estado);
 
         return `
-        <tr>
-            <td style="padding: 10px 12px;">
-                <div style="font-weight: 500; color: #333;">${escapeHtml(nombre)}</div>
-            </td>
-            <td style="padding: 10px 12px;">
-                <div style="font-weight: 500; color: #333;">${escapeHtml(apellidos)}</div>
-            </td>
-            <td style="text-align: center;">${estadoBadge}</td>
-            <td style="padding: 10px 12px; text-align: center;">${escapeHtml(tipoContrato)}</td>
-            <td style="text-align: right; font-weight: 500; color: #333;">S/ ${formatearMoneda(salarioBase)}</td>
-            <td style="text-align: right; color: #666;">S/ ${formatearMoneda(asigFamiliar)}</td>
-            <td style="text-align: right; color: #666;">S/ ${formatearMoneda(horasExtras)}</td>
-            <td style="text-align: right; font-weight: 600; color: #1976d2;">S/ ${formatearMoneda(salarioBruto)}</td>
-            <td style="text-align: right; color: #d32f2f;">S/ ${formatearMoneda(descuentos)}</td>
-            <td style="text-align: right; font-weight: 600; color: #2e7d32;">S/ ${formatearMoneda(salarioNeto)}</td>
-            <td style="text-align: center;">
-                <button class="btn-ver-detalle" data-index="${index}">
-                    <span>👁️</span> Ver
-                </button>
-            </td>
-        </tr>
-    `;
+            <tr>
+                <td style="padding: 10px 12px;">
+                    <div style="font-weight: 500; color: #333;">${escapeHtml(nombre)}</div>
+                </td>
+                <td style="padding: 10px 12px;">
+                    <div style="font-weight: 500; color: #333;">${escapeHtml(apellidos)}</div>
+                </td>
+                <td style="text-align: center;">${estadoBadge}</td>
+                <td style="padding: 10px 12px; text-align: center;">${escapeHtml(tipoContrato)}</td>
+                <td style="text-align: right; font-weight: 500; color: #333;">S/ ${formatearMoneda(salarioBase)}</td>
+                <td style="text-align: right; color: #666;">S/ ${formatearMoneda(asigFamiliar)}</td>
+                <td style="text-align: right; color: #666;">S/ ${formatearMoneda(horasExtras)}</td>
+                <td style="text-align: right; font-weight: 600; color: #1976d2;">S/ ${formatearMoneda(salarioBruto)}</td>
+                <td style="text-align: right; color: #d32f2f;">S/ ${formatearMoneda(descuentos)}</td>
+                <td style="text-align: right; font-weight: 600; color: #2e7d32;">S/ ${formatearMoneda(salarioNeto)}</td>
+                <td style="text-align: center;">
+                    <button class="btn-ver-detalle" data-index="${index}">
+                        <span>👁️</span> Ver
+                    </button>
+                </td>
+            </tr>
+        `;
     }
 
     function crearBadgeEstado(estado) {
@@ -309,11 +300,6 @@ const NominaUI = (function () {
     }
 
     function actualizarResumen(empleados) {
-        <table>
-            <tbody id="tblResumenBody"></tbody>
-        </table>
-
-
         const totalEmpleados = empleados.length;
         const totalBruto = empleados.reduce((sum, e) => sum + (e.SalarioBruto || e.TotalHaberesBruto || 0), 0);
         const totalDescuentos = empleados.reduce((sum, e) => sum + (e.TotalDescuentos || 0), 0);
@@ -381,14 +367,16 @@ const NominaUI = (function () {
             elements.modalConfirmar.find('.total-empleados').text(datosEmpleadosVigentes.length);
             elements.modalConfirmar.addClass('show');
 
-            elements.modalConfirmar.find('.btn-confirmar-procesamiento').off('click').on('click', procesarNomina);
+            elements.modalConfirmar
+                .find('.btn-confirmar-procesamiento')
+                .off('click')
+                .on('click', procesarNomina);
         } else {
             if (confirm(`¿Está seguro de procesar la nómina para ${periodoNombre}?`)) {
                 procesarNomina();
             }
         }
     }
-
 
     function procesarNomina() {
         if (!periodoSeleccionado) {
@@ -401,12 +389,9 @@ const NominaUI = (function () {
 
         elements.btnProcesar.prop('disabled', true);
 
-        $.ajax({
-            url: window.NominaConfig.urls.procesarNomina,
-            type: 'POST',
-            data: { periodoId: periodoSeleccionado },
-            dataType: 'json',
-            success: function (response) {
+        NominaService
+            .procesarNomina(periodoSeleccionado)
+            .done(function (response) {
                 console.log('✅ Respuesta procesamiento:', response);
 
                 Alertas.ocultarTodas();
@@ -415,38 +400,32 @@ const NominaUI = (function () {
                     Alertas.exito(response.msg || 'Nómina procesada correctamente');
                     setTimeout(function () {
                         cargarEmpleadosVigentes();
-                        cargarKPIs();
+                        NominaKPIs.init(elements);
                     }, 1000);
                 } else {
-                    // Manejo de errores de validación del negocio
                     Alertas.error(response.msg || 'Error al procesar la nómina');
                 }
-            },
-            error: function (xhr, status, error) {
+            })
+            .fail(function (xhr, status, error) {
                 console.error('❌ Error procesando nómina:', error);
                 console.error('❌ Status:', status);
                 console.error('❌ Response:', xhr.responseText);
 
                 Alertas.ocultarTodas();
 
-                // Intentar parsear el mensaje de error del servidor
                 let mensajeError = 'Error de conexión al procesar la nómina';
 
                 try {
                     if (xhr.responseJSON && xhr.responseJSON.msg) {
-                        // Si el backend devuelve JSON con mensaje
                         mensajeError = xhr.responseJSON.msg;
                     } else if (xhr.responseText) {
-                        // Intentar parsear el texto de respuesta
                         const respuesta = JSON.parse(xhr.responseText);
                         mensajeError = respuesta.msg || respuesta.message || mensajeError;
                     }
                 } catch (e) {
-                    // Si no se puede parsear, usar el mensaje genérico
                     console.warn('No se pudo parsear el error del servidor');
                 }
 
-                // Verificar si es un error de nómina duplicada
                 if (mensajeError.toLowerCase().includes('ya fue procesada') ||
                     mensajeError.toLowerCase().includes('ya existe') ||
                     mensajeError.toLowerCase().includes('en proceso')) {
@@ -454,11 +433,10 @@ const NominaUI = (function () {
                 } else {
                     Alertas.error(mensajeError);
                 }
-            },
-            complete: function () {
+            })
+            .always(function () {
                 elements.btnProcesar.prop('disabled', false);
-            }
-        });
+            });
     }
 
     // ===== DETALLE DE EMPLEADO =====
@@ -476,7 +454,7 @@ const NominaUI = (function () {
         if (elements.modalDetalleEmpleado && elements.modalDetalleEmpleado.length > 0) {
             const htmlDetalle = construirHtmlDetalle(empleado);
             elements.modalDetalleEmpleado.find('.modal-body').html(htmlDetalle);
-            elements.modalDetalleEmpleado.addClass('show'); // Quitar el removeClass
+            elements.modalDetalleEmpleado.addClass('show');
         } else {
             console.error('❌ Modal no encontrado en el DOM');
             Alertas.error('No se pudo abrir el modal de detalle');
@@ -484,9 +462,6 @@ const NominaUI = (function () {
     }
 
     function construirHtmlDetalle(emp) {
-        const nombreCompleto = construirNombreCompleto(emp);
-
-        // Ingresos (según NominasProcesadasDTO)
         const sueldoBasico = emp.SueldoBasico || 0;
         const asigFamiliar = emp.AsignacionFamiliar || 0;
         const horasExtras = emp.HorasExtras || 0;
@@ -495,13 +470,11 @@ const NominaUI = (function () {
         const remuneracionBruta = emp.RemuneracionBruta || 0;
         const totalIngresos = emp.TotalIngresos || 0;
 
-        // Descuentos por pensiones
         const sistemaPension = emp.SistemaPensionAplicado || 'N/A';
         const aporteEssalud = emp.AporteEssalud || 0;
         const aporteOnp = emp.AporteOnp || 0;
         const descuentoAfp = emp.DescuentoAfp || 0;
 
-        // Impuesto a la renta
         const remuneracionAcumuladaAnual = emp.RemuneracionAcumuladaAnual || 0;
         const baseImponibleAnual = emp.BaseImponibleAnual || 0;
         const impuestoRentaAnual = emp.ImpuestoRentaAnual || 0;
@@ -509,40 +482,41 @@ const NominaUI = (function () {
         const uitValor = emp.UitValor || 0;
         const deduccion7Uit = emp.Deduccion7Uit || 0;
 
-        // Otros descuentos
         const descuentoTardanzas = emp.DescuentoTardanzas || 0;
         const descuentoFaltas = emp.DescuentoFaltas || 0;
         const descuentoAdelantos = emp.DescuentoAdelantos || 0;
         const otrosDescuentos = emp.OtrosDescuentos || 0;
 
-        // Totales
         const totalDescuentos = emp.TotalDescuentos || 0;
         const netoPagar = emp.NetoPagar || 0;
 
-        // Calcular total de pensiones
         const totalPensiones = aporteOnp + descuentoAfp;
 
         return `
             <div style="margin-bottom: 15px;">
                 <div style="font-size: 14px; color: #666;">
-                    <strong>Nombre:</strong> <span style="color: #333;">${escapeHtml(emp.Nombre || emp.PersonaNombre || 'Sin nombre')}</span>
+                    <strong>Nombre:</strong> 
+                    <span style="color: #333;">${escapeHtml(emp.Nombre || emp.PersonaNombre || 'Sin nombre')}</span>
                 </div>
                 <div style="font-size: 14px; color: #666; margin-top: 5px;">
-                    <strong>Apellido:</strong> <span style="color: #333;">${escapeHtml(emp.Apellidos || emp.PersonaApellido || 'Sin apellido')}</span>
+                    <strong>Apellido:</strong> 
+                    <span style="color: #333;">${escapeHtml(emp.Apellidos || emp.PersonaApellido || 'Sin apellido')}</span>
                 </div>
                 <div style="font-size: 14px; color: #666; margin-top: 5px;">
-                    <strong>Tipo de Contrato:</strong> <span style="color: #333;">${escapeHtml(emp.EstadoContratoNombre || emp.TipoContrato || 'N/A')}</span>
+                    <strong>Tipo de Contrato:</strong> 
+                    <span style="color: #333;">${escapeHtml(emp.EstadoContratoNombre || emp.TipoContrato || 'N/A')}</span>
                 </div>
                 <div style="font-size: 14px; color: #666; margin-top: 5px;">
-                    <strong>Sistema de Pensión:</strong> <span style="color: #333;">${escapeHtml(sistemaPension)}</span>
+                    <strong>Sistema de Pensión:</strong> 
+                    <span style="color: #333;">${escapeHtml(sistemaPension)}</span>
                 </div>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 25px;">
-                <!-- INGRESOS -->
                 <div>
                     <h4 style="margin: 0 0 15px 0; color: #333; font-size: 16px; font-weight: 600;">
-                        Ingresos <span style="float: right;">S/ ${formatearMoneda(totalIngresos)}</span>
+                        Ingresos 
+                        <span style="float: right;">S/ ${formatearMoneda(totalIngresos)}</span>
                     </h4>
                     <div style="font-size: 13px; line-height: 2;">
                         <div style="display: flex; justify-content: space-between; color: #666;">
@@ -572,39 +546,36 @@ const NominaUI = (function () {
                     </div>
                 </div>
 
-                <!-- DESCUENTOS -->
                 <div>
                     <h4 style="margin: 0 0 15px 0; color: #333; font-size: 16px; font-weight: 600;">
-                        Descuentos <span style="float: right;">S/ ${formatearMoneda(totalDescuentos)}</span>
+                        Descuentos 
+                        <span style="float: right;">S/ ${formatearMoneda(totalDescuentos)}</span>
                     </h4>
                     <div style="font-size: 13px; line-height: 2;">
-                        <!-- Descuentos por Pensiones -->
                         <div style="font-weight: 600; margin-bottom: 5px;">
                             <div style="display: flex; justify-content: space-between; color: #333;">
                                 <span>Sistema de Pensiones (${escapeHtml(sistemaPension)})</span>
                                 <span>S/ ${formatearMoneda(totalPensiones)}</span>
                             </div>
                         </div>
+
                         ${aporteOnp > 0 ? `
                         <div style="display: flex; justify-content: space-between; color: #666; padding-left: 15px;">
                             <span>ONP (13%)</span>
                             <span>S/ ${formatearMoneda(aporteOnp)}</span>
-                        </div>
-                        ` : ''}
+                        </div>` : ''}
+
                         ${descuentoAfp > 0 ? `
                         <div style="display: flex; justify-content: space-between; color: #666; padding-left: 15px;">
                             <span>AFP (Aporte + Comisión + Seguro)</span>
                             <span>S/ ${formatearMoneda(descuentoAfp)}</span>
-                        </div>
-                        ` : ''}
-                        
-                        <!-- Impuesto a la Renta -->
+                        </div>` : ''}
+
                         <div style="display: flex; justify-content: space-between; color: #666; margin-top: 10px;">
                             <span>Impuesto a la Renta (5ta categoría)</span>
                             <span>S/ ${formatearMoneda(impuestoRentaMensual)}</span>
                         </div>
-                        
-                        <!-- Otros Descuentos -->
+
                         <div style="display: flex; justify-content: space-between; color: #666;">
                             <span>Tardanzas</span>
                             <span>S/ ${formatearMoneda(descuentoTardanzas)}</span>
@@ -621,8 +592,7 @@ const NominaUI = (function () {
                             <span>Otros Descuentos</span>
                             <span>S/ ${formatearMoneda(otrosDescuentos)}</span>
                         </div>
-                        
-                        <!-- Aporte del Empleador -->
+
                         <div style="font-weight: 600; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e0e0e0;">
                             <div style="display: flex; justify-content: space-between; color: #333;">
                                 <span>Aportes del Empleador</span>
@@ -637,7 +607,6 @@ const NominaUI = (function () {
                 </div>
             </div>
 
-            <!-- CÁLCULO DEL IMPUESTO A LA RENTA -->
             ${impuestoRentaMensual > 0 ? `
             <div style="margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #1976d2;">
                 <h5 style="margin: 0 0 10px 0; color: #333; font-size: 14px;">Detalle Impuesto a la Renta</h5>
@@ -663,10 +632,8 @@ const NominaUI = (function () {
                         <span>S/ ${formatearMoneda(impuestoRentaMensual)}</span>
                     </div>
                 </div>
-            </div>
-            ` : ''}
+            </div>` : ''}
 
-            <!-- TOTALES -->
             <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding: 10px; background: #e3f2fd; border-radius: 5px;">
                     <span style="font-weight: 600; color: #1976d2;">Total Ingresos:</span>
@@ -681,8 +648,7 @@ const NominaUI = (function () {
                     <span style="font-weight: 700; font-size: 18px; color: #2e7d32;">S/ ${formatearMoneda(netoPagar)}</span>
                 </div>
             </div>
-        </div>
-    `;
+        `;
     }
 
     // ===== ESTADOS UI =====
@@ -761,219 +727,17 @@ const NominaUI = (function () {
     };
 
 })();
-function cargarKPIsDesdeEmpleados(empleados) {
-    if (!empleados || empleados.length === 0) {
-        elements.kpiPendientes.text('0');
-        elements.kpiProcesadas.text('0');
-        elements.kpiInactivos.text('0');
-        elements.kpiTotalNomina.text('S/ 0.00');
-        return;
-    }
 
-    const total = empleados.length;
-    const inactivos = empleados.filter(e => (e.Estado || '').toUpperCase() !== 'ACTIVO').length;
-    const totalNeto = empleados.reduce((sum, e) => sum + (e.NetoPagar || 0), 0);
-
-    elements.kpiPendientes.text('0');         // si luego manejas “pendientes” de otra forma
-    elements.kpiProcesadas.text(total);
-    elements.kpiInactivos.text(inactivos);
-    elements.kpiTotalNomina.text('S/ ' + formatearMoneda(totalNeto));
-}
-
-// ============================================
-// SISTEMA DE ALERTAS
-// ============================================
-
-const Alertas = (function () {
-    'use strict';
-
-    let contenedorAlertas = null;
-
-    function init() {
-        if (!document.getElementById('alertas-container')) {
-            contenedorAlertas = document.createElement('div');
-            contenedorAlertas.id = 'alertas-container';
-            contenedorAlertas.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                z-index: 9999;
-                max-width: 400px;
-            `;
-            document.body.appendChild(contenedorAlertas);
-        } else {
-            contenedorAlertas = document.getElementById('alertas-container');
-        }
-    }
-
-    function mostrarAlerta(mensaje, tipo, duracion = 4000) {
-        if (!contenedorAlertas) init();
-
-        const colores = {
-            exito: { bg: '#d4edda', border: '#c3e6cb', texto: '#155724', icono: '✓' },
-            error: { bg: '#f8d7da', border: '#f5c6cb', texto: '#721c24', icono: '✕' },
-            info: { bg: '#d1ecf1', border: '#bee5eb', texto: '#0c5460', icono: 'ℹ' },
-            validacion: { bg: '#fff3cd', border: '#ffeaa7', texto: '#856404', icono: '⚠' },
-            cargando: { bg: '#e3f2fd', border: '#90caf9', texto: '#1565c0', icono: '⟳' }
-        };
-
-        const config = colores[tipo] || colores.info;
-
-        const alerta = document.createElement('div');
-        alerta.className = 'alerta-nomina';
-        alerta.style.cssText = `
-            background: ${config.bg};
-            border: 1px solid ${config.border};
-            color: ${config.texto};
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            animation: slideIn 0.3s ease-out;
-            font-size: 14px;
-            font-weight: 500;
-        `;
-
-        const icono = document.createElement('span');
-        icono.style.cssText = `
-            font-size: 20px;
-            margin-right: 12px;
-            ${tipo === 'cargando' ? 'animation: spin 1s linear infinite;' : ''}
-        `;
-        icono.textContent = config.icono;
-
-        const texto = document.createElement('span');
-        texto.textContent = mensaje;
-        texto.style.flex = '1';
-
-        const btnCerrar = document.createElement('button');
-        btnCerrar.innerHTML = '×';
-        btnCerrar.style.cssText = `
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: ${config.texto};
-            cursor: pointer;
-            padding: 0;
-            margin-left: 15px;
-            line-height: 1;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        `;
-        btnCerrar.onmouseover = () => btnCerrar.style.opacity = '1';
-        btnCerrar.onmouseout = () => btnCerrar.style.opacity = '0.7';
-        btnCerrar.onclick = () => cerrarAlerta(alerta);
-
-        alerta.appendChild(icono);
-        alerta.appendChild(texto);
-        if (tipo !== 'cargando') {
-            alerta.appendChild(btnCerrar);
-        }
-
-        contenedorAlertas.appendChild(alerta);
-
-        if (tipo !== 'cargando' && duracion > 0) {
-            setTimeout(() => cerrarAlerta(alerta), duracion);
-        }
-
-        return alerta;
-    }
-
-    function cerrarAlerta(alerta) {
-        if (!alerta || !alerta.parentNode) return;
-
-        alerta.style.animation = 'slideOut 0.3s ease-in';
-        setTimeout(() => {
-            if (alerta.parentNode) {
-                alerta.parentNode.removeChild(alerta);
-            }
-        }, 300);
-    }
-
-    function ocultarTodas() {
-        if (!contenedorAlertas) return;
-
-        const alertas = contenedorAlertas.querySelectorAll('.alerta-nomina');
-        alertas.forEach(alerta => cerrarAlerta(alerta));
-    }
-
-    // Agregar estilos de animación
-    if (!document.getElementById('alertas-styles')) {
-        const styles = document.createElement('style');
-        styles.id = 'alertas-styles';
-        styles.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(400px);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-            @keyframes slideOut {
-                from {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-                to {
-                    transform: translateX(400px);
-                    opacity: 0;
-                }
-            }
-            @keyframes spin {
-                from { transform: rotate(0deg); }
-                to { transform: rotate(360deg); }
-            }
-            .btn-ver-detalle {
-                padding: 6px 12px;
-                border: 1px solid #1976d2;
-                background: white;
-                color: #1976d2;
-                border-radius: 4px;
-                cursor: pointer;
-                font-size: 11px;
-                transition: all 0.2s;
-            }
-            .btn-ver-detalle:hover {
-                background: #1976d2;
-                color: white;
-            }
-        `;
-        document.head.appendChild(styles);
-    }
-
-    return {
-        exito: (msg, dur) => mostrarAlerta(msg, 'exito', dur),
-        error: (msg, dur) => mostrarAlerta(msg, 'error', dur),
-        info: (msg, dur) => mostrarAlerta(msg, 'info', dur),
-        validacion: (msg, dur) => mostrarAlerta(msg, 'validacion', dur),
-        cargando: (msg) => mostrarAlerta(msg, 'cargando', 0),
-        ocultarTodas: ocultarTodas
-    };
-})();
-
-// ============================================
 // AUTO-INICIALIZACIÓN
-// ============================================
-
 $(document).ready(function () {
     console.log('📄 DOM Ready - Iniciando NominaUI');
 
-    // Mostrar alerta de bienvenida
     setTimeout(() => {
         Alertas.info('Sistema de nómina cargado', 2000);
     }, 500);
 
-    // Inicializar módulo principal
     NominaUI.init();
 });
 
-// Exportar a window para acceso global
 window.NominaUI = NominaUI;
-window.Alertas = Alertas;
-
 console.log('✅ Módulo NominaUI cargado correctamente');

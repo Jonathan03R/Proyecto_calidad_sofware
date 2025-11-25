@@ -14,13 +14,10 @@
 
 <div class="procesar-nomina">
 
-    <!-- KPIs -->
     @Html.Partial("_Kpis")
 
-    <!-- ================= FORMULARIO ================ -->
     @Html.Partial("_FormProcesarNomina")
 
-    <!-- ================= TABLAS ================ -->
     <div class="row">
         <div class="col-lg-8">
             @Html.Partial("_TablaVigentes")
@@ -32,27 +29,34 @@
             @Html.Partial("_TablaErrores")
         </div>
     </div>
-
 </div>
 
-<!-- ================= PARTIALS ================= -->
 @Html.Partial("_ModalConfirmarProcesamiento")
-@*@Html.Partial("_ModalParametros")*@
 @Html.Partial("_Toast")
 
 @section Scripts {
+
     <script>
         window.NominaConfig = {
             urls: {
                 listarPeriodos: '@Url.Action("ListarPeriodos", "Nomina")',
                 procesarNomina: '@Url.Action("ProcesarNomina", "Nomina")',
-                obtenerDetallesNominas: '@Url.Action("ObtenerDetalleNominasProcesadas", "Nomina")',
-                diagnosticarTrabajadores: '@Url.Action("DiagnosticarTrabajadores", "Nomina")'
+                obtenerDetallesNominas: '@Url.Action("ObtenerDetalleNominasProcesadas", "Nomina")'
             }
         };
     </script>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="~/Scripts/nomina/nomina.validation.js"></script>
-    <script src="~/Scripts/nomina/nomina.ui.js"></script>
+    <!-- ORDEN OBLIGATORIO -->
+    <script src="~/Scripts/nomina/nomina.config.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/Scripts/nomina/nomina.service.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/Scripts/nomina/nomina.alertas.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/Scripts/nomina/nomina.kpis.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/Scripts/nomina/nomina.validation.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/Scripts/nomina/nomina.ui.js?v=@DateTime.Now.Ticks"></script>
+
+    <script>
+        $(function () {
+            NominaUI.init();
+        });
+    </script>
 }
