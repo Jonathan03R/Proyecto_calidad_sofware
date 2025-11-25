@@ -44,6 +44,10 @@ namespace capa_aplicacion.servicios
             if (periodo == null)
                 throw new InvalidOperationException($"El periodo {periodoId.Value} no existe.");
 
+            if (periodo.EsProcesado())
+                throw new InvalidOperationException("el periodo ya está procesado.");
+
+
             var nomina = new Nomina
             {
                 Periodo = periodo,
@@ -63,6 +67,7 @@ namespace capa_aplicacion.servicios
                 var huboErrores = ProcesarDetallesNomina(nomina, trabajadores, tramos, parametroEssalud, valorUIT);
 
                 FinalizarNomina(nomina, huboErrores);
+                _periodos.ProcesarPeriodo(periodo.PeriodoId);
 
                 _conexion.TerminarTransaccion();
             }
@@ -163,7 +168,6 @@ namespace capa_aplicacion.servicios
 
                     // 4) Remuneración bruta
                     detalle.CalcularRemuneracionBruta();
-
                     // 5) Pensiones
                     detalle.CalcularSistemaPensiones();
 
@@ -178,7 +182,8 @@ namespace capa_aplicacion.servicios
 
                     var dto = new DetalleNominaDTO(
                         nomina.NominaId,
-                        trabajador.TrabajadorId,
+                        //trabajador.TrabajadorId, 
+                        contrato.ContratoId,
                         detalle.RemuneracionBruta,
                         detalle.SueldoBasico,
                         detalle.AsignacionFamiliar,

@@ -28,6 +28,7 @@ namespace capa_persistencia.modulo_principal
                     var ordId = reader.GetOrdinal("tipo_pension_id");
                     var ordNombre = reader.GetOrdinal("tipo_pension_nombre");
                     var ordEntidad = reader.GetOrdinal("tipo_pension_entidad");
+                    var ordComision = reader.GetOrdinal("comision_sobre_flujo");
 
                     while (reader.Read())
                     {
@@ -35,7 +36,9 @@ namespace capa_persistencia.modulo_principal
                         {
                             TipoPensionId = reader.GetInt32(ordId),
                             Nombre = reader.IsDBNull(ordNombre) ? null : reader.GetString(ordNombre),
-                            Entidad = reader.IsDBNull(ordEntidad) ? null : reader.GetString(ordEntidad)
+                            Entidad = reader.IsDBNull(ordEntidad) ? null : reader.GetString(ordEntidad),
+                            ComisionSobreFlujo = reader.IsDBNull(ordComision)? (double?)null: reader.GetDouble(ordComision)
+                            //ComisionSobreFlujo = reader.IsDBNull(ordComision) ? 0 : reader.GetDouble(ordComision)
                         });
                     }
                 }
@@ -43,7 +46,6 @@ namespace capa_persistencia.modulo_principal
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Mensaje: {ex.Message}");
-                // Usa tu excepción de dominio si tienes una específica para pensiones
                 throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CONSULTA);
             }
 

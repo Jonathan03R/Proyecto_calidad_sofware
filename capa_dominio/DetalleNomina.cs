@@ -62,6 +62,18 @@ namespace capa_dominio
 
 
 
+        /// <summary>
+        /// regla: si el trabajador tiene 0 faltas y 0 tardanzas en el periodo,
+        /// recibe un bono fijo de 50 soles por cumplimiento.
+        /// </summary>
+        public void CalculoBonosRegulares()
+        {
+            if (DescuentoFaltas == 0 && DescuentoTardanzas == 0)
+                bonosRegulares = 50;
+            else
+                bonosRegulares = 0;
+        }
+
         public void CalcularDescuentoTardanzas()
         {
             if (Contrato == null)
@@ -84,6 +96,15 @@ namespace capa_dominio
             DescuentoTardanzas = Math.Round(totalDescuento, 2, MidpointRounding.AwayFromZero);
         }
 
+
+        /// <summary>
+        /// regla de negocio para faltas:
+        /// se considera falta cada día laboral del periodo en el que el trabajador:
+        /// 1) no tiene ningún registro de asistencia
+        /// 2) o tiene registros pero con 0 horas normales trabajadas
+        /// los domingos no cuentan como día laboral
+        /// el descuento final es (total_faltas * sueldo_por_dia)
+        /// </summary>
         public void CalcularDescuentoFaltas()
         {
             if (Contrato == null)
@@ -146,7 +167,7 @@ namespace capa_dominio
 
         public void CalcularPagoTotalHorasExtras()
         {
-            System.Diagnostics.Trace.WriteLine("CALCULANDO HORAS EXTRAS...");
+            //System.Diagnostics.Trace.WriteLine("CALCULANDO HORAS EXTRAS...");
 
             if (Contrato == null)
                 throw new InvalidOperationException("El contrato no puede ser nulo en el detalle de nómina.");
@@ -172,14 +193,14 @@ namespace capa_dominio
                 if (pagoDiaExtras > 0)
                     totalExtras += pagoDiaExtras;
 
-                System.Diagnostics.Trace.WriteLine(
-                    $"HORAS_EXTRAS -> Fecha:{h.Fecha:yyyy-MM-dd} | HorasExtras:{h.HorasExtras:F2} | PagoDia:{pagoDiaExtras:F2}"
-                );
+                //System.Diagnostics.Trace.WriteLine(
+                //    $"HORAS_EXTRAS -> Fecha:{h.Fecha:yyyy-MM-dd} | HorasExtras:{h.HorasExtras:F2} | PagoDia:{pagoDiaExtras:F2}"
+                //);
             }
 
             horasExtras = Math.Round(totalExtras, 2);
 
-            System.Diagnostics.Trace.WriteLine($"HORAS_EXTRAS -> Total general: {horasExtras:F2}");
+            //System.Diagnostics.Trace.WriteLine($"HORAS_EXTRAS -> Total general: {horasExtras:F2}");
         }
 
 
@@ -187,6 +208,7 @@ namespace capa_dominio
         {
             remuneracionBruta = contrato.ContratoSalario + horasExtras + asignacionFamiliar + bonosRegulares;
         }
+
 
         // =========================
         // ASIGNACIÓN FAMILIAR
@@ -244,7 +266,13 @@ namespace capa_dominio
                 case 3:
                 case 4:
                 case 5:
-                    descuentoAFP = Math.Round(remuneracionBruta * 0.10m, 2, MidpointRounding.AwayFromZero);
+                    var aporteObligatorio = remuneracionBruta * 0.10m;
+
+                    var comision = 0m;
+                    if (Contrato.TipoPension.ComisionSobreFlujo != null)
+                        comision = remuneracionBruta * (decimal)Contrato.TipoPension.ComisionSobreFlujo;
+
+                    descuentoAFP = Math.Round(aporteObligatorio + comision, 2, MidpointRounding.AwayFromZero);
                     break;
 
                 case 6:

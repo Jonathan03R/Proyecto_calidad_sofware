@@ -5,7 +5,7 @@ namespace capa_dominio.dto
     public class DetalleNominaDTO
     {
         public int NominaId { get; set; }
-        public int TrabajadorId { get; set; }
+        public int ContratoId { get; set; }
         public decimal RemuneracionBruta { get; set; }
         public decimal SueldoBasico { get; set; }
         public decimal AsignacionFamiliar { get; set; }
@@ -34,7 +34,7 @@ namespace capa_dominio.dto
 
         public DetalleNominaDTO(
             int nominaId,
-            int trabajadorId,
+            int contratoId,
             decimal remuneracionBruta,
             decimal sueldoBasico,
             decimal asignacionFamiliar,
@@ -62,7 +62,7 @@ namespace capa_dominio.dto
             string mensajeError)
         {
             NominaId = nominaId;
-            TrabajadorId = trabajadorId;
+            ContratoId = contratoId;
             RemuneracionBruta = remuneracionBruta;
             SueldoBasico = sueldoBasico;
             AsignacionFamiliar = asignacionFamiliar;

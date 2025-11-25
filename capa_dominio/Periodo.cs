@@ -13,7 +13,8 @@ namespace capa_dominio
         private TipoSalario tipoSalario; 
         private DateTime periodoFechaInicio;
         private DateTime periodoFechaFin;
-        private string periodoEstado;
+        private int estadoId;
+        private string estadoNombre;
 
         
         public int PeriodoId { get => periodoId; set => periodoId = value; }
@@ -21,25 +22,14 @@ namespace capa_dominio
         public TipoSalario TipoSalario { get => tipoSalario; set => tipoSalario = value; }
         public DateTime PeriodoFechaInicio { get => periodoFechaInicio; set => periodoFechaInicio = value; }
         public DateTime PeriodoFechaFin { get => periodoFechaFin; set => periodoFechaFin = value; }
-        public string PeriodoEstado { get => periodoEstado; set => periodoEstado = value; }
+        public int EstadoId { get => estadoId; set => estadoId = value; }
+        public string EstadoNombre { get => estadoNombre; set => estadoNombre = value; }
 
-        
-        public bool EstaProcesado()
+        public bool EsProcesado()
         {
-            return periodoEstado == "Procesado";
+            return estadoId == 3;
         }
 
-        public bool EsActivo()
-        {
-            return periodoEstado == "Activo";
-        }
-
-        public bool EsPeriodoActual()
-        {
-            DateTime today = DateTime.Today;
-
-            return today >= this.periodoFechaInicio.Date && today <= this.periodoFechaFin.Date;
-        }
 
     }
 }

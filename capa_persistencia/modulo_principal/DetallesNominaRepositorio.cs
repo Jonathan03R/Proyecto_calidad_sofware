@@ -21,15 +21,16 @@ namespace capa_persistencia.modulo_principal
         {
 
             System.Diagnostics.Debug.WriteLine(
-                $"Insertando detalle de nómina para trabajador ID: {detalle.TrabajadorId} en nómina ID: {detalle.NominaId}");
+                $"Insertando detalle de nómina para trabajador ID: {detalle.ContratoId} en nómina ID: {detalle.NominaId}");
             try
             {
 
                 var cmd = _accesoSQL.ObtenerComandoDeProcedimiento(
-                    "nomina.proc_insertar_detalle_nomina_por_trabajador");
+                    "nomina.proc_insertar_detalle_nomina");
 
                 cmd.Parameters.AddWithValue("@nomina_id", detalle.NominaId);
-                cmd.Parameters.AddWithValue("@trabajador_id", detalle.TrabajadorId);
+                //cmd.Parameters.AddWithValue("@trabajador_id", detalle.TrabajadorId);
+                cmd.Parameters.AddWithValue("@contrato_id", detalle.ContratoId);
                 cmd.Parameters.AddWithValue("@remuneracion_bruta", detalle.RemuneracionBruta);
                 cmd.Parameters.AddWithValue("@sueldo_basico", detalle.SueldoBasico);
                 cmd.Parameters.AddWithValue("@asignacion_familiar", detalle.AsignacionFamiliar);
