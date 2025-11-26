@@ -93,7 +93,7 @@ namespace capa_persistencia.modulo_principal
             var lista = new List<Periodo>();
             try
             {
-                SqlCommand cmd = _conexion.ObtenerComandoDeProcedimiento("proc_listar_periodos_por_estado");
+                SqlCommand cmd = _conexion.ObtenerComandoDeProcedimiento("proc_listar_periodos");
                 cmd.Parameters.AddWithValue("@estado_id", 1); // Estado pendiente
                 using (SqlDataReader dr = cmd.ExecuteReader())
                 {
@@ -124,8 +124,8 @@ namespace capa_persistencia.modulo_principal
             var lista = new List<Periodo>();
             try
             {
-                SqlCommand cmd = _conexion.ObtenerComandoDeProcedimiento("proc_listar_periodos_por_estado");
-                cmd.Parameters.AddWithValue("@estado_id", 2); // Estado procesado
+                SqlCommand cmd = _conexion.ObtenerComandoDeProcedimiento("proc_listar_periodos");
+                cmd.Parameters.AddWithValue("@estado_id", 3); // Estado procesado
                 using (SqlDataReader dr = cmd.ExecuteReader())
                 {
                     while (dr.Read())
@@ -151,13 +151,13 @@ namespace capa_persistencia.modulo_principal
 
 
         /// obtener periodos con estado id = 3  (procesados)
-        public List<Periodo> ListarPeriodosAnulados()
+        public List<Periodo> ListarPeriodosAbiertos()
         {
             var lista = new List<Periodo>();
             try
             {
-                SqlCommand cmd = _conexion.ObtenerComandoDeProcedimiento("proc_listar_periodos_por_estado");
-                cmd.Parameters.AddWithValue("@estado_id", 3); // Estado anulado
+                SqlCommand cmd = _conexion.ObtenerComandoDeProcedimiento("proc_listar_periodos");
+                cmd.Parameters.AddWithValue("@estado_id", 2); // Estado anulado
                 using (SqlDataReader dr = cmd.ExecuteReader())
                 {
                     while (dr.Read())

@@ -1,4 +1,5 @@
 ﻿using capa_aplicacion.Servicios;
+using capa_aplicacion.sevicios;
 using capa_dominio;
 using capa_dominio.dto;
 using System;
@@ -12,10 +13,12 @@ namespace capa_presentacion.Controllers
     public class GenerarReporteController : Controller
     {
         private readonly ReporteService reporteService;
+        private readonly PeriodoService periodoService;
 
         public GenerarReporteController()
         {
             reporteService = new ReporteService();
+            periodoService = new PeriodoService();
         }
 
         // GET: Reporte
@@ -32,9 +35,17 @@ namespace capa_presentacion.Controllers
             List<Periodo> listaPeriodos = new List<Periodo>();
             try
             {
-                listaPeriodos = reporteService.ListarPeriodos();
+                listaPeriodos = periodoService.ListarProcesados();
+                foreach (var p in listaPeriodos)
+                {
+                    System.Diagnostics.Debug.WriteLine(
+                        $"[PERIODO] id={p.PeriodoId}, nombre={p.PeriodoNombre}, inicio={p.PeriodoFechaInicio}, fin={p.PeriodoFechaFin}, estado={p.EstadoId} - {p.EstadoNombre}"
+                    );
+                }
                 accionExitosa = true;
                 mensajeRetorno = "";
+
+
             }
             catch (Exception e)
             {
@@ -44,6 +55,9 @@ namespace capa_presentacion.Controllers
             }
 
             return Json(new { data = listaPeriodos, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+
+
+
 
         }
 

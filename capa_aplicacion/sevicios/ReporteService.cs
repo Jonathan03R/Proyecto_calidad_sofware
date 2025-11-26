@@ -40,20 +40,21 @@ namespace capa_aplicacion.Servicios
             return listaReporte;
         }
 
-        public List<Periodo> ListarPeriodos(int? periodoId = null, string periodoNombre = null)
-        {
-            List<Periodo> listaPeriodo;
-            try
-            {
-                conexion.AbrirConexion();
-                listaPeriodo = periodosRepositorio.ListarTodosPeriodos(periodoId, periodoNombre);
-                conexion.CerrarConexion();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return listaPeriodo;
-        }
+        /// JUGADOR 120 ELIMIDAO POR TRACA
+        //public List<Periodo> ListarPeriodos(int? periodoId = null, string periodoNombre = null)
+        //{
+        //    List<Periodo> listaPeriodo;
+        //    try
+        //    {
+        //        conexion.AbrirConexion();
+        //        listaPeriodo = periodosRepositorio.ListarTodosPeriodos(periodoId, periodoNombre);
+        //        conexion.CerrarConexion();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //    return listaPeriodo;
+        //}
     }
 }

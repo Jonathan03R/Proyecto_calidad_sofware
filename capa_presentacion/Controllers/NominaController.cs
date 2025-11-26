@@ -1,5 +1,6 @@
 ﻿using capa_aplicacion.servicios;
 using capa_aplicacion.Servicios;
+using capa_aplicacion.sevicios;
 using capa_dominio;
 using capa_dominio.dto;
 using capa_persistencia.modulo_principal;
@@ -14,6 +15,7 @@ public class NominaController : Controller
     private readonly ImpuestoRenta _repoImpuestoRenta;
     private readonly Parametros _repoParametros;
     private readonly ReporteService _reporteService;
+    private readonly PeriodoService _periodoService;
 
     public NominaController()
     {
@@ -21,6 +23,7 @@ public class NominaController : Controller
         _repoImpuestoRenta = new ImpuestoRenta();
         _repoParametros = new Parametros();
         _reporteService = new ReporteService();
+        _periodoService = new PeriodoService(); 
     }
 
     public ActionResult Index()
@@ -58,7 +61,7 @@ public class NominaController : Controller
         {
             System.Diagnostics.Debug.WriteLine("[ListarPeriodos] Inicio de consulta");
 
-            listaPeriodos = _reporteService.ListarPeriodos();
+            listaPeriodos = _periodoService.ListarAbiertos();
 
             System.Diagnostics.Debug.WriteLine("[ListarPeriodos] Cantidad de periodos obtenidos: " + (listaPeriodos?.Count ?? 0));
 

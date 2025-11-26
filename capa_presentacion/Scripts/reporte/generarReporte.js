@@ -118,7 +118,7 @@
 
     function renderizarSelectPeriodos(periodos) {
         elements.periodoSelect.empty();
-        elements.periodoSelect.append('<option value="">Seleccione Mes/Año</option>');
+        elements.periodoSelect.append('<option value="">Selecionar periodo</option>');
 
         periodos.forEach(function (periodo) {
             elements.periodoSelect.append(

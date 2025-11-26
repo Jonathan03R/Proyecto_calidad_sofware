@@ -22,7 +22,7 @@ namespace capa_persistencia.modulo_principal
 
         public List<ReporteNominaDTO> ConsultarNominaPorPeriodo(int periodoId, int? cargoId = null)
         {
-            List<ReporteNominaDTO> listaReporte = new List<ReporteNominaDTO>();
+            var lista = new List<ReporteNominaDTO>();
 
             try
             {
@@ -34,36 +34,40 @@ namespace capa_persistencia.modulo_principal
                 {
                     while (dr.Read())
                     {
-                        ReporteNominaDTO reporte = new ReporteNominaDTO
+                        var dto = new ReporteNominaDTO
                         {
-                            // Datos del Trabajador
+                            // ===== DATOS PERSONALES =====
                             CodigoTrabajador = dr["CodigoTrabajador"].ToString(),
                             Nombres = dr["Nombres"].ToString(),
                             Apellidos = dr["Apellidos"].ToString(),
-                            TipoDeIdentificacion = dr["Tipo de Identificacion"].ToString(),
+                            TipoDeIdentificacion = dr["TipoIdentificacion"].ToString(),
                             NumeroIdentificacion = dr["NumeroIdentificacion"].ToString(),
                             SistemaPension = dr["SistemaPension"].ToString(),
                             TipoTrabajador = dr["TipoTrabajador"].ToString(),
-                            FechaInicioContrato = dr["FechaInicioContrato"] != DBNull.Value
-                                ? DateTime.Parse(dr["FechaInicioContrato"].ToString()).ToString("yyyy-MM-dd")
-                                : null,
-                            FechaFinContrato = dr["FechaFinContrato"] != DBNull.Value
-                                ? DateTime.Parse(dr["FechaFinContrato"].ToString()).ToString("yyyy-MM-dd")
-                                : null,
 
-                            // Jornada Laboral
+                            // ===== CONTRATO =====
+                            FechaInicioContrato = dr["FechaInicioContrato"] == DBNull.Value
+                                                  ? null
+                                                  : Convert.ToDateTime(dr["FechaInicioContrato"]).ToString("yyyy-MM-dd"),
+
+                            FechaFinContrato = dr["FechaFinContrato"] == DBNull.Value
+                                                  ? null
+                                                  : Convert.ToDateTime(dr["FechaFinContrato"]).ToString("yyyy-MM-dd"),
+
+                            // ===== JORNADA =====
                             TipoDeJornadaPactada = dr["TipoDeJornadaPactada"].ToString(),
-                            HorasSemanalesPactadas = dr["HorasSemanalesPactadas"] != DBNull.Value
-                                ? (decimal?)Convert.ToDecimal(dr["HorasSemanalesPactadas"])
-                                : null,
-                            HorasTrabajadasEstimadas = dr["HorasTrabajadasEstimadas"] != DBNull.Value
-                                ? (decimal?)Convert.ToDecimal(dr["HorasTrabajadasEstimadas"])
-                                : null,
-                            HorasExtrasReales = dr["HorasExtrasReales"] != DBNull.Value
-                                ? (decimal?)Convert.ToDecimal(dr["HorasExtrasReales"])
-                                : null,
+                            HorasSemanalesPactadas = dr["HorasSemanalesPactadas"] == DBNull.Value
+                                                     ? null
+                                                     : (decimal?)Convert.ToDecimal(dr["HorasSemanalesPactadas"]),
 
-                            // Ingresos
+                            // tu SP NO devuelve HorasTrabajadasEstimadas
+                            HorasTrabajadasEstimadas = null,
+
+                            HorasExtrasReales = dr["HorasExtrasReales"] == DBNull.Value
+                                                ? null
+                                                : (decimal?)Convert.ToDecimal(dr["HorasExtrasReales"]),
+
+                            // ===== INGRESOS =====
                             SueldoBasico = Convert.ToDecimal(dr["SueldoBasico"]),
                             AsignacionFamiliar = Convert.ToDecimal(dr["AsignacionFamiliar"]),
                             MontoHorasExtras = Convert.ToDecimal(dr["MontoHorasExtras"]),
@@ -72,48 +76,39 @@ namespace capa_persistencia.modulo_principal
                             TotalHaberesBruto = Convert.ToDecimal(dr["TotalHaberesBruto"]),
                             TotalHaberes = Convert.ToDecimal(dr["TotalHaberes"]),
 
-                            // Descuentos Legales
+                            // ===== DESCUENTOS =====
                             AporteSistemaPension = Convert.ToDecimal(dr["AporteSistemaPension"]),
                             DescuentoONP = Convert.ToDecimal(dr["DescuentoONP"]),
                             DescuentoAFP = Convert.ToDecimal(dr["DescuentoAFP"]),
                             RetencionImpuestoRenta = Convert.ToDecimal(dr["RetencionImpuestoRenta"]),
 
-                            // Aportes del Empleador
+                            // ===== EMPLEADOR =====
                             AporteEsSalud = Convert.ToDecimal(dr["AporteEsSalud"]),
                             BaseImponibleEsSalud = Convert.ToDecimal(dr["BaseImponibleEsSalud"]),
 
-                            // Otros Descuentos
+                            // ===== OTROS DESCUENTOS =====
                             DescuentoFaltas = Convert.ToDecimal(dr["DescuentoFaltas"]),
                             DescuentoAdelantos = Convert.ToDecimal(dr["DescuentoAdelantos"]),
                             OtrosDescuentos = Convert.ToDecimal(dr["OtrosDescuentos"]),
 
-                            // Totales
+                            // ===== TOTALES =====
                             TotalDescuentos = Convert.ToDecimal(dr["TotalDescuentos"]),
                             NetoPagar = Convert.ToDecimal(dr["NetoPagar"]),
 
-                            // Datos de Contexto
+                            // ===== CONTEXTO =====
                             PeriodoNomina = dr["PeriodoNomina"].ToString()
                         };
 
-                        listaReporte.Add(reporte);
+                        lista.Add(dto);
                     }
                 }
             }
-            catch (FormatException ex)
-            {
-                throw new Exception($"Error de formato al convertir datos: {ex.Message}. Verifique los tipos de datos en la consulta.", ex);
-            }
-            catch (SqlException ex)
-            {
-                throw new Exception($"Error al ejecutar proc_Consultar_Nomina_Por_Periodo: {ex.Message}", ex);
-            }
             catch (Exception ex)
             {
-                throw new Exception("Error al consultar nómina por período.", ex);
+                throw new Exception("error al consultar nómina por período", ex);
             }
-            
 
-            return listaReporte;
+            return lista;
         }
 
         /// <summary>
