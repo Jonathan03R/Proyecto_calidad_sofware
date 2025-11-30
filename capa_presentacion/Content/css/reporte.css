@@ -172,8 +172,18 @@
     max-width: 100%;
 }
 
+    .table-responsive table {
+        min-width: 3500px;
+        white-space: nowrap;
+    }
+
+    .table-responsive th,
+    .table-responsive td {
+        min-width: 100px;
+    }
+
     .table-responsive::-webkit-scrollbar {
-        height: 10px;
+        height: 12px; /* Cambia de 10px a 12px */
         width: 10px;
     }
 

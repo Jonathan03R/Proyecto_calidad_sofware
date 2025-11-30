@@ -1,9 +1,19 @@
 ﻿const ReporteNomina = (function () {
     'use strict';
 
+    // ===== CONSTANTES =====
+    const COLUMNAS_TABLA = 32;
+    const COLUMNAS_CONFIG = {
+        CODIGO: { index: 1, label: 'Código' },
+        NOMBRES: { index: 2, label: 'Nombres' },
+        APELLIDOS: { index: 3, label: 'Apellidos' }
+    };
+
     // ===== ESTADO PRIVADO =====
-    let datosNomina = [];
-    let periodoSeleccionado = null;
+    const state = {
+        datosNomina: [],
+        periodoSeleccionado: null
+    };
 
     // ===== REFERENCIAS DOM =====
     const elements = {
@@ -11,12 +21,12 @@
         cargoSelect: null,
         btnGenerar: null,
         tableBody: null,
-        recordsCount: null,
-        modal: null,
-        modalBody: null
+        recordsCount: null
     };
 
+    // ===== INICIALIZACIÓN =====
     function init() {
+        console.log('🚀 Inicializando ReporteNomina...');
         cacheElements();
         bindEvents();
         cargarDatosIniciales();
@@ -28,107 +38,101 @@
         elements.btnGenerar = $('#btnGenerarReporte');
         elements.tableBody = $('#tableBody');
         elements.recordsCount = $('#recordsCount');
-        elements.modal = $('#detallesModal');
-        elements.modalBody = $('#modalBody');
+
+        console.log('📦 Elementos cacheados');
     }
 
     function bindEvents() {
-        // ✅ Consulta automática al cambiar el periodo
-        elements.periodoSelect.on('change', consultarReporte);
+        elements.periodoSelect.on('change', handlePeriodoChange);
+        elements.cargoSelect.on('change', handleCargoChange);
+        elements.btnGenerar.on('click', generarReportePDF);
 
-        // ✅ Reconsulta al cambiar el tipo de trabajador (si ya hay un periodo seleccionado)
-        elements.cargoSelect.on('change', function () {
-            if (elements.periodoSelect.val()) {
-                consultarReporte();
-            }
-        });
-
-        elements.btnGenerar.on('click', generarReporte);
-
-        // Eventos del modal
-        $('.btn-close').on('click', cerrarModal);
-        elements.modal.on('click', function (e) {
-            if (e.target.id === 'detallesModal') {
-                cerrarModal();
-            }
-        });
-
-        // Cerrar modal con tecla ESC
-        $(document).on('keydown', function (e) {
-            if (e.key === 'Escape' && elements.modal.hasClass('show')) {
-                cerrarModal();
-            }
-        });
+        console.log('✅ Eventos vinculados');
     }
 
+    // ===== MANEJADORES DE EVENTOS =====
+    function handlePeriodoChange() {
+        consultarReporte();
+    }
+
+    function handleCargoChange() {
+        if (elements.periodoSelect.val()) {
+            consultarReporte();
+        }
+    }
+
+    // ===== CARGA DE DATOS INICIALES =====
     function cargarDatosIniciales() {
         cargarCargos();
         cargarPeriodos();
     }
 
     function cargarCargos() {
-        $.ajax({
+        ejecutarAjax({
             url: window.AppConfig.urls.obtenerCargos,
-            type: 'GET',
-            success: function (response) {
+            onSuccess: (response) => {
                 if (response.consultaExitosa) {
                     renderizarSelectCargos(response.data);
                 } else {
-                    console.error('Error al cargar cargos:', response.mensaje);
-                    Alertas.error('Error al cargar tipos de trabajador');
+                    manejarError('Error al cargar tipos de trabajador', response.mensaje);
                 }
             },
-            error: function (xhr, status, error) {
-                console.error('Error de conexión:', error);
-                Alertas.error('Error de conexión al cargar tipos de trabajador');
-            }
+            onError: () => manejarError('Error de conexión al cargar tipos de trabajador')
         });
     }
 
     function cargarPeriodos() {
-        $.ajax({
+        ejecutarAjax({
             url: window.AppConfig.urls.listarPeriodos,
-            type: 'GET',
-            success: function (response) {
+            onSuccess: (response) => {
                 if (response.consultaExitosa) {
                     renderizarSelectPeriodos(response.data);
                     Alertas.exito('Períodos cargados correctamente');
                 } else {
-                    Alertas.error('Error al cargar períodos: ' + response.mensaje);
+                    manejarError('Error al cargar períodos', response.mensaje);
                 }
             },
+            onError: () => manejarError('Error de conexión al cargar períodos')
+        });
+    }
+
+    // ===== AJAX GENÉRICO =====
+    function ejecutarAjax({ url, type = 'GET', onSuccess, onError }) {
+        $.ajax({
+            url: url,
+            type: type,
+            success: onSuccess,
             error: function (xhr, status, error) {
-                console.error('Error:', error);
-                Alertas.error('Error de conexión al cargar períodos');
+                console.error('Error AJAX:', error);
+                if (onError) onError(xhr, status, error);
             }
         });
     }
 
-    // ===== RENDERIZADO =====
+    // ===== RENDERIZADO DE SELECTS =====
     function renderizarSelectCargos(cargos) {
-        elements.cargoSelect.empty();
-        elements.cargoSelect.append('<option value="">Todos los tipos</option>');
-
-        cargos.forEach(function (cargo) {
-            elements.cargoSelect.append(
-                `<option value="${cargo.CargoId}">${escapeHtml(cargo.CargoNombre)}</option>`
-            );
-        });
+        const opciones = [
+            crearOpcion('', 'Todos los tipos'),
+            ...cargos.map(cargo => crearOpcion(cargo.CargoId, cargo.CargoNombre))
+        ];
+        elements.cargoSelect.html(opciones.join(''));
     }
 
     function renderizarSelectPeriodos(periodos) {
-        elements.periodoSelect.empty();
-        elements.periodoSelect.append('<option value="">Selecionar periodo</option>');
-
-        periodos.forEach(function (periodo) {
-            elements.periodoSelect.append(
-                `<option value="${periodo.PeriodoId}">${escapeHtml(periodo.PeriodoNombre)}</option>`
-            );
-        });
+        const opciones = [
+            crearOpcion('', 'Seleccione Mes/Año'),
+            ...periodos.map(periodo => crearOpcion(periodo.PeriodoId, periodo.PeriodoNombre))
+        ];
+        elements.periodoSelect.html(opciones.join(''));
     }
 
+    function crearOpcion(valor, texto) {
+        return `<option value="${valor}">${escapeHtml(texto)}</option>`;
+    }
+
+    // ===== RENDERIZADO DE TABLA =====
     function renderizarTabla(data) {
-        datosNomina = data;
+        state.datosNomina = data;
         elements.tableBody.empty();
 
         if (!data || data.length === 0) {
@@ -136,26 +140,59 @@
             return;
         }
 
-        data.forEach((item, index) => {
-            const row = crearFilaTrabajador(item, index);
-            elements.tableBody.append(row);
-        });
+        const filas = data.map((item, index) => crearFilaTrabajador(item, index));
+        elements.tableBody.html(filas.join(''));
     }
 
     function crearFilaTrabajador(item, index) {
-        return `
-            <tr>
-                <td class="employee-name">${escapeHtml(item.Nombres || '')}</td>
-                <td class="employee-name">${escapeHtml(item.Apellidos || '')}</td>
-                <td>${escapeHtml(item.TipoTrabajador || 'N/A')}</td>
-                <td style="font-weight: 600; color: #38a169;">S/ ${formatearMoneda(item.NetoPagar)}</td>
-                <td>
-                    <button class="btn-ver-detalles" onclick="ReporteNomina.verDetalles(${index})">
-                        <span>👁️</span> Ver Detalles
-                    </button>
-                </td>
-            </tr>
-        `;
+        const campos = [
+            escapeHtml(item.CodigoTrabajador || ''),
+            escapeHtml(item.Nombres || ''),
+            escapeHtml(item.Apellidos || ''),
+            escapeHtml(item.TipoDeIdentificacion || ''),
+            escapeHtml(item.NumeroIdentificacion || ''),
+            escapeHtml(item.SistemaPension || ''),
+            escapeHtml(item.TipoTrabajador || ''),
+            escapeHtml(item.FechaInicioContrato || ''),
+            escapeHtml(item.FechaFinContrato || ''),
+            escapeHtml(item.TipoDeJornadaPactada || ''),
+            formatearNumero(item.HorasSemanalesPactadas),
+            formatearNumero(item.HorasExtrasReales),
+            formatearMonedaConSimbolo(item.SueldoBasico),
+            formatearMonedaConSimbolo(item.AsignacionFamiliar),
+            formatearMonedaConSimbolo(item.MontoHorasExtras),
+            formatearMonedaConSimbolo(item.MontoBonos),
+            formatearMonedaConSimbolo(item.OtrosIngresos),
+            formatearMonedaConSimbolo(item.TotalHaberesBruto),
+            formatearMonedaConSimbolo(item.TotalHaberes),
+            formatearMonedaConSimbolo(item.AporteSistemaPension),
+            formatearMonedaConSimbolo(item.DescuentoONP),
+            formatearMonedaConSimbolo(item.DescuentoAFP),
+            formatearMonedaConSimbolo(item.RetencionImpuestoRenta),
+            formatearMonedaConSimbolo(item.AporteEsSalud),
+            formatearMonedaConSimbolo(item.BaseImponibleEsSalud),
+            formatearMonedaConSimbolo(item.DescuentoTardanzas),
+            formatearMonedaConSimbolo(item.DescuentoFaltas),
+            formatearMonedaConSimbolo(item.DescuentoAdelantos),
+            formatearMonedaConSimbolo(item.OtrosDescuentos),
+            formatearMonedaConSimbolo(item.TotalDescuentos),
+            `<span class="highlight">${formatearMonedaConSimbolo(item.NetoPagar)}</span>`,
+            escapeHtml(item.PeriodoNomina || '')
+        ];
+
+        return `<tr>${campos.map((campo, i) => crearCelda(campo, i + 1)).join('')}</tr>`;
+    }
+
+    function crearCelda(contenido, indice) {
+        const esNombre = indice === COLUMNAS_CONFIG.NOMBRES.index || indice === COLUMNAS_CONFIG.APELLIDOS.index;
+        const esMoneda = indice >= 13 && indice <= 31;
+        const clases = [];
+
+        if (esNombre) clases.push('employee-name');
+        if (esMoneda) clases.push('money');
+
+        const claseStr = clases.length > 0 ? ` class="${clases.join(' ')}"` : '';
+        return `<td${claseStr}>${contenido}</td>`;
     }
 
     // ===== CONSULTA DE REPORTES =====
@@ -163,239 +200,160 @@
         const periodoId = elements.periodoSelect.val();
         const cargoId = elements.cargoSelect.val();
 
-        // Si no hay periodo seleccionado, limpiar tabla
         if (!periodoId) {
-            mostrarEstadoVacio();
-            elements.btnGenerar.prop('disabled', true);
+            resetearVista();
             return;
         }
 
-        periodoSeleccionado = periodoId;
+        state.periodoSeleccionado = periodoId;
         mostrarCargando();
 
         const url = construirUrlConsulta(periodoId, cargoId);
 
-        $.ajax({
+        ejecutarAjax({
             url: url,
-            type: 'GET',
-            success: function (response) {
-                if (response.consultaExitosa) {
-                    renderizarTabla(response.data);
-                    actualizarContador(response.data.length);
-                    elements.btnGenerar.prop('disabled', false);
-
-                    if (response.data.length > 0) {
-                        Alertas.exito(`Se encontraron ${response.data.length} registros`);
-                    } else {
-                        Alertas.info('No se encontraron registros para el periodo seleccionado');
-                    }
-                } else {
-                    Alertas.error('Error al consultar: ' + response.mensaje);
-                    mostrarEstadoVacio();
-                    elements.btnGenerar.prop('disabled', true);
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error('Error:', error);
+            onSuccess: (response) => manejarRespuestaConsulta(response),
+            onError: () => {
                 Alertas.error('Error de conexión al consultar reporte');
-                mostrarEstadoVacio();
-                elements.btnGenerar.prop('disabled', true);
+                resetearVista();
             }
         });
     }
 
     function construirUrlConsulta(periodoId, cargoId) {
-        let url = window.AppConfig.urls.listarNomina + '?periodoId=' + periodoId;
-        if (cargoId) {
-            url += '&cargoId=' + cargoId;
-        }
+        let url = `${window.AppConfig.urls.listarNomina}?periodoId=${periodoId}`;
+        if (cargoId) url += `&cargoId=${cargoId}`;
         return url;
     }
 
-    // ===== MODAL DE DETALLES =====
-    function verDetalles(index) {
-        const item = datosNomina[index];
-        if (!item) {
-            Alertas.error('No se encontraron los datos del trabajador');
+    function manejarRespuestaConsulta(response) {
+        if (response.consultaExitosa) {
+            renderizarTabla(response.data);
+            actualizarContador(response.data.length);
+            elements.btnGenerar.prop('disabled', false);
+
+            mostrarMensajeResultados(response.data.length);
+        } else {
+            Alertas.error('Error al consultar: ' + response.mensaje);
+            resetearVista();
+        }
+    }
+
+    function mostrarMensajeResultados(cantidad) {
+        if (cantidad > 0) {
+            Alertas.exito(`Se encontraron ${cantidad} registros`);
+        } else {
+            Alertas.info('No se encontraron registros para el periodo seleccionado');
+        }
+    }
+
+    function resetearVista() {
+        mostrarEstadoVacio();
+        elements.btnGenerar.prop('disabled', true);
+    }
+
+    // ===== GENERACIÓN DE REPORTE PDF =====
+    function generarReportePDF() {
+        console.log('📄 Generando reporte PDF...');
+
+        if (!validarDatosParaReporte()) return;
+
+        // Verificar que ExportadorReportes esté disponible
+        if (typeof ExportadorReportes === 'undefined') {
+            console.error('❌ ExportadorReportes no está disponible');
+            Alertas.error('El módulo de exportación no está disponible. Verifique que exportadorReportes.js esté cargado.');
             return;
         }
 
-        const htmlDetalles = construirHtmlDetalles(item);
-        elements.modalBody.html(htmlDetalles);
-        elements.modal.addClass('show');
-    }
+        const cargoId = elements.cargoSelect.val();
+        const periodoInfo = elements.periodoSelect.find(':selected').text();
+        const nombreArchivo = `reporte_nomina_${sanitizarNombreArchivo(periodoInfo)}`;
 
-    function construirHtmlDetalles(item) {
-        return `
-            <div class="details-grid">
-                ${crearSeccionPersonal(item)}
-                ${crearSeccionLaboral(item)}
-                ${crearSeccionHoras(item)}
-                ${crearSeccionIngresos(item)}
-                ${crearSeccionDescuentos(item)}
-                ${crearSeccionOtrosDescuentos(item)}
-                ${crearSeccionResumen(item)}
-            </div>
-        `;
-    }
+        const urlExportacion = window.AppConfig.urls.generarPDF;
 
-    function crearSeccionPersonal(item) {
-        return `
-            <div class="detail-section">
-                <h4>👤 Información Personal</h4>
-                ${crearItemDetalle('Código Trabajador', item.CodigoTrabajador)}
-                ${crearItemDetalle('Nombres Completos', item.Nombres)}
-                ${crearItemDetalle('Apellidos', item.Apellidos)}
-                ${crearItemDetalle('Tipo de Identificación', item.TipoDeIdentificacion)}
-                ${crearItemDetalle('Número de Identificación', item.NumeroIdentificacion)}
-                ${crearItemDetalle('Sistema de Pensión', item.SistemaPension)}
-            </div>
-        `;
-    }
-
-    function crearSeccionLaboral(item) {
-        return `
-            <div class="detail-section">
-                <h4>💼 Información Laboral</h4>
-                ${crearItemDetalle('Tipo de Trabajador', item.TipoTrabajador)}
-                ${crearItemDetalle('Fecha Inicio Contrato', formatearFecha(item.FechaInicioContrato))}
-                ${crearItemDetalle('Fecha Fin Contrato', formatearFecha(item.FechaFinContrato))}
-                ${crearItemDetalle('Tipo de Jornada', item.TipoDeJornadaPactada)}
-                ${crearItemDetalle('Horas Semanales Pactadas', formatearNumero(item.HorasSemanalesPactadas))}
-                ${crearItemDetalle('Periodo', item.PeriodoNomina)}
-            </div>
-        `;
-    }
-
-    function crearSeccionHoras(item) {
-        return `
-            <div class="detail-section">
-                <h4>⏱️ Horas Trabajadas</h4>
-                ${crearItemDetalle('Horas Trabajadas Estimadas', formatearNumero(item.HorasTrabajadasEstimadas))}
-                ${crearItemDetalle('Horas Extras Reales', formatearNumero(item.HorasExtrasReales))}
-                ${crearItemDetalle('Monto Horas Extras', formatearMoneda(item.MontoHorasExtras), 'money')}
-            </div>
-        `;
-    }
-
-    function crearSeccionIngresos(item) {
-        return `
-            <div class="detail-section">
-                <h4>💵 Ingresos</h4>
-                ${crearItemDetalle('Sueldo Básico', formatearMoneda(item.SueldoBasico), 'money')}
-                ${crearItemDetalle('Asignación Familiar', formatearMoneda(item.AsignacionFamiliar), 'money')}
-                ${crearItemDetalle('Bonos', formatearMoneda(item.MontoBonos), 'money')}
-                ${crearItemDetalle('Otros Ingresos', formatearMoneda(item.OtrosIngresos), 'money')}
-                ${crearItemDetalle('Total Haberes Bruto', formatearMoneda(item.TotalHaberesBruto), 'money')}
-                ${crearItemDetalle('Total Haberes', formatearMoneda(item.TotalHaberes), 'money')}
-            </div>
-        `;
-    }
-
-    function crearSeccionDescuentos(item) {
-        return `
-            <div class="detail-section">
-                <h4>📉 Descuentos y Aportes</h4>
-                ${crearItemDetalle('Aporte Sistema Pensión', formatearMoneda(item.AporteSistemaPension), 'money')}
-                ${crearItemDetalle('Descuento ONP', formatearMoneda(item.DescuentoONP), 'money')}
-                ${crearItemDetalle('Descuento AFP', formatearMoneda(item.DescuentoAFP), 'money')}
-                ${crearItemDetalle('Retención Impuesto Renta', formatearMoneda(item.RetencionImpuestoRenta), 'money')}
-                ${crearItemDetalle('Aporte EsSalud', formatearMoneda(item.AporteEsSalud), 'money')}
-                ${crearItemDetalle('Base Imponible EsSalud', formatearMoneda(item.BaseImponibleEsSalud), 'money')}
-            </div>
-        `;
-    }
-
-    function crearSeccionOtrosDescuentos(item) {
-        return `
-            <div class="detail-section">
-                <h4>💳 Otros Descuentos</h4>
-                ${crearItemDetalle('Descuento por Faltas', formatearMoneda(item.DescuentoFaltas), 'money')}
-                ${crearItemDetalle('Descuento por Adelantos', formatearMoneda(item.DescuentoAdelantos), 'money')}
-                ${crearItemDetalle('Otros Descuentos', formatearMoneda(item.OtrosDescuentos), 'money')}
-                ${crearItemDetalle('Total Descuentos', formatearMoneda(item.TotalDescuentos), 'money')}
-            </div>
-        `;
-    }
-
-    function crearSeccionResumen(item) {
-        return `
-            <div class="detail-section" style="grid-column: 1 / -1; background: linear-gradient(135deg, #e6f7ff 0%, #f0fff4 100%); border-left-color: #38a169;">
-                <h4>💰 Resumen Final</h4>
-                <div class="detail-item">
-                    <span class="detail-label">NETO A PAGAR</span>
-                    <span class="detail-value highlight">S/ ${formatearMoneda(item.NetoPagar)}</span>
-                </div>
-            </div>
-        `;
-    }
-
-    function crearItemDetalle(label, value, clase = '') {
-        const valorFormateado = value || 'N/A';
-        const claseExtra = clase ? ` ${clase}` : '';
-        return `
-            <div class="detail-item">
-                <span class="detail-label">${escapeHtml(label)}</span>
-                <span class="detail-value${claseExtra}">${escapeHtml(valorFormateado)}</span>
-            </div>
-        `;
-    }
-
-    function cerrarModal() {
-        elements.modal.removeClass('show');
-    }
-
-    // ===== GENERACIÓN DE REPORTES =====
-    function generarReporte() {
-        if (!datosNomina || datosNomina.length === 0) {
-            Alertas.validacion('No hay datos para generar el reporte. Seleccione un período primero');
+        if (!urlExportacion) {
+            Alertas.error('La URL de exportación PDF no está configurada');
             return;
         }
 
-        if (!periodoSeleccionado) {
+        console.log('📤 Iniciando exportación PDF:', {
+            periodoId: state.periodoSeleccionado,
+            cargoId: cargoId,
+            url: urlExportacion
+        });
+
+        // Usar el exportador
+        ExportadorReportes.exportarPDF({
+            url: urlExportacion,
+            periodoId: state.periodoSeleccionado,
+            cargoId: cargoId || null,
+            nombreArchivo: nombreArchivo,
+            onStart: () => {
+                console.log('⏳ Descarga iniciada...');
+                Alertas.cargando('Preparando descarga del PDF...');
+                elements.btnGenerar.prop('disabled', true);
+            },
+            onSuccess: (nombreArchivo) => {
+                console.log('✅ Descarga exitosa:', nombreArchivo);
+                Alertas.ocultarTodas();
+                Alertas.exito('PDF descargado exitosamente');
+            },
+            onError: (error) => {
+                console.error('❌ Error en descarga:', error);
+                Alertas.ocultarTodas();
+                Alertas.error(`Error: ${error}`);
+            },
+            onFinally: () => {
+                console.log('🏁 Descarga finalizada');
+                elements.btnGenerar.prop('disabled', false);
+            }
+        });
+    }
+
+    function validarDatosParaReporte() {
+        if (!state.datosNomina || state.datosNomina.length === 0) {
+            Alertas.validacion('No hay datos para generar el reporte');
+            return false;
+        }
+
+        if (!state.periodoSeleccionado) {
             Alertas.error('No se ha seleccionado un período válido');
-            return;
+            return false;
         }
 
-        Alertas.cargando('Preparando la descarga del reporte...');
+        return true;
+    }
 
-        // Cuando esté listo el endpoint en el backend:
-        // window.location.href = window.AppConfig.urls.generarExcel + '?periodoId=' + periodoSeleccionado;
-
-        // Simulación temporal (eliminar cuando esté el endpoint):
-        setTimeout(() => {
-            Alertas.ocultarTodas();
-            Alertas.info('La funcionalidad de descarga estará disponible próximamente');
-        }, 1500);
+    function sanitizarNombreArchivo(nombre) {
+        return nombre
+            .toLowerCase()
+            .replace(/\s+/g, '_')
+            .replace(/[^a-z0-9_-]/g, '')
+            .substring(0, 50);
     }
 
     // ===== UTILIDADES UI =====
     function mostrarCargando() {
-        elements.tableBody.html(`
-            <tr>
-                <td colspan="5">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <p>Cargando datos...</p>
-                    </div>
-                </td>
-            </tr>
-        `);
+        elements.tableBody.html(crearMensajeEstado('loading', '📊', 'Cargando datos...'));
         actualizarContador(0);
     }
 
     function mostrarEstadoVacio() {
-        elements.tableBody.html(`
+        elements.tableBody.html(crearMensajeEstado('empty-state', '📋', 'Seleccione un período para ver los registros.'));
+        actualizarContador(0);
+    }
+
+    function crearMensajeEstado(clase, icono, mensaje) {
+        return `
             <tr>
-                <td colspan="5">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📋</div>
-                        <p>Seleccione un período para ver los registros.</p>
+                <td colspan="${COLUMNAS_TABLA}">
+                    <div class="${clase}">
+                        ${clase === 'loading' ? '<div class="spinner"></div>' : `<div class="${clase}-icon">${icono}</div>`}
+                        <p>${mensaje}</p>
                     </div>
                 </td>
             </tr>
-        `);
-        actualizarContador(0);
+        `;
     }
 
     function actualizarContador(count) {
@@ -409,22 +367,13 @@
         return parseFloat(valor).toFixed(2);
     }
 
+    function formatearMonedaConSimbolo(valor) {
+        return `S/ ${formatearMoneda(valor)}`;
+    }
+
     function formatearNumero(valor) {
         if (valor == null || isNaN(valor)) return 'N/A';
         return parseFloat(valor).toFixed(2);
-    }
-
-    function formatearFecha(fecha) {
-        if (!fecha) return 'N/A';
-        try {
-            return new Date(fecha).toLocaleDateString('es-PE', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-            });
-        } catch (e) {
-            return 'N/A';
-        }
     }
 
     function escapeHtml(text) {
@@ -439,18 +388,22 @@
         return String(text).replace(/[&<>"']/g, m => map[m]);
     }
 
+    function manejarError(mensaje, detalle = '') {
+        console.error(mensaje, detalle);
+        Alertas.error(mensaje);
+    }
+
     // ===== API PÚBLICA =====
     return {
-        init: init,
-        verDetalles: verDetalles,
-        consultarReporte: consultarReporte,
-        generarReporte: generarReporte,
-        cerrarModal: cerrarModal
+        init,
+        consultarReporte,
+        generarReportePDF
     };
 
 })();
 
 // Inicializar cuando el documento esté listo
-$(document).ready(function () {
+$(document).ready(() => {
+    console.log('📄 DOM Ready');
     ReporteNomina.init();
 });
