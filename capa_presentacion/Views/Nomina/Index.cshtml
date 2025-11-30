@@ -1,62 +1,62 @@
-﻿@{
-    ViewBag.Title = "Procesar Nómina";
-    ViewBag.PageTitle = "Procesar Nómina Vigentes";
-    ViewBag.PageSubtitle = "Gestión de nómina - " +
-        DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
-    ViewBag.PagePeriodo = DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
-}
+﻿    @{
+        ViewBag.Title = "Procesar Nómina";
+        ViewBag.PageTitle = "Procesar Nómina Vigentes";
+        ViewBag.PageSubtitle = "Gestión de nómina - " +
+            DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
+        ViewBag.PagePeriodo = DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
+    }
 
-@section Head {
-    <link rel="stylesheet" href="~/Content/css/nomina.css" />
-    <link rel="stylesheet" href="~/Content/css/listavigente.css?v=@DateTime.Now.Ticks" />
-    <link rel="stylesheet" href="~/Content/css/reporte.css?v=@DateTime.Now.Ticks" />
-}
+    @section Head {
+        <link rel="stylesheet" href="~/Content/css/nomina.css" />
+        <link rel="stylesheet" href="~/Content/css/listavigente.css" />
+        <link rel="stylesheet" href="~/Content/css/reporte.css?v=@DateTime.Now.Ticks" />
+    }
 
-<div class="procesar-nomina">
+    <div class="procesar-nomina">
 
-    @Html.Partial("_Kpis")
+        @Html.Partial("_Kpis")
 
-    @Html.Partial("_FormProcesarNomina")
+        @Html.Partial("_FormProcesarNomina")
 
-    <div class="row">
-        <div class="col-lg-8">
-            @Html.Partial("_TablaVigentes")
+        <div class="row">
+            <div class="col-lg-8">
+                @Html.Partial("_TablaVigentes")
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-12">
+                @Html.Partial("_TablaErrores")
+            </div>
         </div>
     </div>
 
-    <div class="row mt-4">
-        <div class="col-lg-12">
-            @Html.Partial("_TablaErrores")
-        </div>
-    </div>
-</div>
+    @Html.Partial("_ModalConfirmarProcesamiento")
+    @Html.Partial("_Toast")
 
-@Html.Partial("_ModalConfirmarProcesamiento")
-@Html.Partial("_Toast")
+    @section Scripts {
 
-@section Scripts {
+        <script>
+            window.NominaConfig = {
+                urls: {
+                    listarPeriodos: '@Url.Action("ListarPeriodos", "Nomina")',
+                    procesarNomina: '@Url.Action("ProcesarNomina", "Nomina")',
+                    obtenerDetallesNominas: '@Url.Action("ObtenerDetalleNominasProcesadas", "Nomina")'
+                }
+            };
+        </script>
 
-    <script>
-        window.NominaConfig = {
-            urls: {
-                listarPeriodos: '@Url.Action("ListarPeriodos", "Nomina")',
-                procesarNomina: '@Url.Action("ProcesarNomina", "Nomina")',
-                obtenerDetallesNominas: '@Url.Action("ObtenerDetalleNominasProcesadas", "Nomina")'
-            }
-        };
-    </script>
+        <!-- ORDEN OBLIGATORIO -->
+        <script src="~/Scripts/nomina/nomina.config.js?v=@DateTime.Now.Ticks"></script>
+        <script src="~/Scripts/nomina/nomina.service.js?v=@DateTime.Now.Ticks"></script>
+        <script src="~/Scripts/nomina/nomina.alertas.js?v=@DateTime.Now.Ticks"></script>
+        <script src="~/Scripts/nomina/nomina.kpis.js?v=@DateTime.Now.Ticks"></script>
+        <script src="~/Scripts/nomina/nomina.validation.js?v=@DateTime.Now.Ticks"></script>
+        <script src="~/Scripts/nomina/nomina.ui.js?v=@DateTime.Now.Ticks"></script>
 
-    <!-- ORDEN OBLIGATORIO -->
-    <script src="~/Scripts/nomina/nomina.config.js?v=@DateTime.Now.Ticks"></script>
-    <script src="~/Scripts/nomina/nomina.service.js?v=@DateTime.Now.Ticks"></script>
-    <script src="~/Scripts/nomina/nomina.alertas.js?v=@DateTime.Now.Ticks"></script>
-    <script src="~/Scripts/nomina/nomina.kpis.js?v=@DateTime.Now.Ticks"></script>
-    <script src="~/Scripts/nomina/nomina.validation.js?v=@DateTime.Now.Ticks"></script>
-    <script src="~/Scripts/nomina/nomina.ui.js?v=@DateTime.Now.Ticks"></script>
-
-    <script>
-        $(function () {
-            NominaUI.init();
-        });
-    </script>
-}
+        <script>
+            $(function () {
+                NominaUI.init();
+            });
+        </script>
+    }
