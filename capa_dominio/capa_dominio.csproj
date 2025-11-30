@@ -52,6 +52,7 @@
     <Compile Include="Contrato.cs" />
     <Compile Include="ContratoDetalle.cs" />
     <Compile Include="dto\AdelantoSueldoDTO.cs" />
+    <Compile Include="dto\ContratoPorPeriodoDTO.cs" />
     <Compile Include="dto\NominasProcesadasDTO.cs" />
     <Compile Include="dto\PeriodoDTO.cs" />
     <Compile Include="dto\PersonaSinContratoDTO.cs" />
