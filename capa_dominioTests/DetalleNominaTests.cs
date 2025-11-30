@@ -384,7 +384,7 @@ namespace capa_dominio.Tests
             Console.WriteLine($"Asignación familiar: {detalle2.AsignacionFamiliar}");
             Console.WriteLine($"Bonos regulares: {detalle2.BonosRegulares}");
 
-            detalle2.CalcularRemuneracionBruta();
+            detalle2.calcularRemuneracionBruta();
 
             Console.WriteLine($"Remuneración bruta calculada: {detalle2.RemuneracionBruta}");
             Console.WriteLine($"Remuneración esperada: 1602.5");
@@ -410,7 +410,7 @@ namespace capa_dominio.Tests
             Console.WriteLine($"Asignación familiar: {detalle1.AsignacionFamiliar}");
             Console.WriteLine($"Bonos regulares: {detalle1.BonosRegulares}");
 
-            detalle1.CalcularRemuneracionBruta();
+            detalle1.calcularRemuneracionBruta();
 
             Console.WriteLine($"Remuneración bruta calculada: {detalle1.RemuneracionBruta}");
             Console.WriteLine($"Remuneración esperada: 1952.5");
@@ -436,7 +436,7 @@ namespace capa_dominio.Tests
             Console.WriteLine($"Asignación familiar: {detalle3.AsignacionFamiliar}");
             Console.WriteLine($"Bonos regulares: {detalle3.BonosRegulares}");
 
-            detalle3.CalcularRemuneracionBruta();
+            detalle3.calcularRemuneracionBruta();
 
             Console.WriteLine($"Remuneración bruta calculada: {detalle3.RemuneracionBruta}");
             Console.WriteLine($"Remuneración esperada: 1500");

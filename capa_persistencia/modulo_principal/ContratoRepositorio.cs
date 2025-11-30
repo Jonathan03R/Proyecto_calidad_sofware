@@ -356,51 +356,7 @@ namespace capa_persistencia.modulo_principal
             return resumen;
         }
 
-        public List<ContratoPorPeriodoDTO> ListarContratosPorPeriodo(int periodoId)
-        {
-            var lista = new List<ContratoPorPeriodoDTO>();
-            try
-            {
-                _accesoSQL.AbrirConexion();
-                var comando = _accesoSQL.ObtenerComandoDeProcedimiento("nomina.proc_listar_contratos_por_periodo");
-                comando.Parameters.AddWithValue("@periodo_id", periodoId);
 
-                using (var reader = comando.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var dto = new ContratoPorPeriodoDTO
-                        {
-                            ContratoId = reader.GetInt32(reader.GetOrdinal("contrato_id")),
-                            TrabajadorId = reader.IsDBNull(reader.GetOrdinal("trabajador_id")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("trabajador_id")),
-                            TrabajadorCodigo = reader["trabajador_codigo"]?.ToString(),
-                            PersonaNombre = reader["persona_nombre"]?.ToString(),
-                            PersonaApellido = reader["persona_apellido"]?.ToString(),
-                            ContratoSalario = reader.IsDBNull(reader.GetOrdinal("contrato_salario")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("contrato_salario")),
-                            TipoPensionId = reader.IsDBNull(reader.GetOrdinal("tipo_pension_id")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("tipo_pension_id")),
-                            TieneAsignacionFamiliar = reader.GetInt32(reader.GetOrdinal("tiene_asignacion_familiar")) == 1,
-                            CargoId = reader.IsDBNull(reader.GetOrdinal("cargo_id")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("cargo_id")),
-                            CargoNombre = reader["cargo_nombre"]?.ToString(),
-                            AreaId = reader.IsDBNull(reader.GetOrdinal("area_id")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("area_id")),
-                            AreaNombre = reader["area_nombre"]?.ToString(),
-                            EstadoContratoId = reader.GetInt32(reader.GetOrdinal("estado_contrato_id")),
-                            EstadoContratoNombre = reader["estado_contrato_nombre"]?.ToString(),
-                            PeriodoId = reader.GetInt32(reader.GetOrdinal("periodo_id")),
-                            PeriodoNombre = reader["periodo_nombre"]?.ToString(),
-                            PeriodoFechaInicio = reader.GetDateTime(reader.GetOrdinal("periodo_fecha_inicio")),
-                            PeriodoFechaFin = reader.GetDateTime(reader.GetOrdinal("periodo_fecha_fin")),
-                            Procesado = reader.GetInt32(reader.GetOrdinal("procesado")) == 1
-                        };
-                        lista.Add(dto);
-                    }
-                }
-            }
-            finally
-            {
-                _accesoSQL.CerrarConexion();
-            }
 
-            return lista;
-        }
     }
 }

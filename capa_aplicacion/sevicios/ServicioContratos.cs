@@ -214,23 +214,15 @@ namespace capa_aplicacion.Servicios
             }
         }
 
-        /// se le tiene que pasar por default el periodo actual antes de que carge la pantalla
-        public List<ContratoPorPeriodoDTO> ListarContratosPorPeriodo(int periodoId)
+        // CLASE CONTENEDORA
+        public class DatosNuevoContrato
         {
-            accesoSQLServer.AbrirConexion();
-            try
-            {
-                if (periodoId <= 0)
-                    throw new ArgumentException("El ID del periodo no es válido.");
-
-                return contratosRepo.ListarContratosPorPeriodo(periodoId);
-            }
-            finally
-            {
-                accesoSQLServer.CerrarConexion();
-            }
+            public Trabajador Trabajador { get; set; }
+            public List<Area> Areas { get; set; }
+            public List<Cargo> Cargos { get; set; }
+            public List<TipoPension> Pensiones { get; set; }
+            public List<TipoSalario> TiposSalario { get; set; }
+            public List<TipoJornada> TiposJornada { get; set; }
         }
-
-       
     }
 }
