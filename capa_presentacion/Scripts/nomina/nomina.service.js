@@ -1,11 +1,15 @@
-﻿// nomina.service.js
+﻿let procesoInterval = null;
+let procesoInicio = null;
+let procesoTotalEmpleados = 0;
+
+// nomina.service.js
 (function (global) {
     'use strict';
 
     const NominaService = {
         listarPeriodos: function () {
             return $.ajax({
-                url: global.NominaConfig.urls.listarPeriodos, // 👈 AQUÍ
+                url: global.NominaConfig.urls.listarPeriodos,
                 type: 'GET',
                 dataType: 'json'
             });

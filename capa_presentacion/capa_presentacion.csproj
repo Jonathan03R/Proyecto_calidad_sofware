@@ -497,6 +497,7 @@
     <Content Include="Content\css\_CardResumenContratos.css" />
     <Content Include="Content\css\_FiltrosContratos.css" />
     <Content Include="Content\css\_ModalNuevoContrato.css" />
+    <Content Include="Content\css\_ProcesandoNomina.css" />
     <Content Include="Content\css\_TablaContratos.css" />
     <Content Include="Content\img\icons\calendar.svg" />
     <Content Include="Content\img\icons\Contrato.svg" />
@@ -581,6 +582,7 @@
     <Content Include="Views\Nomina\_Kpis.cshtml" />
     <Content Include="Views\Nomina\_FormProcesarNomina.cshtml" />
     <Content Include="Views\Nomina\_ModalDetalleEmpleado.cshtml" />
+    <Content Include="Views\Nomina\_ProcesandoNomina.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

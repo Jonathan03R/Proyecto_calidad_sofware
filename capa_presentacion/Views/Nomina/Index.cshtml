@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="~/Content/css/nomina.css" />
     <link rel="stylesheet" href="~/Content/css/listavigente.css?v=@DateTime.Now.Ticks" />
     <link rel="stylesheet" href="~/Content/css/reporte.css?v=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/Content/css/_ProcesandoNomina.css" />
 }
 
 <div class="procesar-nomina">
@@ -33,6 +34,8 @@
 
 @Html.Partial("_ModalConfirmarProcesamiento")
 @Html.Partial("_Toast")
+@Html.Partial("_ProcesandoNomina")
+
 
 @section Scripts {
 
@@ -60,4 +63,10 @@
             NominaUI.init();
         });
     </script>
+    @*<script>
+        $(function () {
+            // ⛔ Solo para diseñar el modal — luego BORRAR
+            $('#modalProcesandoNomina').addClass('show');
+        });
+    </script>*@
 }
