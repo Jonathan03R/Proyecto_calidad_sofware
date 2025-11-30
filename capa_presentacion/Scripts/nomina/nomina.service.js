@@ -13,7 +13,7 @@
 
         obtenerEmpleadosVigentes: function (periodoId) {
             return $.ajax({
-                url: global.NominaConfig.urls.obtenerDetallesNominas,
+                url: global.NominaConfig.urls.obtenerEmpleadosVigentesPorPeriodo,
                 type: 'GET',
                 dataType: 'json',
                 data: { periodoId }

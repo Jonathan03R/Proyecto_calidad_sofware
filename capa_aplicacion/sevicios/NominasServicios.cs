@@ -20,6 +20,7 @@ namespace capa_aplicacion.servicios
         private readonly TiposHorasExtrasRepositorio _tiposHorasExtras;
         private readonly PeriodosRepositorio _periodos;
 
+
         public NominasServicios()
         {
             _conexion = new AccesoSQLServer();
@@ -273,5 +274,23 @@ namespace capa_aplicacion.servicios
             }
             return listaDetalles;
         }
+        public List<ContratoPorPeriodoDTO> ListarContratosPorPeriodo(int periodoId)
+        {
+            _conexion.AbrirConexion();
+            try
+            {
+                if (periodoId <= 0)
+                    throw new ArgumentException("El ID del periodo no es válido.");
+
+                // usar el repositorio que ya tienes declarado arriba:
+                return _contratos.ListarContratosPorPeriodo(periodoId);
+            }
+            finally
+            {
+                _conexion.CerrarConexion();
+            }
+        }
+
+
     }
 }

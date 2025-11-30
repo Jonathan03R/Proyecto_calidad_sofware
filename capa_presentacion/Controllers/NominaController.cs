@@ -37,19 +37,6 @@ public class NominaController : Controller
         return View(historial);
     }
 
-    // ========== PERIODOS =============
-    //public JsonResult ListarPeriodos()
-    //{
-    //    var srv = new ReporteService();
-    //    var lista = srv.ListarPeriodos();
-
-    //    return Json(lista.Select(x => new PeriodoDTO
-    //    {
-    //        Id = x.PeriodoId,
-    //        Nombre = x.PeriodoNombre
-    //    }), JsonRequestBehavior.AllowGet);
-    //}
-
     [HttpGet]
     public JsonResult ListarPeriodos()
     {
@@ -148,5 +135,38 @@ public class NominaController : Controller
         return Json(new { data = listaDetalles, consultaExitosa = accionExitosa, mensaje = mensajeRetorno },
             JsonRequestBehavior.AllowGet);
     }
+
+    [HttpGet]
+    public JsonResult ObtenerEmpleadosVigentesPorPeriodo(int periodoId)
+    {
+        bool accionExitosa;
+        string mensajeRetorno;
+        List<ContratoPorPeriodoDTO> listaContratos;
+
+        try
+        {
+            listaContratos = _servicio.ListarContratosPorPeriodo(periodoId);
+
+            accionExitosa = true;
+            mensajeRetorno = "";
+        }
+        catch (Exception e)
+        {
+            listaContratos = null;
+            accionExitosa = false;
+            mensajeRetorno = e.Message;
+        }
+
+        return Json(
+            new
+            {
+                data = listaContratos,
+                consultaExitosa = accionExitosa,
+                mensaje = mensajeRetorno
+            },
+            JsonRequestBehavior.AllowGet
+        );
+    }
+
 
 }
