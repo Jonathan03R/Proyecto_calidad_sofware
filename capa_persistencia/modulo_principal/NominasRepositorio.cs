@@ -143,6 +143,38 @@ namespace capa_persistencia.modulo_principal
 
             return nominas;
         }
+        public List<ResumenNominaDTO> ListarResumenNominas()
+        {
+            var lista = new List<ResumenNominaDTO>();
+
+            try
+            {
+                var comando = _accesoSQL.ObtenerComandoDeProcedimiento("nomina.proc_listar_resumen_nominas");
+
+                using (var reader = comando.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var resumen = new ResumenNominaDTO
+                        {
+                            PeriodoNombre = reader.GetString(reader.GetOrdinal("periodo_nombre")),
+                            NominaFechaProcesamiento = reader.GetDateTime(reader.GetOrdinal("nomina_fecha_procesamiento")),
+                            NominaTotalEmpleados = reader.GetInt32(reader.GetOrdinal("nomina_total_empleados")),
+                            NominaEstado = reader.GetString(reader.GetOrdinal("nomina_estado")),
+                            NominaTotalNeto = reader.GetDecimal(reader.GetOrdinal("nomina_total_neto"))
+                        };
+
+                        lista.Add(resumen);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw new Exception("Error al consultar el resumen de nóminas.");
+            }
+
+            return lista;
+        }
 
 
     }

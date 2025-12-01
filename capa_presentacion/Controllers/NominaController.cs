@@ -31,6 +31,7 @@ public class NominaController : Controller
         return View();
     }
 
+
     public ActionResult Historial()
     {
         var historial = _servicio.ListarDetallesNominasProcesadas();
@@ -168,5 +169,32 @@ public class NominaController : Controller
         );
     }
 
+    [HttpGet]
+    public JsonResult ListarResumenNominas()
+    {
+        bool ok;
+        string mensaje;
+        List<ResumenNominaDTO> lista;
+
+        try
+        {
+            lista = _servicio.ListarResumenNominas();
+            ok = true;
+            mensaje = "";
+        }
+        catch (Exception ex)
+        {
+            lista = null;
+            ok = false;
+            mensaje = ex.Message;
+        }
+
+        return Json(new
+        {
+            data = lista,
+            consultaExitosa = ok,
+            mensaje = mensaje
+        }, JsonRequestBehavior.AllowGet);
+    }
 
 }

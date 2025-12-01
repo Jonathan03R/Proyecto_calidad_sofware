@@ -118,7 +118,6 @@ namespace capa_aplicacion.servicios
         }
 
         // Nota: aquí ya NO pasamos fechaInicio/fechaFin sueltos.
-        // Nota: aquí ya NO pasamos fechaInicio/fechaFin sueltos.
         private bool ProcesarDetallesNomina(
             Nomina nomina,
             List<Trabajador> trabajadores,
@@ -290,6 +289,26 @@ namespace capa_aplicacion.servicios
                 _conexion.CerrarConexion();
             }
         }
+
+        public List<ResumenNominaDTO> ListarResumenNominas()
+        {
+            _conexion.AbrirConexion();
+
+            try
+            {
+                return _nominas.ListarResumenNominas();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                _conexion.CerrarConexion();
+            }
+        }
+
+
 
 
     }
