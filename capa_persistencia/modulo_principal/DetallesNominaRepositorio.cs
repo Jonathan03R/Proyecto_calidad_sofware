@@ -1,4 +1,5 @@
-﻿using capa_dominio.dto;
+﻿using capa_dominio;
+using capa_dominio.dto;
 using capa_persistencia.modulo_base;
 using System;
 using System.Collections.Generic;
@@ -164,5 +165,87 @@ namespace capa_persistencia.modulo_principal
                 throw new ExcepcionNomina("Error al obtener los detalles de las nóminas procesadas");
             }
         }
+
+        public bool ExisteDetalleParaContrato(int nominaId, int contratoId)
+        {
+            string sql = @"
+                select count(*) 
+                from nomina.detalle_nomina
+                where nomina_id = @nomina_id
+                and contrato_id = @contrato_id;
+            ";
+
+            var cmd = _accesoSQL.ObtenerComandoSQL(sql);
+            cmd.Parameters.AddWithValue("@nomina_id", nominaId);
+            cmd.Parameters.AddWithValue("@contrato_id", contratoId);
+
+            int count = Convert.ToInt32(cmd.ExecuteScalar());
+            return count > 0;
+        }
+
+
+        public List<DetalleNomina> ListarDetallesPorNomina(int nominaId)
+        {
+            var lista = new List<DetalleNomina>();
+
+            string sql = @"
+        select 
+            contrato_id,
+            remuneracion_bruta,
+            sueldo_basico,
+            asignacion_familiar,
+            horas_extras,
+            bonos_regulares,
+            otros_ingresos,
+            aporte_essalud,
+            aporte_onp,
+            descuento_afp,
+            descuento_tardanzas,
+            descuento_faltas,
+            descuento_adelantos,
+            otros_descuentos,
+            total_ingresos,
+            total_descuentos,
+            neto_pagar
+        from nomina.detalle_nomina
+        where nomina_id = @nomina_id;
+    ";
+
+            var cmd = _accesoSQL.ObtenerComandoSQL(sql);
+            cmd.Parameters.AddWithValue("@nomina_id", nominaId);
+
+            using (var dr = cmd.ExecuteReader())
+            {
+                while (dr.Read())
+                {
+                    var detalle = new DetalleNomina
+                    {
+                        Contrato = new Contrato { ContratoId = dr.GetInt32(0) },
+                        RemuneracionBruta = dr.GetDecimal(1),
+                        SueldoBasico = dr.GetDecimal(2),
+                        AsignacionFamiliar = dr.GetDecimal(3),
+                        HorasExtras = dr.GetDecimal(4),
+                        BonosRegulares = dr.GetDecimal(5),
+                        OtrosIngresos = dr.GetDecimal(6),
+                        AporteEssalud = dr.GetDecimal(7),
+                        AporteONP = dr.GetDecimal(8),
+                        DescuentoAFP = dr.GetDecimal(9),
+                        DescuentoTardanzas = dr.GetDecimal(10),
+                        DescuentoFaltas = dr.GetDecimal(11),
+                        DescuentoAdelantos = dr.GetDecimal(12),
+                        //OtrosDescuentos = dr.GetDecimal(13),
+                        TotalIngresos = dr.GetDecimal(14),
+                        TotalDescuentos = dr.GetDecimal(15),
+                        NetoPagar = dr.GetDecimal(16)
+                    };
+
+                    lista.Add(detalle);
+                }
+            }
+
+            return lista;
+        }
+
+
     }
 }

@@ -6,6 +6,7 @@ using capa_dominio.dto;
 using capa_persistencia.modulo_principal;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -31,7 +32,6 @@ public class NominaController : Controller
         return View();
     }
 
-
     public ActionResult Historial()
     {
         var historial = _servicio.ListarDetallesNominasProcesadas();
@@ -41,52 +41,83 @@ public class NominaController : Controller
     [HttpGet]
     public JsonResult ListarPeriodos()
     {
-        bool accionExitosa;
-        string mensajeRetorno;
-        List<Periodo> listaPeriodos = new List<Periodo>();
-
         try
         {
-            System.Diagnostics.Debug.WriteLine("[ListarPeriodos] Inicio de consulta");
+            var listaPeriodos = _periodoService.ListarAbiertos();
 
-            listaPeriodos = _periodoService.ListarAbiertos();
+            // DEBUG:
+            Debug.WriteLine("=== PERIODOS DEVUELTOS ===");
+            foreach (var p in listaPeriodos)
+            {
+                Debug.WriteLine($"ID: {p.PeriodoId} | Nombre: {p.PeriodoNombre} | Estado: {p.EstadoId}");
+            }
+            Debug.WriteLine("=== FIN ===");
 
-            System.Diagnostics.Debug.WriteLine("[ListarPeriodos] Cantidad de periodos obtenidos: " + (listaPeriodos?.Count ?? 0));
-
-            accionExitosa = true;
-            mensajeRetorno = "";
+            return Json(new { data = listaPeriodos, consultaExitosa = true, mensaje = "" }, JsonRequestBehavior.AllowGet);
         }
         catch (Exception e)
         {
-            System.Diagnostics.Debug.WriteLine("[ListarPeriodos] ERROR: " + e.Message);
-
-            listaPeriodos = null;
-            accionExitosa = false;
-            mensajeRetorno = e.Message;
+            return Json(new { data = (object)null, consultaExitosa = false, mensaje = e.Message }, JsonRequestBehavior.AllowGet);
         }
-
-        System.Diagnostics.Debug.WriteLine("[ListarPeriodos] Fin de consulta");
-
-        return Json(new
-        {
-            data = listaPeriodos,
-            consultaExitosa = accionExitosa,
-            mensaje = mensajeRetorno
-        }, JsonRequestBehavior.AllowGet);
     }
 
-    // ========== PROCESAR NÓMINA =============
+    // -----------------------
+    // INICIAR PROCESO -> crea cabecera y devuelve lista de pendientes con nombres
+    // -----------------------
     [HttpPost]
-    public JsonResult ProcesarNomina(int periodoId)
+    public JsonResult IniciarProceso(int periodoId)
     {
         try
         {
             if (periodoId <= 0)
                 return Json(new { ok = false, msg = "Periodo inválido" });
 
-            int anio = DateTime.Now.Year;
+            // ÚNICA llamada: crea nomina y obtiene pendientes dentro de una transacción
+            var inicio = _servicio.IniciarProcesoYObtenerPendientes(periodoId);
 
-            // Obtener tramos de impuesto a la renta
+            var nominaId = inicio.nominaId;
+            var pendientesIds = inicio.trabajadoresPendientes;
+
+            // Mapear información completa de los trabajadores
+            var contratos = _servicio.ObtenerContratosParaPeriodo(periodoId);
+            var trabajadores = contratos
+                .Where(c => c.TrabajadorId.HasValue && pendientesIds.Contains(c.TrabajadorId.Value))
+                .Select(c => new
+                {
+                    trabajadorId = c.TrabajadorId.Value,
+                    nombre = (c.PersonaNombre ?? string.Empty) + " " + (c.PersonaApellido ?? string.Empty),
+                    contratoId = c.ContratoId
+                })
+                .ToList();
+
+            return Json(new
+            {
+                ok = true,
+                nominaId,
+                totalPendientes = trabajadores.Count,
+                trabajadores
+            }, JsonRequestBehavior.AllowGet);
+        }
+        catch (Exception ex)
+        {
+            return Json(new { ok = false, msg = ex.Message });
+        }
+    }
+
+    // -----------------------
+    // PROCESAR TRABAJADOR -> llamado por frontend por cada trabajador
+    // -----------------------
+    [HttpPost]
+    public JsonResult ProcesarTrabajador(int nominaId, int trabajadorId, int periodoId)
+    {
+        try
+        {
+            if (nominaId <= 0 || trabajadorId <= 0 || periodoId <= 0)
+                return Json(new { ok = false, msg = "Parametros invalidos" });
+
+            // obtener tramos y parametros (se repite en cada llamada; si quieres optimizar,
+            // haz que el frontend obtenga estos y los envíe)
+            int anio = DateTime.Now.Year;
             var tramos = _repoImpuestoRenta.ObtenerTramosIRPorAnio(anio);
             if (tramos == null || tramos.Count == 0)
                 return Json(new { ok = false, msg = "No existen tramos IR." });
@@ -96,29 +127,42 @@ public class NominaController : Controller
 
             var parametroEssalud = parametros.FirstOrDefault(p => p.ParametroCodigo == "APORTE_ESSALUD");
             var parametroUIT = parametros.FirstOrDefault(p => p.ParametroCodigo.StartsWith("UIT"));
-            var parametroRMV = parametros.FirstOrDefault(p => p.ParametroCodigo == "RMV" || p.ParametroCodigo == "REMUNERACION_MINIMA_VITAL");
 
-            // Validar que existan los parámetros necesarios
-            if (parametroEssalud == null)
-                return Json(new { ok = false, msg = "Falta parámetro APORTE_ESSALUD." });
+            if (parametroEssalud == null || parametroUIT == null)
+                return Json(new { ok = false, msg = "Faltan parámetros ESSALUD o UIT." });
 
-            if (parametroUIT == null)
-                return Json(new { ok = false, msg = "Falta parámetro UIT." });
+            var resultado = _servicio.ProcesarTrabajadorEnNomina(nominaId, trabajadorId, periodoId, tramos, parametroEssalud, parametroUIT.ParametroValor);
 
-            // Calcular el monto fijo de asignación familiar (10% de RMV)
-            decimal valorRMV = parametroRMV?.ParametroValor ?? 1130m;
-            decimal montoAsignacionFamiliar = Math.Round(valorRMV * 0.10m, 2); // S/ 113 en 2025
+            return Json(new
+            {
+                ok = resultado.ok,
+                trabajadorId = trabajadorId,
+                mensaje = resultado.mensaje,
+            });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { ok = false, trabajadorId, msg = ex.Message });
+        }
+    }
 
-            // Llamar al servicio con todos los parámetros
-            _servicio.ProcesarNominaPorPeriodo(
-                periodoId,
-                tramos,
-                parametroEssalud,
-                parametroUIT.ParametroValor,
-                montoAsignacionFamiliar  // ✅ Pasar el MONTO FIJO (S/ 113)
-            );
+    // -----------------------
+    // CERRAR PROCESO -> marca estado final de nómina y actualiza periodo
+    // acepta huboErrores opcional; si no se envía, calcula por pendientes
+    // -----------------------
+    [HttpPost]
+    public JsonResult CerrarProceso(int nominaId, int periodoId, bool? huboErrores, bool cancelado = false)
+    {
+        Debug.WriteLine($"[CerrarProceso] INICIO - NominaId: {nominaId}, PeriodoId: {periodoId}, HuboErrores: {huboErrores}, Cancelado:{cancelado}");
 
-            return Json(new { ok = true, msg = "Nómina procesada correctamente." });
+        try
+        {
+            if (nominaId <= 0 || periodoId <= 0)
+                return Json(new { ok = false, msg = "Parametros invalidos" });
+
+            _servicio.CerrarNominaYActualizarPeriodo(nominaId, periodoId, huboErrores, cancelado);
+
+            return Json(new { ok = true, msg = cancelado ? "Proceso cancelado" : "Proceso finalizado" });
         }
         catch (Exception ex)
         {
@@ -126,94 +170,71 @@ public class NominaController : Controller
         }
     }
 
-    // ========== DETALLES PROCESADOS =============
+    // ========== DETALLES y RESUMEN ==========
     [HttpGet]
     public JsonResult ObtenerDetalleNominasProcesadas(int? periodoId)
     {
-        bool accionExitosa;
-        string mensajeRetorno;
-        List<NominasProcesadasDTO> listaDetalles;
-
         try
         {
-            listaDetalles = _servicio.ListarDetallesNominasProcesadas(
-                trabajadorId: null,
-                nominaId: null,
-                periodoId: periodoId,
-                estadoNomina: null
-            );
-            accionExitosa = true;
-            mensajeRetorno = "";
+            var listaDetalles = _servicio.ListarDetallesNominasProcesadas(null, null, periodoId, null);
+            return Json(new { data = listaDetalles, consultaExitosa = true, mensaje = "" }, JsonRequestBehavior.AllowGet);
         }
         catch (Exception e)
         {
-            listaDetalles = null;
-            accionExitosa = false;
-            mensajeRetorno = e.Message;
+            return Json(new { data = (object)null, consultaExitosa = false, mensaje = e.Message }, JsonRequestBehavior.AllowGet);
         }
+    }
 
-        return Json(new { data = listaDetalles, consultaExitosa = accionExitosa, mensaje = mensajeRetorno },
-            JsonRequestBehavior.AllowGet);
+    [HttpGet]
+    public JsonResult ObtenerResumenProcesoNomina(int periodoId)
+    {
+        try
+        {
+            if (periodoId <= 0) return Json(new { ok = false, msg = "periodo inválido" }, JsonRequestBehavior.AllowGet);
+
+            var contratos = _servicio.ObtenerContratosParaPeriodo(periodoId);
+            var trabajadores = contratos
+                .Where(c => c.TrabajadorId.HasValue)
+                .Select(c => new
+                {
+                    trabajadorId = c.TrabajadorId.Value,
+                    nombre = (c.PersonaNombre ?? string.Empty) + " " + (c.PersonaApellido ?? string.Empty)
+                })
+                .ToList();
+
+            return Json(new { ok = true, totalEmpleados = trabajadores.Count, trabajadores }, JsonRequestBehavior.AllowGet);
+        }
+        catch (Exception ex)
+        {
+            return Json(new { ok = false, msg = ex.Message }, JsonRequestBehavior.AllowGet);
+        }
     }
 
     [HttpGet]
     public JsonResult ObtenerEmpleadosVigentesPorPeriodo(int periodoId)
     {
-        bool accionExitosa;
-        string mensajeRetorno;
-        List<ContratoPorPeriodoDTO> listaContratos;
-
         try
         {
-            listaContratos = _servicio.ListarContratosPorPeriodo(periodoId);
-
-            accionExitosa = true;
-            mensajeRetorno = "";
+            var listaContratos = _servicio.ListarContratosPorPeriodo(periodoId);
+            return Json(new { data = listaContratos, consultaExitosa = true, mensaje = "" }, JsonRequestBehavior.AllowGet);
         }
         catch (Exception e)
         {
-            listaContratos = null;
-            accionExitosa = false;
-            mensajeRetorno = e.Message;
+            return Json(new { data = (object)null, consultaExitosa = false, mensaje = e.Message }, JsonRequestBehavior.AllowGet);
         }
-
-        return Json(
-            new
-            {
-                data = listaContratos,
-                consultaExitosa = accionExitosa,
-                mensaje = mensajeRetorno
-            },
-            JsonRequestBehavior.AllowGet
-        );
     }
 
     [HttpGet]
     public JsonResult ListarResumenNominas()
     {
-        bool ok;
-        string mensaje;
-        List<ResumenNominaDTO> lista;
-
         try
         {
-            lista = _servicio.ListarResumenNominas();
-            ok = true;
-            mensaje = "";
+            var lista = _servicio.ListarResumenNominas();
+            return Json(new { data = lista, consultaExitosa = true, mensaje = "" }, JsonRequestBehavior.AllowGet);
         }
         catch (Exception ex)
         {
-            lista = null;
-            ok = false;
-            mensaje = ex.Message;
+            return Json(new { data = (object)null, consultaExitosa = false, mensaje = ex.Message }, JsonRequestBehavior.AllowGet);
         }
-
-        return Json(new
-        {
-            data = lista,
-            consultaExitosa = ok,
-            mensaje = mensaje
-        }, JsonRequestBehavior.AllowGet);
     }
-
 }
