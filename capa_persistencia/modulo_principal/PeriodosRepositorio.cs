@@ -1,9 +1,10 @@
-﻿using System;
+﻿using capa_dominio;
+using capa_persistencia.modulo_base;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using capa_dominio;
-using capa_persistencia.modulo_base;
+using System.Linq;
 
 namespace capa_persistencia.modulo_principal
 {
@@ -79,7 +80,15 @@ namespace capa_persistencia.modulo_principal
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al obtener periodo con ID {periodoId}.", ex);
+                var detalle =
+                    $"[PERIODOS] Error al obtener periodo ID {periodoId}\n" +
+                    $"Mensaje: {ex.Message}\n" +
+                    $"Inner: {ex.InnerException?.Message}\n" +
+                    $"StackTrace Inner:\n{ex.InnerException?.StackTrace}";
+
+                System.Diagnostics.Debug.WriteLine(detalle);
+
+                throw new Exception($"Error al obtener periodo con ID {periodoId}: {ex.Message}", ex);
             }
 
             return null;
@@ -150,36 +159,54 @@ namespace capa_persistencia.modulo_principal
         }
 
 
-        /// obtener periodos con estado id = 3  (procesados)
+        /// obtener periodos con estado id = 2  (procesados) 5 con incidencia.
         public List<Periodo> ListarPeriodosAbiertos()
         {
             var lista = new List<Periodo>();
+
+            lista.AddRange(ObtenerPeriodosPorEstado(2));
+            lista.AddRange(ObtenerPeriodosPorEstado(5));
+
+            return lista
+                .OrderByDescending(p => p.PeriodoFechaInicio)
+                .ToList();
+        }
+
+        private List<Periodo> ObtenerPeriodosPorEstado(int estadoId)
+        {
+            var resultado = new List<Periodo>();
+
             try
             {
-                SqlCommand cmd = _conexion.ObtenerComandoDeProcedimiento("proc_listar_periodos");
-                cmd.Parameters.AddWithValue("@estado_id", 2); // Estado anulado
-                using (SqlDataReader dr = cmd.ExecuteReader())
+                using (var cmd = _conexion.ObtenerComandoDeProcedimiento("proc_listar_periodos"))
                 {
-                    while (dr.Read())
+                    cmd.Parameters.AddWithValue("@estado_id", estadoId);
+
+                    using (var dr = cmd.ExecuteReader())
                     {
-                        lista.Add(new Periodo
+                        while (dr.Read())
                         {
-                            PeriodoId = Convert.ToInt32(dr["periodo_id"]),
-                            PeriodoNombre = dr["periodo_nombre"].ToString(),
-                            PeriodoFechaInicio = Convert.ToDateTime(dr["periodo_fecha_inicio"]),
-                            PeriodoFechaFin = Convert.ToDateTime(dr["periodo_fecha_fin"]),
-                            EstadoId = Convert.ToInt32(dr["periodo_estado_id"]),
-                            EstadoNombre = dr["estado_nombre"].ToString(),
-                        });
+                            resultado.Add(new Periodo
+                            {
+                                PeriodoId = Convert.ToInt32(dr["periodo_id"]),
+                                PeriodoNombre = dr["periodo_nombre"].ToString(),
+                                PeriodoFechaInicio = Convert.ToDateTime(dr["periodo_fecha_inicio"]),
+                                PeriodoFechaFin = Convert.ToDateTime(dr["periodo_fecha_fin"]),
+                                EstadoId = Convert.ToInt32(dr["periodo_estado_id"]),
+                                EstadoNombre = dr["estado_nombre"].ToString()
+                            });
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al listar períodos anulados de nómina.", ex);
+                throw new Exception("Error al listar períodos.", ex);
             }
-            return lista;
+
+            return resultado;
         }
+
 
 
         /// actualizar estado del periodo a 3 (procesado)
@@ -201,6 +228,31 @@ namespace capa_persistencia.modulo_principal
             catch (Exception ex)
             {
                 throw new Exception("error al procesar el periodo.", ex);
+            }
+        }
+
+
+        public void ActualizarEstadoPeriodo(int periodoId, int nuevoEstadoId)
+        {
+            try
+            {
+                const string sql = @"
+                    update nomina.periodos
+                    set periodo_estado_id = @estado_id
+                    where periodo_id = @periodo_id;
+                ";
+
+                using (var cmd = _conexion.ObtenerComandoSQL(sql))
+                {
+                    cmd.Parameters.AddWithValue("@estado_id", nuevoEstadoId);
+                    cmd.Parameters.AddWithValue("@periodo_id", periodoId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("error al actualizar el estado del periodo.", ex);
             }
         }
     }

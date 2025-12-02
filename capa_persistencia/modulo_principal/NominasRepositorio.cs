@@ -81,8 +81,9 @@ namespace capa_persistencia.modulo_principal
 
                 cmd.ExecuteNonQuery();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                //System.Diagnostics.Debug.WriteLine($"Error actualizando estado de nómina ID {nominaId}: {ex.Message}");
                 throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_ACTUALIZACION);
             }
         }

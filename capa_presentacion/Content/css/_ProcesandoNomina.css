@@ -141,3 +141,21 @@
     border-radius: 4px;
     cursor: pointer;
 }
+
+
+    .modal-overlay.show {
+        display: flex;
+    }
+
+.modal-card {
+    background: #fff;
+    padding: 18px;
+    border-radius: 8px;
+    width: 380px;
+    max-width: 94%;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+}
+
+#modalConfirmarProcesamiento {
+    z-index: 10001 !important;
+}

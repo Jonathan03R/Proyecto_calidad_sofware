@@ -43,12 +43,15 @@
         window.NominaConfig = {
             urls: {
                 listarPeriodos: '@Url.Action("ListarPeriodos", "Nomina")',
-                procesarNomina: '@Url.Action("ProcesarNomina", "Nomina")',
-                @*obtenerDetallesNominas: '@Url.Action("ObtenerDetalleNominasProcesadas", "Nomina")'*@
-                obtenerEmpleadosVigentesPorPeriodo: '@Url.Action("ObtenerEmpleadosVigentesPorPeriodo", "Nomina")'
+                iniciarProceso: '@Url.Action("IniciarProceso", "Nomina")',
+                procesarTrabajador: '@Url.Action("ProcesarTrabajador", "Nomina")',
+                cerrarProceso: '@Url.Action("CerrarProceso", "Nomina")',
+                obtenerEmpleadosVigentesPorPeriodo: '@Url.Action("ObtenerEmpleadosVigentesPorPeriodo", "Nomina")',
+                obtenerResumenProcesoNomina: '@Url.Action("ObtenerResumenProcesoNomina", "Nomina")'
             }
         };
     </script>
+
 
     <!-- ORDEN OBLIGATORIO -->
     <script src="~/Scripts/nomina/nomina.config.js?v=@DateTime.Now.Ticks"></script>
@@ -60,13 +63,18 @@
 
     <script>
         $(function () {
-            NominaUI.init();
+            if (window.NominaUI && typeof NominaUI.init === 'function') {
+                NominaUI.init();
+            } else {
+                console.error('NominaUI no disponible. Revisa errores previos en consola.');
+            }
         });
+
     </script>
     @*<script>
-        $(function () {
-            // ⛔ Solo para diseñar el modal — luego BORRAR
-            $('#modalProcesandoNomina').addClass('show');
-        });
-    </script>*@
+            $(function () {
+                // ⛔ Solo para diseñar el modal — luego BORRAR
+                $('#modalProcesandoNomina').addClass('show');
+            });
+        </script>*@
 }
