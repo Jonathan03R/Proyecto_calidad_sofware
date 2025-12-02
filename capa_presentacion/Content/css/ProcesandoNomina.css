@@ -159,3 +159,42 @@
 #modalConfirmarProcesamiento {
     z-index: 10001 !important;
 }
+
+
+.badge {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-activo {
+    background: #16a34a20;
+    color: #16a34a;
+    border: 1px solid #16a34a50;
+}
+
+.badge-suspendido {
+    background: #facc1520;
+    color: #d97706;
+    border: 1px solid #fbbf2440;
+}
+
+.badge-cesado {
+    background: #dc262620;
+    color: #dc2626;
+    border: 1px solid #dc262640;
+}
+
+.badge-af {
+    background: #3b82f620;
+    color: #2563eb;
+    border: 1px solid #3b82f650;
+}
+
+.badge-af-no {
+    background: #6b728020;
+    color: #6b7280;
+    border: 1px solid #6b728040;
+}

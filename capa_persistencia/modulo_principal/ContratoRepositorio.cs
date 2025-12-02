@@ -391,7 +391,7 @@ namespace capa_persistencia.modulo_principal
                                 ? (int?)null
                                 : reader.GetInt32(reader.GetOrdinal("tipo_pension_id")),
                             TieneAsignacionFamiliar =
-                                reader.GetInt32(reader.GetOrdinal("tiene_asignacion_familiar")) == 1,
+                                reader.GetInt32(reader.GetOrdinal("tiene_asignacion_familiar")) == 0,
                             CargoId = reader.IsDBNull(reader.GetOrdinal("cargo_id"))
                                 ? (int?)null
                                 : reader.GetInt32(reader.GetOrdinal("cargo_id")),

@@ -147,7 +147,91 @@ const NominaUI = (function () {
         });
     }
     function renderizarTabla(data) { elements.tblVigentesBody.empty(); if (!data || !data.length) return mostrarEstadoVacio(); data.forEach((item, idx) => elements.tblVigentesBody.append(crearFilaEmpleado(item, idx))); }
-    function crearFilaEmpleado(item) { /* copia tu template actual */ return `<tr><td>${escapeHtml(item.PersonaNombre || '')}</td><td>${escapeHtml(item.PersonaApellido || '')}</td><td>S/ ${formatearMoneda(item.ContratoSalario || 0)}</td></tr>`; }
+    function crearFilaEmpleado(item) {
+        const nombre = escapeHtml(item.PersonaNombre || '');
+        const apellido = escapeHtml(item.PersonaApellido || '');
+        const salario = item.ContratoSalario
+            ? `S/ ${formatearMoneda(item.ContratoSalario)}`
+            : '—';
+
+        const tipoPension = obtenerTipoPension(item.TipoPensionId);
+
+        const asignacion = item.TieneAsignacionFamiliar
+            ? '<span class="badge af">Sí</span>'
+            : '<span class="badge af-no">No</span>';
+
+        const cargo = escapeHtml(item.CargoNombre || '—');
+        const area = escapeHtml(item.AreaNombre || '—');
+
+        const estadoContrato = renderEstadoContrato(item.EstadoContratoId, item.EstadoContratoNombre);
+
+        // ====== PROCESADO ======
+        const procesado = item.Procesado === true || item.Procesado === 1;
+
+        const estadoProcesado = procesado
+            ? `<span class="estado-badge estado-procesado">✔ procesado</span>`
+            : `<span class="estado-badge estado-no-procesado">⚠ pendiente</span>`;
+
+        const fechaInicio = formatearFecha(item.PeriodoFechaInicio);
+        const fechaFin = item.PeriodoFechaFin ? formatearFecha(item.PeriodoFechaFin) : '—';
+
+        return `
+        <tr>
+            <td>${nombre}</td>
+            <td>${apellido}</td>
+            <td class="t-center">${salario}</td>
+            <td class="t-center">${tipoPension}</td>
+            <td class="t-center">${asignacion}</td>
+            <td class="t-center">${cargo}</td>
+            <td class="t-center">${area}</td>
+            <td class="t-center">${estadoContrato}</td>
+            <td class="t-center">${fechaInicio}</td>
+            <td class="t-center">${fechaFin}</td>
+            <td class="t-center">${estadoProcesado}</td>
+        </tr>`;
+    }
+
+    function obtenerTipoPension(id) {
+        const map = {
+            1: 'AFP Integra',
+            2: 'AFP Prima',
+            3: 'AFP Hábitat',
+            4: 'AFP Profuturo',
+            5: 'ONP'
+        };
+        return map[id] || '—';
+    }
+
+    function renderEstadoContrato(estadoId, nombre) {
+        const n = escapeHtml(nombre || '—');
+        switch (estadoId) {
+            case 1: return `<span class="badge badge-activo">${n}</span>`;
+            case 2: return `<span class="badge badge-suspendido">${n}</span>`;
+            case 3: return `<span class="badge badge-cesado">${n}</span>`;
+            default: return `<span class="badge badge-desconocido">${n}</span>`;
+        }
+    }
+
+    function formatearFecha(fecha) {
+        if (!fecha) return '—';
+
+        try {
+            // soporta formato /Date(1234567890000)/
+            const match = /\/Date\((\d+)\)\//.exec(fecha);
+            const ms = match ? parseInt(match[1]) : Date.parse(fecha);
+
+            if (isNaN(ms)) return fecha;
+
+            const d = new Date(ms);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+
+            return `${yyyy}-${mm}-${dd}`;
+        } catch {
+            return fecha;
+        }
+    }
     function mostrarCargando() { elements.tblVigentesBody.html(`<tr><td colspan="12">Cargando...</td></tr>`); }
     function mostrarEstadoVacio() { elements.tblVigentesBody.html(`<tr><td colspan="12">Seleccione un período</td></tr>`); }
     function limpiarTablaVigentes() { datosEmpleadosVigentes = []; datosFiltrados = []; mostrarEstadoVacio(); }
@@ -402,12 +486,13 @@ const NominaUI = (function () {
         }
 
         const periodoNombre = elements.ddlPeriodo.find('option:selected').text() || '—';
-        const total = datosEmpleadosVigentes?.length || 0;
+
+        // SOLO los pendientes
+        const pendientes = datosEmpleadosVigentes.filter(e => !e.Procesado).length;
 
         elements.modalConfirmar.find('.periodo-nombre').text(periodoNombre);
-        elements.modalConfirmar.find('.total-empleados').text(total);
+        elements.modalConfirmar.find('.total-empleados').text(pendientes);
 
-        // mostrar modal de confirmación
         elements.modalConfirmar.addClass('show');
 
         elements.modalConfirmar
@@ -416,15 +501,12 @@ const NominaUI = (function () {
             .on('click', function (e) {
                 e.preventDefault();
 
-                // cerrar modal pequeño
                 elements.modalConfirmar.removeClass('show');
 
-                // *** ABRIR MODAL DE PROCESAMIENTO ***
-                iniciarModalProcesando(periodoNombre, total);
+                iniciarModalProcesando(periodoNombre, pendientes);
 
                 $(this).prop('disabled', true);
 
-                // ahora sí procesa
                 procesarNomina().finally(() => {
                     $(this).prop('disabled', false);
                 });
