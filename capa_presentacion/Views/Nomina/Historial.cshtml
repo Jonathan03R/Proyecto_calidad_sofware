@@ -1,13 +1,7 @@
-﻿@*@model IEnumerable<capa_presentacion.Models.ViewModels.NominaHistorialItemVM>*@
-@model IEnumerable<capa_dominio.dto.NominasProcesadasDTO>
-
-
-@{
+﻿@{
     ViewBag.Title = "Historial de Nóminas";
     ViewBag.PageTitle = "Historial de Nóminas";
-    ViewBag.PageSubtitle = "Revisa y gestiona las ejecuciones anteriores de nómina";
-    ViewBag.PagePeriodo = "";
-    var tipos = new[] { "Mensual", "Quincenal" };
+    ViewBag.PageSubtitle = "Revisa y gestiona ejecuciones anteriores de nómina";
 }
 
 @section Head {
@@ -15,34 +9,54 @@
 }
 
 <div class="historial-wrapper">
-    <div class="historial">
-        <table class="tabla-historial" id="tblHistorial">
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var p in Model)
-                    {
-                        <tr data-periodo="@p.PeriodoId"
-                            data-tipo="@p.EstadoContratoNombre"
-                            data-estado="@p.NominaEstado">
 
-                            @* agrega aquí tus celdas reales *@
+    <!-- FILTROS -->
+    <div class="filtros">
 
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="7" class="t-center">Sin datos</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <div class="filtro-item">
+            <label>Periodo</label>
+            <select id="filtroPeriodo" class="form-control"></select>
+        </div>
+
+        <div class="filtro-item">
+            <label>Estado</label>
+            <select id="filtroEstado" class="form-control">
+                <option value="">Todos</option>
+                <option value="Exitoso">Exitoso</option>
+                <option value="Incompleto">Incompleto</option>
+                <option value="Procesando">Procesando</option>
+            </select>
+        </div>
+
+        <div class="filtro-item">
+            <label>Buscar</label>
+            <input id="filtroBuscar" type="text" class="form-control" placeholder="Buscar...">
+        </div>
+
+        <button id="btnFiltrar" class="btn btn-primary">Filtrar</button>
     </div>
+
+    <!-- TABLA -->
+    <table class="tabla-historial">
+        <thead>
+            <tr>
+                <th>Periodo</th>
+                <th>Estado</th>
+                <th>Empleados</th>
+                <th>Bruto</th>
+                <th>Descuentos</th>
+                <th>Neto</th>
+                <th>Procesado</th>
+            </tr>
+        </thead>
+        <tbody id="tblHistorialBody"></tbody>
+    </table>
+
+    <!-- PAGINACIÓN -->
+    <div id="paginacion" class="pagination-container"></div>
+
 </div>
 
-
 @section Scripts {
-    <script src="~/Scripts/nomina/nomina.historial.js"></script>
+    <script src="~/Scripts/nomina/nomina.historial.js?v=@DateTime.Now.Ticks"></script>
 }

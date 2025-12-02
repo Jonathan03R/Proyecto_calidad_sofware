@@ -273,5 +273,20 @@ namespace capa_aplicacion.servicios
             }
             return listaDetalles;
         }
+
+
+        public PaginacionResultadoDTO<NominasProcesadasDTO> ListarHistorialPaginado(
+            int page,
+            int pageSize,
+            int? periodoId,
+            string estadoNomina,
+            string buscar
+        )
+        {
+            _conexion.AbrirConexion();
+            var data = _nominas.ListarHistorialPaginado(page, pageSize, periodoId, estadoNomina, buscar);
+            _conexion.CerrarConexion();
+            return data;
+        }
     }
 }

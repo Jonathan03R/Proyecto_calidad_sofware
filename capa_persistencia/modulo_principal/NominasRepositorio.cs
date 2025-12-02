@@ -111,7 +111,6 @@ namespace capa_persistencia.modulo_principal
                                 PeriodoId = reader.GetInt32(reader.GetOrdinal("periodo_id"))
                             },
 
-                            // 👇 Aquí evitamos reventar si nomina_fecha viene NULL
                             NominaFecha = reader.IsDBNull(reader.GetOrdinal("nomina_fecha"))
                                 ? DateTime.MinValue
                                 : reader.GetDateTime(reader.GetOrdinal("nomina_fecha")),
@@ -144,6 +143,55 @@ namespace capa_persistencia.modulo_principal
             return nominas;
         }
 
+        public PaginacionResultadoDTO<NominasProcesadasDTO> ListarHistorialPaginado(
+            int page,
+            int pageSize,
+            int? periodoId = null,
+            string estadoNomina = null,
+            string buscar = null
+        )
+        {
+            var resultado = new PaginacionResultadoDTO<NominasProcesadasDTO>();
+            var lista = new List<NominasProcesadasDTO>();
 
+            try
+            {
+                var cmd = _accesoSQL.ObtenerComandoDeProcedimiento(
+                    "nomina.proc_listar_nominas_historial_paginado"
+                );
+
+                cmd.Parameters.AddWithValue("@page", page);
+                cmd.Parameters.AddWithValue("@pageSize", pageSize);
+                cmd.Parameters.AddWithValue("@periodoId", (object)periodoId ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@estadoNomina", (object)estadoNomina ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@buscar", (object)buscar ?? DBNull.Value);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        resultado.Total = reader.GetInt32(reader.GetOrdinal("total"));
+                        resultado.TotalPages = reader.GetInt32(reader.GetOrdinal("totalPages"));
+                        resultado.Page = reader.GetInt32(reader.GetOrdinal("page"));
+                        resultado.PageSize = reader.GetInt32(reader.GetOrdinal("pageSize"));
+
+                        var json = reader.GetString(reader.GetOrdinal("rowsJson"));
+                        lista = System.Text.Json.JsonSerializer
+                            .Deserialize<List<NominasProcesadasDTO>>(json);
+                    }
+                }
+
+                resultado.Items = lista;
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"[ListarHistorialPaginado] Error: {e.Message}"
+                );
+                throw;
+            }
+
+            return resultado;
+        }
     }
 }

@@ -37,19 +37,42 @@ public class NominaController : Controller
         return View(historial);
     }
 
+    [HttpGet]
+    public JsonResult ListarHistorialPaginado(
+    int page = 1,
+    int pageSize = 10,
+    int? periodoId = null,
+    string estado = null,
+    string buscar = null)
+    {
+        try
+        {
+            var data = _servicio.ListarHistorialPaginado(
+                page,
+                pageSize,
+                periodoId,
+                estado,
+                buscar
+            );
+
+            return Json(new { ok = true, data }, JsonRequestBehavior.AllowGet);
+        }
+        catch (Exception ex)
+        {
+            return Json(new { ok = false, msg = ex.Message }, JsonRequestBehavior.AllowGet);
+        }
+    }
+
+    [HttpGet]
+    public JsonResult ListarPeriodosHistorial()
+    {
+        var periodos = _periodoService.ListarProcesados();
+        return Json(new { ok = true, data = periodos }, JsonRequestBehavior.AllowGet);
+    }
+
+
+
     // ========== PERIODOS =============
-    //public JsonResult ListarPeriodos()
-    //{
-    //    var srv = new ReporteService();
-    //    var lista = srv.ListarPeriodos();
-
-    //    return Json(lista.Select(x => new PeriodoDTO
-    //    {
-    //        Id = x.PeriodoId,
-    //        Nombre = x.PeriodoNombre
-    //    }), JsonRequestBehavior.AllowGet);
-    //}
-
     [HttpGet]
     public JsonResult ListarPeriodos()
     {
@@ -132,7 +155,7 @@ public class NominaController : Controller
             listaDetalles = _servicio.ListarDetallesNominasProcesadas(
                 trabajadorId: null,
                 nominaId: null,
-                periodoId: periodoId,      // 👈 aquí usas el periodo
+                periodoId: periodoId,
                 estadoNomina: null
             );
             accionExitosa = true;

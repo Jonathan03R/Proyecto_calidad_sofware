@@ -539,6 +539,7 @@
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\nomina\nomina.alertas.js" />
     <Content Include="Scripts\nomina\nomina.config.js" />
+    <Content Include="Scripts\nomina\nomina.historial.js" />
     <Content Include="Scripts\nomina\nomina.kpis.js" />
     <Content Include="Scripts\nomina\nomina.service.js" />
     <Content Include="Scripts\nomina\nomina.ui.js" />

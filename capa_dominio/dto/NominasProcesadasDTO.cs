@@ -6,6 +6,38 @@ using System.Threading.Tasks;
 
 namespace capa_dominio.dto
 {
+
+    public class PaginacionResultadoDTO<T>
+    {
+        public int Total { get; set; }
+        public int TotalPages { get; set; }
+        public int Page { get; set; }
+        public int PageSize { get; set; }
+        public List<T> Items { get; set; }
+    }
+
+    public class NominasProcesadasPaginadoDTO
+    {
+        public int NominaId { get; set; }
+        public int PeriodoId { get; set; }
+        public string PeriodoNombre { get; set; }
+
+        public DateTime PeriodoFechaInicio { get; set; }
+        public DateTime PeriodoFechaFin { get; set; }
+
+        public DateTime NominaFecha { get; set; }
+        public DateTime NominaFechaProcesamiento { get; set; }
+
+        public string NominaEstado { get; set; }
+        public int NominaTotalEmpleados { get; set; }
+        public decimal NominaTotalBruto { get; set; }
+        public decimal NominaTotalDescuentos { get; set; }
+        public decimal NominaTotalNeto { get; set; }
+
+        public string NominaObservaciones { get; set; }
+    }
+
+
     public class NominasProcesadasDTO
     {
         public int DetalleNominaId { get; set; }
