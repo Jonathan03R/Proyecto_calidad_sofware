@@ -192,15 +192,9 @@ namespace capa_dominio
 
                 if (pagoDiaExtras > 0)
                     totalExtras += pagoDiaExtras;
-
-                //System.Diagnostics.Trace.WriteLine(
-                //    $"HORAS_EXTRAS -> Fecha:{h.Fecha:yyyy-MM-dd} | HorasExtras:{h.HorasExtras:F2} | PagoDia:{pagoDiaExtras:F2}"
-                //);
             }
 
             horasExtras = Math.Round(totalExtras, 2);
-
-            //System.Diagnostics.Trace.WriteLine($"HORAS_EXTRAS -> Total general: {horasExtras:F2}");
         }
 
 
@@ -214,30 +208,18 @@ namespace capa_dominio
         // ASIGNACIÓN FAMILIAR
         // =========================
 
-        public decimal CalculoAsignacionFamiliar(bool tieneRemuneracionFamiliar)
+        public decimal CalculoAsignacionFamiliar(bool tieneHijos)
         {
-            System.Diagnostics.Trace.WriteLine("CALCULANDO ASIGNACION FAMILIAR...");
-            System.Diagnostics.Trace.WriteLine(
-                $"ASIG_FAM -> Trabajador:{Contrato?.Trabajador?.TrabajadorId} | " +
-                $"TieneFam:{tieneRemuneracionFamiliar} | Salario:{Contrato?.ContratoSalario:F2}"
-            );
-
-            if (!tieneRemuneracionFamiliar)
+            if (!tieneHijos)
             {
                 asignacionFamiliar = 0;
-                System.Diagnostics.Trace.WriteLine("ASIG_FAM -> Monto: 0.00");
-
                 return 0;
             }
 
-            asignacionFamiliar = Math.Round(Contrato.ContratoSalario * 0.10m, 2);
-
-            System.Diagnostics.Trace.WriteLine(
-                $"ASIG_FAM -> Monto:{asignacionFamiliar:F2}"
-            );
-
+            asignacionFamiliar = 113m;
             return asignacionFamiliar;
         }
+
 
 
         // =========================
