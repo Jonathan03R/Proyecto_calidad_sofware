@@ -275,29 +275,29 @@
 
 
     // ---------- Cargar Tipos de Salario (nuevo / editar) ----------
-    function cargarTiposSalarios(selector, selectedId) {
-        const $select = $(selector || '#nc_tipo_salario_id');
-        $select.empty().append('<option value="">Seleccione</option>');
+    //function cargarTiposSalarios(selector, selectedId) {
+    //    const $select = $(selector || '#nc_tipo_salario_id');
+    //    $select.empty().append('<option value="">Seleccione</option>');
 
-        $.getJSON(URLS.obtenerTiposSalarios)
-            .done(function (data) {
-                (data || []).forEach(function (t) {
-                    $select.append(
-                        $('<option>', {
-                            value: t.id,
-                            text: t.nombre
-                        })
-                    );
-                });
+    //    $.getJSON(URLS.obtenerTiposSalarios)
+    //        .done(function (data) {
+    //            (data || []).forEach(function (t) {
+    //                $select.append(
+    //                    $('<option>', {
+    //                        value: t.id,
+    //                        text: t.nombre
+    //                    })
+    //                );
+    //            });
 
-                if (selectedId != null) {
-                    $select.val(String(selectedId));
-                }
-            })
-            .fail(function () {
-                console.error('Error al cargar tipos de salario');
-            });
-    }
+    //            if (selectedId != null) {
+    //                $select.val(String(selectedId));
+    //            }
+    //        })
+    //        .fail(function () {
+    //            console.error('Error al cargar tipos de salario');
+    //        });
+    //}
 
 
     // ---------- Cargar jornadas ----------
@@ -527,7 +527,7 @@
         cargarAreas('#ec_area_id', item.AreaId);
         cargarPensiones('#ec_tipo_pension_id', item.TipoPensionId);
         cargarCargos('#ec_cargo_id', item.CargoId);
-        cargarTiposSalarios('#ec_tipo_salario_id', item.TipoSalarioId);
+        /*cargarTiposSalarios('#ec_tipo_salario_id', item.TipoSalarioId);*/
         cargarJornadas('#ec_tipo_jornada_id', item.TipoJornadaId);
 
         openModal('modal-editar-contrato');
@@ -552,7 +552,7 @@
             CargoId: $('#ec_cargo_id').val() ? Number($('#ec_cargo_id').val()) : null,
             AreaId: $('#ec_area_id').val() ? Number($('#ec_area_id').val()) : null,
             TipoPensionId: $('#ec_tipo_pension_id').val() ? Number($('#ec_tipo_pension_id').val()) : null,
-            TipoSalarioId: $('#ec_tipo_salario_id').val() ? Number($('#ec_tipo_salario_id').val()) : null,
+            TipoSalarioId: 2,
             TipoJornadaId: $('#ec_tipo_jornada_id').val() ? Number($('#ec_tipo_jornada_id').val()) : null,
 
             FechaInicio: $('#ec_fecha_inicio').val(),

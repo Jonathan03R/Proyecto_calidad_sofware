@@ -14,6 +14,7 @@ namespace capa_dominio.dto
         public decimal OtrosIngresos { get; set; }
         public string SistemaPensionAplicado { get; set; }
         public decimal AporteEssalud { get; set; }
+        public decimal BaseImponibleEsSalud { get; set; }
         public decimal AporteOnp { get; set; }
         public decimal DescuentoAfp { get; set; }
         public decimal RemuneracionAcumuladaAnual { get; set; }
@@ -43,6 +44,7 @@ namespace capa_dominio.dto
             decimal otrosIngresos,
             string sistemaPensionAplicado,
             decimal aporteEssalud,
+            decimal baseImponibleEsSalud,
             decimal aporteOnp,
             decimal descuentoAfp,
             decimal remuneracionAcumuladaAnual,
@@ -71,6 +73,7 @@ namespace capa_dominio.dto
             OtrosIngresos = otrosIngresos;
             SistemaPensionAplicado = sistemaPensionAplicado ?? throw new ArgumentNullException(nameof(sistemaPensionAplicado));
             AporteEssalud = aporteEssalud;
+            BaseImponibleEsSalud = baseImponibleEsSalud;
             AporteOnp = aporteOnp;
             DescuentoAfp = descuentoAfp;
             RemuneracionAcumuladaAnual = remuneracionAcumuladaAnual;
@@ -96,6 +99,7 @@ namespace capa_dominio.dto
             SistemaPensionAplicado = "SIN_CALCULAR";
             TieneErrores = true;
             MensajeError = mensajeError;
+            BaseImponibleEsSalud = 0;
         }
 
     }

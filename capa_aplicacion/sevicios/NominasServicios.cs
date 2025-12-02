@@ -20,7 +20,6 @@ namespace capa_aplicacion.servicios
         private readonly TiposHorasExtrasRepositorio _tiposHorasExtras;
         private readonly PeriodosRepositorio _periodos;
 
-
         public NominasServicios()
         {
             _conexion = new AccesoSQLServer();
@@ -34,7 +33,15 @@ namespace capa_aplicacion.servicios
             _periodos = new PeriodosRepositorio(_conexion);
         }
 
-        public void ProcesarNominaPorPeriodo(int? periodoId, List<ImpuestoRentaTramo> tramos, Parametro parametroEssalud, decimal valorUIT)
+        /// <summary>
+        /// Procesa la nómina para un periodo determinado
+        /// </summary>
+        public void ProcesarNominaPorPeriodo(
+            int? periodoId,
+            List<ImpuestoRentaTramo> tramos,
+            Parametro parametroEssalud,
+            decimal valorUIT,
+            decimal montoAsignacionFamiliar)
         {
             if (periodoId == null)
                 throw new ArgumentException("Selecciona un periodo.");
@@ -46,8 +53,7 @@ namespace capa_aplicacion.servicios
                 throw new InvalidOperationException($"El periodo {periodoId.Value} no existe.");
 
             if (periodo.EsProcesado())
-                throw new InvalidOperationException("el periodo ya está procesado.");
-
+                throw new InvalidOperationException("El periodo ya está procesado.");
 
             var nomina = new Nomina
             {
@@ -59,13 +65,18 @@ namespace capa_aplicacion.servicios
             {
                 ValidarExistenciaNomina(periodo.PeriodoId);
                 var trabajadores = ObtenerTrabajadoresConContratoActivo();
-                //var tiposHorasExtras = _tiposHorasExtras.ObtenerTiposHorasExtrasActivos();
 
                 var nominaId = CrearCabeceraNomina(periodo.PeriodoId);
                 nomina.NominaId = nominaId;
                 nomina.NominaEstado = "Procesando";
 
-                var huboErrores = ProcesarDetallesNomina(nomina, trabajadores, tramos, parametroEssalud, valorUIT);
+                var huboErrores = ProcesarDetallesNomina(
+                    nomina,
+                    trabajadores,
+                    tramos,
+                    parametroEssalud,
+                    valorUIT,
+                    montoAsignacionFamiliar);
 
                 FinalizarNomina(nomina, huboErrores);
                 _periodos.ProcesarPeriodo(periodo.PeriodoId);
@@ -79,7 +90,6 @@ namespace capa_aplicacion.servicios
                     _nominas.ActualizarEstado(nomina.NominaId, "Con Errores");
                 throw;
             }
-
         }
 
         private void ValidarExistenciaNomina(int periodoId)
@@ -117,13 +127,26 @@ namespace capa_aplicacion.servicios
             return _nominas.IniciarProcesoPorPeriodo(periodoId, "Nómina generada automáticamente");
         }
 
-        // Nota: aquí ya NO pasamos fechaInicio/fechaFin sueltos.
+        /// <summary>
+        /// ✅ ORDEN CORRECTO DE CÁLCULOS:
+        /// 1. Asignación familiar
+        /// 2. Horas extras
+        /// 3. Descuento tardanzas
+        /// 4. Descuento faltas (excluye sábado y domingo)
+        /// 5. Bonos regulares (después de tardanzas y faltas)
+        /// 6. Remuneración bruta
+        /// 7. Sistema de pensiones
+        /// 8. Essalud (sobre base imponible: sueldo + asig. familiar)
+        /// 9. Renta quinta
+        /// 10. Totales
+        /// </summary>
         private bool ProcesarDetallesNomina(
             Nomina nomina,
             List<Trabajador> trabajadores,
             List<ImpuestoRentaTramo> tramos,
             Parametro parametroEssalud,
-            decimal valorUIT)
+            decimal valorUIT,
+            decimal montoAsignacionFamiliar)
         {
             bool algunError = false;
             var tiposHorasExtras = _tiposHorasExtras.ObtenerTiposHorasExtrasActivos();
@@ -138,7 +161,6 @@ namespace capa_aplicacion.servicios
                     if (contrato == null)
                         continue;
 
-                    // SIEMPRE tomar las fechas del objeto nomina.Periodo
                     var horasTrabajadas = _horasTrabajadas.ObtenerHorasTrabajadas(
                         contrato.ContratoId,
                         nomina.Periodo.PeriodoFechaInicio,
@@ -156,33 +178,43 @@ namespace capa_aplicacion.servicios
                         OtrosIngresos = 0
                     };
 
-                    // 1) Asignación familiar
-                    detalle.CalculoAsignacionFamiliar(trabajador.TieneDerechoAsignacionFamiliar());
+                    // ✅ ORDEN CORRECTO:
 
-                    // 2) Horas extras
+                    // 1. Asignación familiar
+                    detalle.CalculoAsignacionFamiliar(
+                        trabajador.TieneDerechoAsignacionFamiliar(),
+                        montoAsignacionFamiliar);
+
+                    // 2. Horas extras
                     detalle.CalcularPagoTotalHorasExtras();
 
-                    // 3) Descuentos por tardanzas y faltas
+                    // 3. Descuento tardanzas
                     detalle.CalcularDescuentoTardanzas();
+
+                    // 4. Descuento faltas (excluye sábado y domingo)
                     detalle.CalcularDescuentoFaltas();
 
-                    // 4) Remuneración bruta
+                    // 5. Bonos regulares (después de tardanzas y faltas)
+                    detalle.CalculoBonosRegulares();
+
+                    // 6. Remuneración bruta
                     detalle.CalcularRemuneracionBruta();
-                    // 5) Pensiones
+
+                    // 7. Sistema de pensiones
                     detalle.CalcularSistemaPensiones();
 
-                    // 6) Essalud
+                    // 8. Essalud (sobre base imponible)
                     detalle.CalcularAporteEssalud(parametroEssalud);
 
-                    // 7) Renta de quinta
+                    // 9. Renta quinta
                     detalle.CalcularImpuestoRentaQuinta(tramos, valorUIT);
 
-                    // 8) Totales
+                    // 10. Totales
                     detalle.CalcularTotales();
 
+                    // ✅ CREAR DTO CON NUEVO PARÁMETRO
                     var dto = new DetalleNominaDTO(
                         nomina.NominaId,
-                        //trabajador.TrabajadorId, 
                         contrato.ContratoId,
                         detalle.RemuneracionBruta,
                         detalle.SueldoBasico,
@@ -192,6 +224,7 @@ namespace capa_aplicacion.servicios
                         detalle.OtrosIngresos,
                         detalle.SistemasPensionAplicado ?? "No definido",
                         detalle.AporteEssalud,
+                        detalle.BaseImponibleEsSalud, // ✅ NUEVO
                         detalle.AporteONP,
                         detalle.DescuentoAFP,
                         0,      // remuneración acumulada anual
@@ -218,7 +251,6 @@ namespace capa_aplicacion.servicios
                 {
                     algunError = true;
 
-                    // ⚠ Aquí registramos el error sin romper el constructor del DTO
                     var dtoError = new DetalleNominaDTO(
                         nomina.NominaId,
                         trabajador.Contrato.ContratoId,
@@ -226,13 +258,11 @@ namespace capa_aplicacion.servicios
                     );
 
                     _detalleNomina.InsertarDetalleNomina(dtoError);
-
                 }
             }
 
             return algunError;
         }
-
 
         private void FinalizarNomina(Nomina nomina, bool huboErrores)
         {
@@ -273,6 +303,7 @@ namespace capa_aplicacion.servicios
             }
             return listaDetalles;
         }
+
         public List<ContratoPorPeriodoDTO> ListarContratosPorPeriodo(int periodoId)
         {
             _conexion.AbrirConexion();
@@ -281,7 +312,6 @@ namespace capa_aplicacion.servicios
                 if (periodoId <= 0)
                     throw new ArgumentException("El ID del periodo no es válido.");
 
-                // usar el repositorio que ya tienes declarado arriba:
                 return _contratos.ListarContratosPorPeriodo(periodoId);
             }
             finally
@@ -307,9 +337,5 @@ namespace capa_aplicacion.servicios
                 _conexion.CerrarConexion();
             }
         }
-
-
-
-
     }
 }

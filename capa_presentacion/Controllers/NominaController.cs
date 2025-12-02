@@ -23,7 +23,7 @@ public class NominaController : Controller
         _repoImpuestoRenta = new ImpuestoRenta();
         _repoParametros = new Parametros();
         _reporteService = new ReporteService();
-        _periodoService = new PeriodoService(); 
+        _periodoService = new PeriodoService();
     }
 
     public ActionResult Index()
@@ -86,18 +86,37 @@ public class NominaController : Controller
 
             int anio = DateTime.Now.Year;
 
+            // Obtener tramos de impuesto a la renta
             var tramos = _repoImpuestoRenta.ObtenerTramosIRPorAnio(anio);
             if (tramos == null || tramos.Count == 0)
                 return Json(new { ok = false, msg = "No existen tramos IR." });
 
+            // Obtener parámetros vigentes
             var parametros = _repoParametros.ListarParametrosVigentesParaNomina();
+
             var parametroEssalud = parametros.FirstOrDefault(p => p.ParametroCodigo == "APORTE_ESSALUD");
             var parametroUIT = parametros.FirstOrDefault(p => p.ParametroCodigo.StartsWith("UIT"));
+            var parametroRMV = parametros.FirstOrDefault(p => p.ParametroCodigo == "RMV" || p.ParametroCodigo == "REMUNERACION_MINIMA_VITAL");
 
-            if (parametroEssalud == null || parametroUIT == null)
-                return Json(new { ok = false, msg = "Faltan parámetros ESSALUD o UIT." });
+            // Validar que existan los parámetros necesarios
+            if (parametroEssalud == null)
+                return Json(new { ok = false, msg = "Falta parámetro APORTE_ESSALUD." });
 
-            _servicio.ProcesarNominaPorPeriodo(periodoId, tramos, parametroEssalud, parametroUIT.ParametroValor);
+            if (parametroUIT == null)
+                return Json(new { ok = false, msg = "Falta parámetro UIT." });
+
+            // Calcular el monto fijo de asignación familiar (10% de RMV)
+            decimal valorRMV = parametroRMV?.ParametroValor ?? 1130m;
+            decimal montoAsignacionFamiliar = Math.Round(valorRMV * 0.10m, 2); // S/ 113 en 2025
+
+            // Llamar al servicio con todos los parámetros
+            _servicio.ProcesarNominaPorPeriodo(
+                periodoId,
+                tramos,
+                parametroEssalud,
+                parametroUIT.ParametroValor,
+                montoAsignacionFamiliar  // ✅ Pasar el MONTO FIJO (S/ 113)
+            );
 
             return Json(new { ok = true, msg = "Nómina procesada correctamente." });
         }
@@ -120,7 +139,7 @@ public class NominaController : Controller
             listaDetalles = _servicio.ListarDetallesNominasProcesadas(
                 trabajadorId: null,
                 nominaId: null,
-                periodoId: periodoId,      // 👈 aquí usas el periodo
+                periodoId: periodoId,
                 estadoNomina: null
             );
             accionExitosa = true;
