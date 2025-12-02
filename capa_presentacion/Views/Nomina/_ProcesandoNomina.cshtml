@@ -1,0 +1,59 @@
+﻿<div id="modalProcesandoNomina" class="modal-overlay">
+    <div class="modal-proceso">
+        <div class="modal-header">
+            <div class="modal-header-title">
+                <h4 id="proc-titulo-periodo">Procesando Nómina - </h4>
+                @*<small id="proc-subtitulo-periodo"> Período actual</small>*@
+            </div>
+            <button type="button" class="btn-cancelar-proceso" id="btnCancelarProceso">
+                Cancelar Proceso
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <div class="progreso-general">
+                <div class="progreso-labels">
+                    <span>Progreso General</span>
+                    <span id="proc-porcentaje-texto">0 de 0 empleados (0%)</span>
+                </div>
+                <div class="progreso-barra">
+                    <div id="proc-barra" class="progreso-barra-fill" style="width:0%;"></div>
+                </div>
+                <div class="progreso-tiempos">
+                    <span id="proc-tiempo-transcurrido">Tiempo transcurrido: 0s</span>
+                    <span id="proc-tiempo-restante">Tiempo estimado restante: -</span>
+                </div>
+            </div>
+
+            <div class="progreso-estado">
+                <h5>Estado Actual del Proceso</h5>
+                <ul id="proc-log-lista" class="progreso-log">
+                    <!-- aquí se agregan los mensajes -->
+                </ul>
+            </div>
+
+            <div class="progreso-kpis">
+                <div class="kpi-card kpi-procesados">
+                    <div id="proc-kpi-procesados" class="kpi-numero">0</div>
+                    <div class="kpi-label">Procesados</div>
+                </div>
+                <div class="kpi-card kpi-advertencias">
+                    <div id="proc-kpi-advertencias" class="kpi-numero">0</div>
+                    <div class="kpi-label">Con Advertencias</div>
+                </div>
+                <div class="kpi-card kpi-errores">
+                    <div id="proc-kpi-errores" class="kpi-numero">0</div>
+                    <div class="kpi-label">Con Errores</div>
+                </div>
+                <div class="kpi-card kpi-pendientes">
+                    <div id="proc-kpi-pendientes" class="kpi-numero">0</div>
+                    <div class="kpi-label">Pendientes</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

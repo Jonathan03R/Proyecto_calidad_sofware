@@ -52,6 +52,7 @@
     <Compile Include="Contrato.cs" />
     <Compile Include="ContratoDetalle.cs" />
     <Compile Include="dto\AdelantoSueldoDTO.cs" />
+    <Compile Include="dto\ContratoPorPeriodoDTO.cs" />
     <Compile Include="dto\NominasProcesadasDTO.cs" />
     <Compile Include="dto\PeriodoDTO.cs" />
     <Compile Include="dto\PersonaSinContratoDTO.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="dto\DetalleNominaDTO.cs" />
     <Compile Include="dto\ImpuestoRentaAcumuladoDTO.cs" />
     <Compile Include="dto\ResumenContratosDTO.cs" />
+    <Compile Include="dto\ResumenNominaDTO.cs" />
     <Compile Include="dto\TrabajadorProcesableDTO.cs" />
     <Compile Include="EstadoContrato.cs" />
     <Compile Include="Falta.cs" />

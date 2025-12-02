@@ -20,6 +20,7 @@ namespace capa_aplicacion.servicios
         private readonly TiposHorasExtrasRepositorio _tiposHorasExtras;
         private readonly PeriodosRepositorio _periodos;
 
+
         public NominasServicios()
         {
             _conexion = new AccesoSQLServer();
@@ -116,7 +117,6 @@ namespace capa_aplicacion.servicios
             return _nominas.IniciarProcesoPorPeriodo(periodoId, "Nómina generada automáticamente");
         }
 
-        // Nota: aquí ya NO pasamos fechaInicio/fechaFin sueltos.
         // Nota: aquí ya NO pasamos fechaInicio/fechaFin sueltos.
         private bool ProcesarDetallesNomina(
             Nomina nomina,
@@ -273,5 +273,43 @@ namespace capa_aplicacion.servicios
             }
             return listaDetalles;
         }
+        public List<ContratoPorPeriodoDTO> ListarContratosPorPeriodo(int periodoId)
+        {
+            _conexion.AbrirConexion();
+            try
+            {
+                if (periodoId <= 0)
+                    throw new ArgumentException("El ID del periodo no es válido.");
+
+                // usar el repositorio que ya tienes declarado arriba:
+                return _contratos.ListarContratosPorPeriodo(periodoId);
+            }
+            finally
+            {
+                _conexion.CerrarConexion();
+            }
+        }
+
+        public List<ResumenNominaDTO> ListarResumenNominas()
+        {
+            _conexion.AbrirConexion();
+
+            try
+            {
+                return _nominas.ListarResumenNominas();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                _conexion.CerrarConexion();
+            }
+        }
+
+
+
+
     }
 }
