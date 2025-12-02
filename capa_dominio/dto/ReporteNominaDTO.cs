@@ -28,7 +28,6 @@ namespace capa_dominio.dto
         public decimal TotalHaberesBruto { get; set; }
         public decimal TotalHaberes { get; set; }
         public decimal AporteSistemaPension { get; set; }
-        public decimal DescuentoComision { get; set; }
         public decimal RetencionImpuestoRenta { get; set; }
         public decimal AporteEsSalud { get; set; }
         public decimal BaseImponibleEsSalud { get; set; }

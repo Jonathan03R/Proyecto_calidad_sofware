@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Security.Cryptography;
 
 namespace capa_dominio
 {
@@ -31,7 +33,6 @@ namespace capa_dominio
         private decimal totalIngresos;
         private decimal totalDescuentos;
         private decimal netoPagar;
-        private decimal baseImponibleEsSalud; // ✅ Nueva propiedad
 
         public int DetalleNominaId { get => detalleNominaId; set => detalleNominaId = value; }
         public Nomina Nomina { get => nomina; set => nomina = value; }
@@ -58,11 +59,12 @@ namespace capa_dominio
         public decimal TotalIngresos { get => totalIngresos; set => totalIngresos = value; }
         public decimal TotalDescuentos { get => totalDescuentos; set => totalDescuentos = value; }
         public decimal NetoPagar { get => netoPagar; set => netoPagar = value; }
-        public decimal BaseImponibleEsSalud { get => baseImponibleEsSalud; set => baseImponibleEsSalud = value; } // ✅ Nueva
+
+
 
         /// <summary>
-        /// Bono por cumplimiento: S/ 50 si no tiene faltas ni tardanzas
-        /// IMPORTANTE: Ejecutar DESPUÉS de calcular faltas y tardanzas
+        /// regla: si el trabajador tiene 0 faltas y 0 tardanzas en el periodo,
+        /// recibe un bono fijo de 50 soles por cumplimiento.
         /// </summary>
         public void CalculoBonosRegulares()
         {
@@ -94,10 +96,14 @@ namespace capa_dominio
             DescuentoTardanzas = Math.Round(totalDescuento, 2, MidpointRounding.AwayFromZero);
         }
 
+
         /// <summary>
-        /// ✅ CORREGIDO: Descuento por faltas
-        /// - Excluye SÁBADOS Y DOMINGOS (no solo domingos)
-        /// - Solo días laborables cuentan como falta
+        /// regla de negocio para faltas:
+        /// se considera falta cada día laboral del periodo en el que el trabajador:
+        /// 1) no tiene ningún registro de asistencia
+        /// 2) o tiene registros pero con 0 horas normales trabajadas
+        /// los domingos no cuentan como día laboral
+        /// el descuento final es (total_faltas * sueldo_por_dia)
         /// </summary>
         public void CalcularDescuentoFaltas()
         {
@@ -106,14 +112,17 @@ namespace capa_dominio
 
             if (HorasTrabajadas == null)
             {
-                System.Diagnostics.Trace.WriteLine("Las horas han llegado NULL");
+                System.Diagnostics.Trace.WriteLine(
+                $"las horas han llegado NULL"
+            );
                 DescuentoFaltas = 0;
                 return;
             }
 
+            //decimal jornadaDiaria = Contrato.ObtenerJornadaDiaria();
             decimal sueldoPorDia = Contrato.ObtenerSueldoPorDia();
 
-            // Agrupar por fecha de trabajo
+            // agrupar por fecha de trabajo
             var diasTrabajados = HorasTrabajadas
                 .GroupBy(h => h.Fecha.Date)
                 .ToDictionary(g => g.Key, g => g.ToList());
@@ -121,18 +130,17 @@ namespace capa_dominio
             DateTime fechaInicio = nomina.Periodo.PeriodoFechaInicio;
             DateTime fechaFin = nomina.Periodo.PeriodoFechaFin;
 
-            // ✅ CORREGIDO: Excluir SÁBADOS Y DOMINGOS
             var diasPeriodo = Enumerable
                 .Range(0, (fechaFin.Date - fechaInicio.Date).Days + 1)
                 .Select(offset => fechaInicio.Date.AddDays(offset))
-                .Where(d => d.DayOfWeek != DayOfWeek.Saturday && d.DayOfWeek != DayOfWeek.Sunday) // ✅ Excluir sábado y domingo
+                .Where(d => d.DayOfWeek != DayOfWeek.Sunday)
                 .ToList();
 
             int totalFaltas = 0;
 
             foreach (var dia in diasPeriodo)
             {
-                // Si no trabajó ese día → falta
+                // si no trabajó ese día → falta
                 if (!diasTrabajados.ContainsKey(dia))
                 {
                     totalFaltas++;
@@ -146,18 +154,21 @@ namespace capa_dominio
                 }
             }
 
-            DescuentoFaltas = Math.Round(totalFaltas * sueldoPorDia, 2, MidpointRounding.AwayFromZero);
+            DescuentoFaltas = Math.Round(totalFaltas * sueldoPorDia, 2 , MidpointRounding.AwayFromZero);
 
             System.Diagnostics.Trace.WriteLine(
                 $"DESCUENTO FALTAS -> Faltas:{totalFaltas} | SueldoDia:{sueldoPorDia:F2} | TotalDescuento:{DescuentoFaltas:F2}"
             );
         }
 
-        /// <summary>
-        /// Cálculo de horas extras
-        /// </summary>
+        // =========================
+        // HORAS EXTRAS
+        // =========================
+
         public void CalcularPagoTotalHorasExtras()
         {
+            //System.Diagnostics.Trace.WriteLine("CALCULANDO HORAS EXTRAS...");
+
             if (Contrato == null)
                 throw new InvalidOperationException("El contrato no puede ser nulo en el detalle de nómina.");
 
@@ -176,56 +187,66 @@ namespace capa_dominio
             {
                 h.Contrato = Contrato;
                 h.TiposHorasExtras = TiposHorasExtras;
+
                 decimal pagoDiaExtras = h.CalcularPagoHorasExtras();
 
                 if (pagoDiaExtras > 0)
                     totalExtras += pagoDiaExtras;
+
+                //System.Diagnostics.Trace.WriteLine(
+                //    $"HORAS_EXTRAS -> Fecha:{h.Fecha:yyyy-MM-dd} | HorasExtras:{h.HorasExtras:F2} | PagoDia:{pagoDiaExtras:F2}"
+                //);
             }
 
             horasExtras = Math.Round(totalExtras, 2);
+
+            //System.Diagnostics.Trace.WriteLine($"HORAS_EXTRAS -> Total general: {horasExtras:F2}");
         }
 
-        /// <summary>
-        /// RN-01: Remuneración Bruta = Sueldo Básico + Asignación Familiar + Horas Extras + Bonos Regulares
-        /// </summary>
-        public void CalcularRemuneracionBruta()
+
+        public void CalcularRemuneracionBruta() 
         {
-            remuneracionBruta = sueldoBasico + horasExtras + asignacionFamiliar + bonosRegulares;
+            remuneracionBruta = contrato.ContratoSalario + horasExtras + asignacionFamiliar + bonosRegulares;
         }
 
-        /// <summary>
-        /// RN-10: Asignación Familiar
-        /// Monto fijo de S/ 113 (10% de RMV 2025) si tiene hijos
-        /// </summary>
-        public decimal CalculoAsignacionFamiliar(bool tieneHijos, decimal montoAsignacionFamiliar)
+
+        // =========================
+        // ASIGNACIÓN FAMILIAR
+        // =========================
+
+        public decimal CalculoAsignacionFamiliar(bool tieneRemuneracionFamiliar)
         {
             System.Diagnostics.Trace.WriteLine("CALCULANDO ASIGNACION FAMILIAR...");
             System.Diagnostics.Trace.WriteLine(
                 $"ASIG_FAM -> Trabajador:{Contrato?.Trabajador?.TrabajadorId} | " +
-                $"TieneHijos:{tieneHijos} | MontoFijo:{montoAsignacionFamiliar:F2}"
+                $"TieneFam:{tieneRemuneracionFamiliar} | Salario:{Contrato?.ContratoSalario:F2}"
             );
 
-            if (!tieneHijos)
+            if (!tieneRemuneracionFamiliar)
             {
                 asignacionFamiliar = 0;
-                System.Diagnostics.Trace.WriteLine("ASIG_FAM -> No tiene hijos -> Monto: 0.00");
+                System.Diagnostics.Trace.WriteLine("ASIG_FAM -> Monto: 0.00");
+
                 return 0;
             }
 
-            asignacionFamiliar = montoAsignacionFamiliar;
+            asignacionFamiliar = Math.Round(Contrato.ContratoSalario * 0.10m, 2);
 
             System.Diagnostics.Trace.WriteLine(
-                $"ASIG_FAM -> Tiene hijos -> Monto:{asignacionFamiliar:F2}"
+                $"ASIG_FAM -> Monto:{asignacionFamiliar:F2}"
             );
 
             return asignacionFamiliar;
         }
 
-        /// <summary>
-        /// Sistema de pensiones: ONP (13%) o AFP (10% + comisión)
-        /// </summary>
+
+        // =========================
+        // SISTEMA DE PENSIONES
+        // =========================
+
         public void CalcularSistemaPensiones()
         {
+           
             if (Contrato == null || Contrato.TipoPension == null)
                 throw new InvalidOperationException("El contrato o el tipo de pensión no están definidos.");
 
@@ -237,16 +258,14 @@ namespace capa_dominio
 
             switch (tipoPensionId)
             {
-                case 1: // ONP
-                    // RN-03: Aporte ONP = Remuneración Bruta × 0.13
+                case 1:
                     aporteONP = Math.Round(remuneracionBruta * 0.13m, 2, MidpointRounding.AwayFromZero);
                     break;
 
                 case 2:
                 case 3:
                 case 4:
-                case 5: // AFP
-                    // RN-04: Descuento AFP = (RB × 0.10) + (RB × % Comisión Flujo)
+                case 5:
                     var aporteObligatorio = remuneracionBruta * 0.10m;
 
                     var comision = 0m;
@@ -256,7 +275,7 @@ namespace capa_dominio
                     descuentoAFP = Math.Round(aporteObligatorio + comision, 2, MidpointRounding.AwayFromZero);
                     break;
 
-                case 6: // Sin sistema de pensión
+                case 6:
                     break;
 
                 default:
@@ -264,38 +283,32 @@ namespace capa_dominio
             }
         }
 
-        /// <summary>
-        /// ✅ CORREGIDO: Aporte Essalud
-        /// RN-02: 9% sobre la BASE IMPONIBLE (Sueldo Básico + Asignación Familiar)
-        /// NO sobre la remuneración bruta total
-        /// </summary>
+        // =========================
+        // ESSALUD
+        // =========================
+
         public void CalcularAporteEssalud(Parametro parametroEssalud)
         {
             if (parametroEssalud == null)
                 throw new ArgumentNullException(nameof(parametroEssalud));
-
             decimal porcentaje = parametroEssalud.ParametroValor;
-
-            // ✅ CORREGIDO: Base imponible = Sueldo Básico + Asignación Familiar
-            baseImponibleEsSalud = sueldoBasico + asignacionFamiliar;
-            decimal calculoBruto = baseImponibleEsSalud * porcentaje;
+            decimal calculoBruto = remuneracionBruta * porcentaje;
 
             System.Diagnostics.Trace.WriteLine(
-                $"ESSALUD -> SueldoBasico: {sueldoBasico:F2} | AsigFam: {asignacionFamiliar:F2} | " +
-                $"BaseImponible: {baseImponibleEsSalud:F2} | Porcentaje: {porcentaje:P2} | CalculoBruto: {calculoBruto:F2}"
+                $"ESSALUD -> RemuneracionBruta: {remuneracionBruta:F2} | Porcentaje: {porcentaje:P2} | CalculoBruto: {calculoBruto:F2}"
             );
-
             aporteEssalud = Math.Round(calculoBruto, 2, MidpointRounding.AwayFromZero);
 
             System.Diagnostics.Trace.WriteLine(
                 $"ESSALUD -> AporteEssalud (redondeado): {aporteEssalud:F2}"
             );
+
         }
 
-        /// <summary>
-        /// RN-05: Impuesto a la Renta de Quinta Categoría
-        /// Cálculo acumulativo anual con tabla progresiva
-        /// </summary>
+        // =========================
+        // RENTA DE QUINTA
+        // =========================
+
         public void CalcularImpuestoRentaQuinta(List<ImpuestoRentaTramo> tramos, decimal valorUIT)
         {
             if (tramos == null || tramos.Count == 0)
@@ -340,24 +353,35 @@ namespace capa_dominio
 
             impuestoRentaMensual = Math.Round(impuestoAnual / 12, 2, MidpointRounding.AwayFromZero);
         }
+        //public void CalcularDescuentoAdelantos()
+        //{
+        //    if (AdelantoSueldo == null)
+        //    {
+        //        descuentoAdelantos = 0;
+        //        return;
+        //    }
 
-        /// <summary>
-        /// Cálculo de totales finales
-        /// Ingresos, descuentos y neto a pagar
-        /// </summary>
+        //    descuentoAdelantos = Math.Round(AdelantoSueldo.Monto, 2, MidpointRounding.AwayFromZero);
+
+        //    System.Diagnostics.Trace.WriteLine(
+        //        $"ADELANTOS -> Monto: {descuentoAdelantos:F2}"
+        //    );
+        //}
+
+        // =========================
+        // TOTALES
+        // =========================
+
         public void CalcularTotales()
         {
-            // Ingresos = Remuneración bruta + otros ingresos
+            // Ingresos = Remuneración bruta + otros ingresos (si aplica)
             totalIngresos = remuneracionBruta + otrosIngresos;
 
-            // Total de descuentos
             totalDescuentos = aporteONP +
                               descuentoAFP +
                               impuestoRentaMensual +
                               descuentoFaltas +
-                              descuentoTardanzas +
-                              descuentoAdelantos +
-                              aporteEssalud;
+                              descuentoAdelantos;
 
             netoPagar = totalIngresos - totalDescuentos;
 
@@ -365,5 +389,6 @@ namespace capa_dominio
                 $"TOTAL_INGRESOS: {totalIngresos} | TOTAL_DESCUENTOS: {totalDescuentos} | NETO_PAGAR: {netoPagar}"
             );
         }
+
     }
 }

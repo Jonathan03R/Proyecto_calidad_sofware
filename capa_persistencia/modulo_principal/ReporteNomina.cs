@@ -74,7 +74,6 @@ namespace capa_persistencia.modulo_principal
 
                             // ===== DESCUENTOS =====
                             AporteSistemaPension = Convert.ToDecimal(dr["AporteSistemaPension"]),
-                            DescuentoComision = Convert.ToDecimal(dr["DescuentoComision"]),
                             RetencionImpuestoRenta = Convert.ToDecimal(dr["RetencionImpuestoRenta"]),
 
                             // ===== EMPLEADOR =====

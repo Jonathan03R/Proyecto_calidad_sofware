@@ -118,8 +118,8 @@ namespace capa_dominio
             if (TipoPension == null || TipoPension.TipoPensionId <= 0)
                 throw new InvalidOperationException("Debe seleccionar el sistema de pensiones.");
 
-            //if (TipoSalario == null || TipoSalario.TipoSalarioId <= 0)
-            //    throw new InvalidOperationException("Debe seleccionar el tipo de salario.");
+            if (TipoSalario == null || TipoSalario.TipoSalarioId <= 0)
+                throw new InvalidOperationException("Debe seleccionar el tipo de salario.");
 
             if (ContratoFechaInicio == DateTime.MinValue)
                 throw new InvalidOperationException("Debe especificar una fecha de inicio válida.");
