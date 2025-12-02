@@ -18,7 +18,6 @@ namespace capa_dominio.dto
         public string TipoTrabajador { get; set; }
         public string FechaInicioContrato { get; set; }
         public string FechaFinContrato { get; set; } 
-        public string TipoDeJornadaPactada { get; set; }
         public decimal? HorasSemanalesPactadas { get; set; } 
         public decimal? HorasExtrasReales { get; set; } 
         public decimal SueldoBasico { get; set; }
@@ -29,17 +28,12 @@ namespace capa_dominio.dto
         public decimal TotalHaberesBruto { get; set; }
         public decimal TotalHaberes { get; set; }
         public decimal AporteSistemaPension { get; set; }
-        public decimal DescuentoONP { get; set; }
-        public decimal DescuentoAFP { get; set; }
         public decimal RetencionImpuestoRenta { get; set; }
         public decimal AporteEsSalud { get; set; }
         public decimal BaseImponibleEsSalud { get; set; }
         public decimal DescuentoTardanzas { get; set; }
         public decimal DescuentoFaltas { get; set; }
-        public decimal DescuentoAdelantos { get; set; }
-        public decimal OtrosDescuentos { get; set; }
         public decimal TotalDescuentos { get; set; }
         public decimal NetoPagar { get; set; }
-        public string PeriodoNomina { get; set; }
     }
 }

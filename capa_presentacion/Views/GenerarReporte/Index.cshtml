@@ -55,7 +55,6 @@
                         <th>Tipo Trabajador</th>
                         <th>Fecha Inicio</th>
                         <th>Fecha Fin</th>
-                        <th>Tipo Jornada</th>
                         <th>Hrs Semanales</th>
                         <th>Hrs Extras</th>
                         <th>Sueldo Básico</th>
@@ -66,18 +65,13 @@
                         <th>Total Haberes Bruto</th>
                         <th>Total Haberes</th>
                         <th>Aporte Pensión</th>
-                        <th>Desc. ONP</th>
-                        <th>Desc. AFP</th>
                         <th>Ret. Imp. Renta</th>
                         <th>Aporte EsSalud</th>
                         <th>Base Imp. EsSalud</th>
                         <th>Desc. Tardanzas</th>
                         <th>Desc. Faltas</th>
-                        <th>Desc. Adelantos</th>
-                        <th>Otros Desc.</th>
                         <th>Total Desc.</th>
                         <th>Neto a Pagar</th>
-                        <th>Periodo</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -90,23 +84,18 @@
 
 @section Scripts {
     <script>
-        // Configuración de URLs del servidor
         window.AppConfig = {
             urls: {
                 obtenerCargos: '@Url.Action("ObtenerCargos", "Cargo")',
                 listarPeriodos: '@Url.Action("ListarPeriodos", "GenerarReporte")',
                 listarNomina: '@Url.Action("ListarNominaPorPeriodo", "GenerarReporte")',
-                generarExcel: '@Url.Action("GenerarExcel", "GenerarReporte")',
                 generarPDF: '@Url.Action("GenerarPDF", "GenerarReporte")'
             }
         };
-        console.log('✅ AppConfig cargado:', window.AppConfig);
     </script>
 
-    <!-- jQuery (REQUERIDO - debe cargarse primero) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- Scripts del proyecto EN ORDEN -->
     <script src="~/Scripts/reporte/reporte.alerta.js"></script>
     <script src="~/Scripts/reporte/exportadorReporte.js"></script>
     <script src="~/Scripts/reporte/generarReporte.js"></script>

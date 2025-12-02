@@ -155,7 +155,6 @@
             escapeHtml(item.TipoTrabajador || ''),
             escapeHtml(item.FechaInicioContrato || ''),
             escapeHtml(item.FechaFinContrato || ''),
-            escapeHtml(item.TipoDeJornadaPactada || ''),
             formatearNumero(item.HorasSemanalesPactadas),
             formatearNumero(item.HorasExtrasReales),
             formatearMonedaConSimbolo(item.SueldoBasico),
@@ -166,18 +165,13 @@
             formatearMonedaConSimbolo(item.TotalHaberesBruto),
             formatearMonedaConSimbolo(item.TotalHaberes),
             formatearMonedaConSimbolo(item.AporteSistemaPension),
-            formatearMonedaConSimbolo(item.DescuentoONP),
-            formatearMonedaConSimbolo(item.DescuentoAFP),
             formatearMonedaConSimbolo(item.RetencionImpuestoRenta),
             formatearMonedaConSimbolo(item.AporteEsSalud),
             formatearMonedaConSimbolo(item.BaseImponibleEsSalud),
             formatearMonedaConSimbolo(item.DescuentoTardanzas),
             formatearMonedaConSimbolo(item.DescuentoFaltas),
-            formatearMonedaConSimbolo(item.DescuentoAdelantos),
-            formatearMonedaConSimbolo(item.OtrosDescuentos),
             formatearMonedaConSimbolo(item.TotalDescuentos),
-            `<span class="highlight">${formatearMonedaConSimbolo(item.NetoPagar)}</span>`,
-            escapeHtml(item.PeriodoNomina || '')
+            `<span class="highlight">${formatearMonedaConSimbolo(item.NetoPagar)}</span>`
         ];
 
         return `<tr>${campos.map((campo, i) => crearCelda(campo, i + 1)).join('')}</tr>`;
@@ -282,7 +276,6 @@
             url: urlExportacion
         });
 
-        // Usar el exportador
         ExportadorReportes.exportarPDF({
             url: urlExportacion,
             periodoId: state.periodoSeleccionado,
@@ -332,7 +325,6 @@
             .substring(0, 50);
     }
 
-    // ===== UTILIDADES UI =====
     function mostrarCargando() {
         elements.tableBody.html(crearMensajeEstado('loading', '📊', 'Cargando datos...'));
         actualizarContador(0);
@@ -361,7 +353,6 @@
         elements.recordsCount.text(`${count} ${texto}`);
     }
 
-    // ===== UTILIDADES DE FORMATO =====
     function formatearMoneda(valor) {
         if (valor == null || isNaN(valor)) return '0.00';
         return parseFloat(valor).toFixed(2);
@@ -402,7 +393,6 @@
 
 })();
 
-// Inicializar cuando el documento esté listo
 $(document).ready(() => {
     console.log('📄 DOM Ready');
     ReporteNomina.init();
