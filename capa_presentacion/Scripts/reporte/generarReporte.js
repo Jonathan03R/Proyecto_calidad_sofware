@@ -2,7 +2,7 @@
     'use strict';
 
     // ===== CONSTANTES =====
-    const COLUMNAS_TABLA = 32;
+    const COLUMNAS_TABLA = 27;
     const COLUMNAS_CONFIG = {
         CODIGO: { index: 1, label: 'Código' },
         NOMBRES: { index: 2, label: 'Nombres' },
@@ -165,6 +165,7 @@
             formatearMonedaConSimbolo(item.TotalHaberesBruto),
             formatearMonedaConSimbolo(item.TotalHaberes),
             formatearMonedaConSimbolo(item.AporteSistemaPension),
+            formatearMonedaConSimbolo(item.DescuentoComision),
             formatearMonedaConSimbolo(item.RetencionImpuestoRenta),
             formatearMonedaConSimbolo(item.AporteEsSalud),
             formatearMonedaConSimbolo(item.BaseImponibleEsSalud),
@@ -179,7 +180,7 @@
 
     function crearCelda(contenido, indice) {
         const esNombre = indice === COLUMNAS_CONFIG.NOMBRES.index || indice === COLUMNAS_CONFIG.APELLIDOS.index;
-        const esMoneda = indice >= 13 && indice <= 31;
+        const esMoneda = indice >= 12 && indice <= 27; // ← CAMBIO: de (13-31) a (12-27)
         const clases = [];
 
         if (esNombre) clases.push('employee-name');

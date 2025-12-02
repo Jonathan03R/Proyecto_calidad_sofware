@@ -122,7 +122,9 @@ public class NominaController : Controller
             if (tramos == null || tramos.Count == 0)
                 return Json(new { ok = false, msg = "No existen tramos IR." });
 
+            // Obtener parámetros vigentes
             var parametros = _repoParametros.ListarParametrosVigentesParaNomina();
+
             var parametroEssalud = parametros.FirstOrDefault(p => p.ParametroCodigo == "APORTE_ESSALUD");
             var parametroUIT = parametros.FirstOrDefault(p => p.ParametroCodigo.StartsWith("UIT"));
 
