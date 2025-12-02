@@ -37,10 +37,8 @@ namespace capa_persistencia.modulo_principal
                             TipoPensionId = reader.GetInt32(ordId),
                             Nombre = reader.IsDBNull(ordNombre) ? null : reader.GetString(ordNombre),
                             Entidad = reader.IsDBNull(ordEntidad) ? null : reader.GetString(ordEntidad),
-                            // SOLUCIÓN: Usar Convert.ToDouble en lugar de GetDouble
-                            ComisionSobreFlujo = reader.IsDBNull(ordComision)
-                                ? (double?)null
-                                : Convert.ToDouble(reader.GetValue(ordComision))
+                            ComisionSobreFlujo = reader.IsDBNull(ordComision)? (double?)null: reader.GetDouble(ordComision)
+                            //ComisionSobreFlujo = reader.IsDBNull(ordComision) ? 0 : reader.GetDouble(ordComision)
                         });
                     }
                 }
