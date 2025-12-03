@@ -6,21 +6,13 @@ namespace capa_dominio
 {
     public class HoraTrabajada
     {
-        private DateTime fecha;
-        private decimal horasNormales;
-        private decimal horasExtras;
-        private decimal horasDescanso;
-        private decimal totalDiaTrabajado;
-        private Contrato contrato;
-        private List<TipoHoraExtra> tiposHorasExtras;
-
-        public DateTime Fecha { get => fecha; set => fecha = value; }
-        public decimal HorasNormales { get => horasNormales; set => horasNormales = value; }
-        public decimal HorasExtras { get => horasExtras; set => horasExtras = value; }
-        public decimal HorasDescanso { get => horasDescanso; set => horasDescanso = value; }
-        public decimal TotalDiaTrabajado { get => totalDiaTrabajado; set => totalDiaTrabajado = value; }
-        public Contrato Contrato { get => contrato; set => contrato = value; }
-        public List<TipoHoraExtra> TiposHorasExtras { get => tiposHorasExtras; set => tiposHorasExtras = value; }
+        public DateTime Fecha { get ; set ; }
+        public decimal HorasNormales { get ; set ; }
+        public decimal HorasExtras { get ; set ; }
+        public decimal HorasDescanso { get ; set ; }
+        public decimal TotalDiaTrabajado { get ; set ; }
+        public Contrato Contrato { get ; set ; }
+        public List<TipoHoraExtra> TiposHorasExtras { get ; set ; }
 
         public decimal CalcularPagoHorasExtras()
         {
@@ -40,7 +32,7 @@ namespace capa_dominio
 
             var dia = Fecha.DayOfWeek;
 
-            // DOMINGO -> TODO lo extra se paga 100% adicional
+            // DOMINGO -> lo extra se paga 100% adicional
             if (dia == DayOfWeek.Sunday)
             {
                 decimal tarifaConRecargo = tarifaHora * (1 + recDomingo);
@@ -71,9 +63,6 @@ namespace capa_dominio
             return Math.Round(pagoExtras, 2);
         }
 
-
-
-
         private decimal ObtenerMultiplicador(string codigo)
         {
             var tipo = TiposHorasExtras.FirstOrDefault(t =>
@@ -86,15 +75,13 @@ namespace capa_dominio
             return tipo.TiposHorasExtrasMultiplicador;
         }
 
-
-
         public decimal CalcularDescuentoTardanza()
         {
-            if (contrato == null)
+            if (Contrato == null)
                 throw new InvalidOperationException("El contrato no puede ser nulo para calcular descuentos.");
 
-            decimal jornada_diaria = contrato.ObtenerJornadaDiaria();
-            decimal sueldo_por_dia = contrato.ObtenerSueldoPorDia();
+            decimal jornada_diaria = Contrato.ObtenerJornadaDiaria();
+            decimal sueldo_por_dia = Contrato.ObtenerSueldoPorDia();
 
             if (jornada_diaria <= 0)
                 return 0;

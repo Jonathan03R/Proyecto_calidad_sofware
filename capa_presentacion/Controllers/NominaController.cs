@@ -12,7 +12,22 @@ using System.Web.Mvc;
 
 namespace capa_presentacion.Controllers
 {
-    public class NominaController : Controller
+    private readonly NominasServicios _servicio;
+    private readonly ImpuestoRentaRepositorio _repoImpuestoRenta;
+    private readonly ParametrosRepositorio _repoParametros;
+    private readonly ReporteService _reporteService;
+    private readonly PeriodoService _periodoService;
+
+    public NominaController()
+    {
+        _servicio = new NominasServicios();
+        _repoImpuestoRenta = new ImpuestoRentaRepositorio();
+        _repoParametros = new ParametrosRepositorio();
+        _reporteService = new ReporteService();
+        _periodoService = new PeriodoService();
+    }
+
+    public ActionResult Index()
     {
         private readonly NominasServicios _servicio;
         private readonly ImpuestoRentaRepositorio _repoImpuestoRenta;
