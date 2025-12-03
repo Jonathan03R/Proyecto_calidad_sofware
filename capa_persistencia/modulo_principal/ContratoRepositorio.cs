@@ -17,8 +17,6 @@ namespace capa_persistencia.modulo_principal
             _accesoSQL = accesoSQL;
         }
 
-
-        // CREAR CONTRATO A TRABAJADORES
         public int CrearContratoEmpleado(ContratoDTO contrato)
         {
             try
@@ -53,7 +51,6 @@ namespace capa_persistencia.modulo_principal
                 _accesoSQL.CerrarConexion();
             }
         }
-
 
         public (int contratoActualizado, int cambioRegistrado) FinalizarContrato(int contratoId, string observaciones = null)
         {
@@ -90,44 +87,25 @@ namespace capa_persistencia.modulo_principal
                 _accesoSQL.AbrirConexion();
                 var comando = _accesoSQL.ObtenerComandoDeProcedimiento("Personal.actualizar_contrato");
 
-                // Parámetros de auditoría
                 comando.Parameters.AddWithValue("@contrato_id", contratoId);
                 comando.Parameters.AddWithValue("@usuario", usuario);
                 comando.Parameters.AddWithValue("@motivo", motivo);
-                comando.Parameters.AddWithValue("@observaciones", contrato.Observaciones ?? (object)DBNull.Value); // observación del CAMBIO
-
-                // ==== CAMPOS DEL CONTRATO (TODOS OPCIONALES EN EL SP) ====
-
-                // Los que ya tenías
+                comando.Parameters.AddWithValue("@observaciones", contrato.Observaciones ?? (object)DBNull.Value); 
                 comando.Parameters.AddWithValue("@cargo_id", (object)contrato.CargoId ?? DBNull.Value);
                 comando.Parameters.AddWithValue("@tipo_salario_id", (object)contrato.TipoSalarioId ?? DBNull.Value);
                 comando.Parameters.AddWithValue("@contrato_salario", contrato.Salario ?? (object)DBNull.Value);
                 comando.Parameters.AddWithValue("@contrato_modo_pago", contrato.ModoPago ?? (object)DBNull.Value);
-
-                // NUEVOS CAMPOS (los mismos que usas al crear)
-
                 comando.Parameters.AddWithValue("@area_id", (object)contrato.AreaId ?? DBNull.Value);
                 comando.Parameters.AddWithValue("@tipo_pension_id", (object)contrato.TipoPensionId ?? DBNull.Value);
                 comando.Parameters.AddWithValue("@tipo_jornada_id", (object)contrato.TipoJornadaId ?? DBNull.Value);
-
-                // Fechas
                 comando.Parameters.AddWithValue("@contrato_fecha_inicio", contrato.FechaInicio); // es DateTime no-nullable
                 comando.Parameters.AddWithValue("@contrato_fecha_fin", contrato.FechaFin ?? (object)DBNull.Value);
-
-                // Horas semanales: si quieres que solo se actualice cuando venga un valor, respeta el null
                 int? horas = null;
                 if (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
                     horas = contrato.HorasSemanales.Value;
-
                 comando.Parameters.AddWithValue("@contrato_horas_semanales", (object)horas ?? DBNull.Value);
-
-                // Tarifa hora
                 comando.Parameters.AddWithValue("@contrato_tarifa_hora", contrato.TarifaHora ?? (object)DBNull.Value);
-
-                // Documento URL (si tu DTO tiene esta propiedad; si aún no, la puedes agregar)
                 comando.Parameters.AddWithValue("@contrato_documento_url", contrato.DocumentoUrl ?? (object)DBNull.Value);
-
-                // Descripción y observaciones del CONTRATO
                 comando.Parameters.AddWithValue("@contrato_descripcion_funciones", contrato.DescripcionFunciones ?? (object)DBNull.Value);
                 comando.Parameters.AddWithValue("@contrato_observaciones", contrato.Observaciones ?? (object)DBNull.Value);
 
@@ -138,8 +116,6 @@ namespace capa_persistencia.modulo_principal
                 _accesoSQL.CerrarConexion();
             }
         }
-
-
 
         public List<Contrato> ObtenerContratosPorTrabajador(int trabajadorId)
         {
@@ -177,7 +153,6 @@ namespace capa_persistencia.modulo_principal
                             EstadoiId = reader.GetInt32(reader.GetOrdinal("estado_contrato_id")),
                         };
 
-                        // ✅ Mapea solo el ID del tipo de pensión
                         if (!reader.IsDBNull(reader.GetOrdinal("tipo_pension_id")))
                         {
                             contrato.TipoPension = new TipoPension
@@ -237,32 +212,22 @@ namespace capa_persistencia.modulo_principal
                     {
                         lista.Add(new ContratoDTO
                         {
-                            // Claves
                             ContratoId = dr.GetInt32(iContratoId),
                             TrabajadorId = dr.IsDBNull(iTrabajadorId) ? (int?)null : dr.GetInt32(iTrabajadorId),
-
-                            // Persona
                             EmpleadoNombre = dr.IsDBNull(iPersonaNombre) ? "" : dr.GetString(iPersonaNombre),
                             Documento = dr.IsDBNull(iDocumento) ? "" : dr.GetString(iDocumento),
-
-                            // Cargo / tipo salario / estado
                             CargoId = dr.IsDBNull(iCargoId) ? (int?)null : dr.GetInt32(iCargoId),
                             CargoNombre = dr.IsDBNull(iCargoNombre) ? "" : dr.GetString(iCargoNombre),
                             TipoSalarioId = dr.IsDBNull(iTipoSalarioId) ? (int?)null : dr.GetInt32(iTipoSalarioId),
                             EstadoContratoNombre = dr.IsDBNull(iEstadoContratoNom) ? "" : dr.GetString(iEstadoContratoNom),
-
-                            // Contrato
                             AreaId = dr.IsDBNull(iAreaId) ? (int?)null : dr.GetInt32(iAreaId),
                             TipoPensionId = dr.IsDBNull(iTipoPensionId) ? (int?)null : dr.GetInt32(iTipoPensionId),
                             TipoJornadaId = dr.IsDBNull(iTipoJornadaId) ? (int?)null : dr.GetInt32(iTipoJornadaId),
-
                             FechaInicio = dr.IsDBNull(iFechaInicio) ? DateTime.MinValue : dr.GetDateTime(iFechaInicio),
                             FechaFin = dr.IsDBNull(iFechaFin) ? (DateTime?)null : dr.GetDateTime(iFechaFin),
-
                             Salario = dr.IsDBNull(iSalario) ? (decimal?)null : dr.GetDecimal(iSalario),
                             ModoPago = dr.IsDBNull(iModoPago) ? null : dr.GetString(iModoPago),
                             Observaciones = dr.IsDBNull(iObs) ? null : dr.GetString(iObs),
-
                             TarifaHora = dr.IsDBNull(iTarifaHora) ? (decimal?)null : dr.GetDecimal(iTarifaHora),
                             HorasSemanales = dr.IsDBNull(iHorasSem) ? (int?)null : dr.GetInt32(iHorasSem),
                             DescripcionFunciones = dr.IsDBNull(iDescFunciones) ? null : dr.GetString(iDescFunciones),
@@ -279,9 +244,6 @@ namespace capa_persistencia.modulo_principal
             return lista;
         }
 
-
-
-        // CONSULTAR TRABAJADORES SIN CONTRATOS
         public List<ContratoDTO> ListarSinContratoActivo()
         {
             var lista = new List<ContratoDTO>();
@@ -318,10 +280,9 @@ namespace capa_persistencia.modulo_principal
             return lista;
         }
 
-        // RESUMEN DE CONTRATOS PARA LAS CARDS
-        public ResumenContratosDTO ObtenerResumenContratos()
+        public ResumenContratosDto ObtenerResumenContratos()
         {
-            var resumen = new ResumenContratosDTO();
+            var resumen = new ResumenContratosDto();
 
             try
             {

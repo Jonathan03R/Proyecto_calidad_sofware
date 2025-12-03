@@ -50,7 +50,7 @@ namespace capa_persistencia.modulo_principal
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Mensaje: {ex.Message}");
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CONSULTA);
+                throw new TrabajadorException(TrabajadorException.ERROR_DE_CONSULTA);
             }
 
             return empleados;
@@ -84,7 +84,7 @@ namespace capa_persistencia.modulo_principal
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error obteniendo personas sin contrato activo: {ex.Message}");
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CONSULTA);
+                throw new TrabajadorException(TrabajadorException.ERROR_DE_CONSULTA);
             }
 
             return personas;

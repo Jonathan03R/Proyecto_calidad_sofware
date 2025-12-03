@@ -201,7 +201,7 @@ namespace capa_aplicacion.Servicios
             }
         }
 
-        public ResumenContratosDTO ObtenerResumen()
+        public ResumenContratosDto ObtenerResumen()
         {
             accesoSQLServer.AbrirConexion();
             try

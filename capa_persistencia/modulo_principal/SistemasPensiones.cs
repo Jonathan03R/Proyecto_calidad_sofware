@@ -38,7 +38,6 @@ namespace capa_persistencia.modulo_principal
                             Nombre = reader.IsDBNull(ordNombre) ? null : reader.GetString(ordNombre),
                             Entidad = reader.IsDBNull(ordEntidad) ? null : reader.GetString(ordEntidad),
                             ComisionSobreFlujo = reader.IsDBNull(ordComision)? (double?)null: reader.GetDouble(ordComision)
-                            //ComisionSobreFlujo = reader.IsDBNull(ordComision) ? 0 : reader.GetDouble(ordComision)
                         });
                     }
                 }
@@ -46,7 +45,7 @@ namespace capa_persistencia.modulo_principal
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Mensaje: {ex.Message}");
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CONSULTA);
+                throw new TrabajadorException(TrabajadorException.ERROR_DE_CONSULTA);
             }
 
             return pensiones;

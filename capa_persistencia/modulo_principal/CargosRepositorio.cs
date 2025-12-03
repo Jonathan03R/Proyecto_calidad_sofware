@@ -39,7 +39,7 @@ namespace capa_persistencia.modulo_principal
             catch (Exception)
             {
 
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CONSULTA);
+                throw new TrabajadorException(TrabajadorException.ERROR_DE_CONSULTA);
             }
 
             return listaCargos;

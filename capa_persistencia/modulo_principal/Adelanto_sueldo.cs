@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class Adelanto_sueldo
+    public class AdelantoSueldoRepositorio
     {
         private readonly AccesoSQLServer _accesoSQL = new AccesoSQLServer();
 
@@ -50,7 +50,7 @@ namespace capa_persistencia.modulo_principal
             }
             catch
             {
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CONSULTA);
+                throw new NominaException(NominaException.ERROR_DE_CONSULTA);
             }
             finally
             {

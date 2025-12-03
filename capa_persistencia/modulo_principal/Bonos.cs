@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class Bonos_Repositorio
+    public class BonosRepositorio
 
     {
 
@@ -43,7 +43,7 @@ namespace capa_persistencia.modulo_principal
                     }
                 }
             }
-            catch { throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CONSULTA); }
+            catch { throw new NominaException(NominaException.ERROR_DE_CONSULTA); }
             finally { _accesoSQL.CerrarConexion(); }
             return lista;
         }

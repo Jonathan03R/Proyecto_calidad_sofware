@@ -7,11 +7,11 @@ using System.Data.SqlClient;
 namespace capa_persistencia.modulo_principal
 {
 
-    public class Adelantos
+    public class AdelantosRepositorio
     {
         private readonly AccesoSQLServer _accesoSQL;
 
-        public Adelantos()
+        public AdelantosRepositorio()
         {
             _accesoSQL = new AccesoSQLServer();
         }
@@ -49,7 +49,7 @@ namespace capa_persistencia.modulo_principal
             catch
             {
 
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CONSULTA);
+                throw new NominaException(NominaException.ERROR_DE_CONSULTA);
             }
             finally
             {

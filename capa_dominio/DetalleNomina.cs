@@ -167,7 +167,7 @@ namespace capa_dominio
                     totalExtras += pagoDiaExtras;
             }
 
-            horasExtras = Math.Round(totalExtras, 2);
+            HorasExtras = Math.Round(totalExtras, 2);
         }
 
 
@@ -185,12 +185,12 @@ namespace capa_dominio
         {
             if (!tieneHijos)
             {
-                asignacionFamiliar = 0;
+                AsignacionFamiliar = 0;
                 return 0;
             }
 
-            asignacionFamiliar = 113m;
-            return asignacionFamiliar;
+            AsignacionFamiliar = 113m;
+            return AsignacionFamiliar;
         }
 
 

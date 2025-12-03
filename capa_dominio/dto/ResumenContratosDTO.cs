@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace capa_dominio.dto
 {
-    public class ResumenContratosDTO
+    public class ResumenContratosDto
     {
         public int TotalContratos { get; set; }
         public int ContratosActivos { get; set; }

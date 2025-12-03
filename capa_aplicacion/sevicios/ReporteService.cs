@@ -13,14 +13,14 @@ namespace capa_aplicacion.Servicios
 {
     public class ReporteService
     {
-        private readonly ReporteNomina reporteNomina;
+        private readonly ReporteNominaRepositorio reporteNomina;
         private readonly PeriodosRepositorio periodosRepositorio;
         private readonly AccesoSQLServer conexion;
 
         public ReporteService()
         {
             conexion = new AccesoSQLServer();
-            reporteNomina = new ReporteNomina(conexion);
+            reporteNomina = new ReporteNominaRepositorio(conexion);
             periodosRepositorio = new PeriodosRepositorio(conexion);    
         }
 

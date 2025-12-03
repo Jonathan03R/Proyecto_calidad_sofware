@@ -452,7 +452,7 @@ namespace capa_aplicacion.servicios
         }
 
         // listado simple de resumen (usa tu repo existente)
-        public List<ResumenNominaDTO> ListarResumenNominas()
+        public List<ResumenNominaDto> ListarResumenNominas()
         {
             _conexion.AbrirConexion();
             try

@@ -11,11 +11,11 @@ using capa_persistencia.modulo_base;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class ReporteNomina
+    public class ReporteNominaRepositorio
     {
         private readonly AccesoSQLServer conexion;
 
-        public ReporteNomina(AccesoSQLServer accesoSQLServer)
+        public ReporteNominaRepositorio(AccesoSQLServer accesoSQLServer)
         {
             this.conexion = accesoSQLServer;
         }

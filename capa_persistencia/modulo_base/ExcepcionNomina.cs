@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace capa_persistencia.modulo_base
 {
-    public class ExcepcionNomina : Exception
+    public class NominaException : Exception
     {
         public const string ERROR_DE_CREACION = "ERROR_DE_CREACION";
         public const string ERROR_DE_ACTUALIZACION = "ERROR_DE_ACTUALIZACION";
@@ -14,7 +14,7 @@ namespace capa_persistencia.modulo_base
 
         public string Codigo { get; }
 
-        public ExcepcionNomina(string codigo, string detalle = null)
+        public NominaException(string codigo, string detalle = null)
             : base(detalle ?? codigo)
         {
             Codigo = codigo;
