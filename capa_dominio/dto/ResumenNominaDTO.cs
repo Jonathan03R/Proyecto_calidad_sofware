@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace capa_dominio.dto
 {
-    public class ResumenNominaDTO
+    public class ResumenNominaDto
     {
         public string PeriodoNombre { get; set; }
         public DateTime NominaFechaProcesamiento { get; set; }

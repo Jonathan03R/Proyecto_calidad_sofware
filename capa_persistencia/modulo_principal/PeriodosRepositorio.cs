@@ -17,9 +17,6 @@ namespace capa_persistencia.modulo_principal
             _conexion = conexion;
         }
 
-        /// <summary>
-        /// Lista períodos filtrando por ID o por nombre.
-        /// </summary>
         public List<Periodo> ListarTodosPeriodos(int? periodoId = null, string periodoNombre = null)
         {
             var lista = new List<Periodo>();
@@ -94,9 +91,6 @@ namespace capa_persistencia.modulo_principal
             return null;
         }
 
-
-        /// obtener periodos con estado id = 1  (pendientes)
-        /// 
         public List<Periodo> ListarPeriodosPendientes()
         {
             var lista = new List<Periodo>();
@@ -127,14 +121,13 @@ namespace capa_persistencia.modulo_principal
             return lista;
         }
 
-        /// obtener periodos con estado id = 2  (procesados)
         public List<Periodo> ListarPeriodosProcesados()
         {
             var lista = new List<Periodo>();
             try
             {
                 SqlCommand cmd = _conexion.ObtenerComandoDeProcedimiento("proc_listar_periodos");
-                cmd.Parameters.AddWithValue("@estado_id", 3); // Estado procesado
+                cmd.Parameters.AddWithValue("@estado_id", 3);
                 using (SqlDataReader dr = cmd.ExecuteReader())
                 {
                     while (dr.Read())
@@ -158,8 +151,6 @@ namespace capa_persistencia.modulo_principal
             return lista;
         }
 
-
-        /// obtener periodos con estado id = 2  (procesados) 5 con incidencia.
         public List<Periodo> ListarPeriodosAbiertos()
         {
             var lista = new List<Periodo>();
@@ -207,9 +198,6 @@ namespace capa_persistencia.modulo_principal
             return resultado;
         }
 
-
-
-        /// actualizar estado del periodo a 3 (procesado)
         public void ProcesarPeriodo(int periodoId)
         {
             try
@@ -230,7 +218,6 @@ namespace capa_persistencia.modulo_principal
                 throw new Exception("error al procesar el periodo.", ex);
             }
         }
-
 
         public void ActualizarEstadoPeriodo(int periodoId, int nuevoEstadoId)
         {

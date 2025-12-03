@@ -5,13 +5,12 @@ using System.Collections.Generic;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class ImpuestoRenta
+    public class ImpuestoRentaRepositorio
     {
         private readonly AccesoSQLServer _accesoSQL;
         
-        public ImpuestoRenta() { _accesoSQL = new AccesoSQLServer(); }
+        public ImpuestoRentaRepositorio() { _accesoSQL = new AccesoSQLServer(); }
 
-        // C-04: tramos IR por año
         public List<ImpuestoRentaTramo> ObtenerTramosIRPorAnio(int anio)
         {
             var lista = new List<ImpuestoRentaTramo>();
@@ -43,7 +42,7 @@ namespace capa_persistencia.modulo_principal
             }
             catch (Exception)
             {
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CONSULTA);
+                throw new NominaException(NominaException.ERROR_DE_CONSULTA);
             }
             finally { _accesoSQL.CerrarConexion(); }
             return lista;

@@ -6,19 +6,15 @@ using capa_persistencia.modulo_base;
 namespace capa_persistencia.modulo_principal
 {
 
-    public class Faltas
+    public class FaltasRepositorio
     {
         private readonly AccesoSQLServer _accesoSQL;
 
-        public Faltas()
+        public FaltasRepositorio()
         {
             _accesoSQL = new AccesoSQLServer();
         }
 
-        // -----------------------------------------------------------
-        // C-FA-01: Obtener faltas de un trabajador (solo lectura)
-        // Procedimiento: nomina.proc_obtener_faltas_por_trabajador
-        // -----------------------------------------------------------
         public List<Falta> ObtenerFaltasPorTrabajador(int trabajadorId)
         {
             var lista = new List<Falta>();
@@ -49,7 +45,7 @@ namespace capa_persistencia.modulo_principal
             }
             catch
             {
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CONSULTA);
+                throw new NominaException(NominaException.ERROR_DE_CONSULTA);
             }
             finally
             {

@@ -35,7 +35,7 @@ namespace capa_persistencia.modulo_principal
             {
 
                 System.Diagnostics.Debug.WriteLine($"Mensaje: {ex.Message}");
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CREACION);
+                throw new NominaException(NominaException.ERROR_DE_CREACION);
             }
         }
 
@@ -65,7 +65,7 @@ namespace capa_persistencia.modulo_principal
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Mensaje: {ex.Message}");
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_ACTUALIZACION);
+                throw new NominaException(NominaException.ERROR_DE_ACTUALIZACION);
             }
         }
 
@@ -84,7 +84,7 @@ namespace capa_persistencia.modulo_principal
             catch (Exception ex)
             {
                 //System.Diagnostics.Debug.WriteLine($"Error actualizando estado de nómina ID {nominaId}: {ex.Message}");
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_ACTUALIZACION);
+                throw new NominaException(NominaException.ERROR_DE_ACTUALIZACION);
             }
         }
 
@@ -143,9 +143,9 @@ namespace capa_persistencia.modulo_principal
 
             return nominas;
         }
-        public List<ResumenNominaDTO> ListarResumenNominas()
+        public List<ResumenNominaDto> ListarResumenNominas()
         {
-            var lista = new List<ResumenNominaDTO>();
+            var lista = new List<ResumenNominaDto>();
 
             try
             {
@@ -155,7 +155,7 @@ namespace capa_persistencia.modulo_principal
                 {
                     while (reader.Read())
                     {
-                        var resumen = new ResumenNominaDTO
+                        var resumen = new ResumenNominaDto
                         {
                             PeriodoNombre = reader.GetString(reader.GetOrdinal("periodo_nombre")),
                             NominaFechaProcesamiento = reader.GetDateTime(reader.GetOrdinal("nomina_fecha_procesamiento")),
@@ -168,9 +168,15 @@ namespace capa_persistencia.modulo_principal
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("Error al consultar el resumen de nóminas.");
+                System.Diagnostics.Debug.WriteLine(
+                    $"Error al consultar el resumen de nóminas: {ex}");
+
+                throw new NominaException(
+                    NominaException.ERROR_DE_CONSULTA,
+                    "Error al consultar el resumen de nóminas."
+                );
             }
 
             return lista;

@@ -7,7 +7,7 @@ using System.Web.Routing;
 
 namespace capa_presentacion
 {
-    public class RouteConfig
+    public static class RouteConfig
     {
         public static void RegisterRoutes(RouteCollection routes)
         {

@@ -17,8 +17,6 @@ namespace capa_persistencia.modulo_principal
             _accesoSQL = accesoSQL;
         }
 
-
-        // CREAR CONTRATO A TRABAJADORES
         public int CrearContratoEmpleado(ContratoDTO contrato)
         {
             try
@@ -52,7 +50,6 @@ namespace capa_persistencia.modulo_principal
                 _accesoSQL.CerrarConexion();
             }
         }
-
 
         public (int contratoActualizado, int cambioRegistrado) FinalizarContrato(int contratoId, string observaciones = null)
         {
@@ -117,8 +114,6 @@ namespace capa_persistencia.modulo_principal
             }
         }
 
-
-
         public List<Contrato> ObtenerContratosPorTrabajador(int trabajadorId)
         {
             var contratos = new List<Contrato>();
@@ -155,7 +150,6 @@ namespace capa_persistencia.modulo_principal
                             EstadoiId = reader.GetInt32(reader.GetOrdinal("estado_contrato_id")),
                         };
 
-                        // ✅ Mapea solo el ID del tipo de pensión
                         if (!reader.IsDBNull(reader.GetOrdinal("tipo_pension_id")))
                         {
                             contrato.TipoPension = new TipoPension
@@ -244,10 +238,6 @@ namespace capa_persistencia.modulo_principal
             return lista;
         }
 
-
-
-
-        // CONSULTAR TRABAJADORES SIN CONTRATOS
         public List<ContratoDTO> ListarSinContratoActivo()
         {
             var lista = new List<ContratoDTO>();
@@ -284,10 +274,9 @@ namespace capa_persistencia.modulo_principal
             return lista;
         }
 
-        // RESUMEN DE CONTRATOS PARA LAS CARDS
-        public ResumenContratosDTO ObtenerResumenContratos()
+        public ResumenContratosDto ObtenerResumenContratos()
         {
-            var resumen = new ResumenContratosDTO();
+            var resumen = new ResumenContratosDto();
 
             try
             {

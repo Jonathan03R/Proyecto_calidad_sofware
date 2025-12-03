@@ -22,7 +22,7 @@ namespace capa_dominio
         public string ContratoObservaciones { get; set; }
         public DateTime ContratoFechaCreacion { get; set; }
 
-        // ====== Propiedades con validación (mantienen backing field) ======
+        // ====== Propiedades con validación ======
 
         private decimal contratoTarifaHora;
         public decimal ContratoTarifaHora
@@ -58,7 +58,6 @@ namespace capa_dominio
 
         public bool EsActivo() => EstadoiId == 1;
 
-        // Asumimos 6 días laborales por semana
         public decimal ObtenerJornadaDiaria()
         {
             if (!ContratoHorasSemanales.HasValue || ContratoHorasSemanales.Value <= 0)
@@ -111,8 +110,6 @@ namespace capa_dominio
             ValidarEntidadesRequeridas();
             ValidarFechas();
             ValidarSalarioYHoras();
-
-            // Si todo está ok, calculamos la tarifa
             CalcularTarifaHora();
         }
 
