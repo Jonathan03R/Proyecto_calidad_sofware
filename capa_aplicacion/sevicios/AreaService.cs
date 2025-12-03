@@ -13,7 +13,6 @@ namespace capa_aplicacion.sevicios
     {
         private readonly AreasRepositorio areaRepositorio;
         private readonly AccesoSQLServer conexion;
-        
 
         public AreaService()
         {
@@ -32,7 +31,7 @@ namespace capa_aplicacion.sevicios
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error al obtener areas{ex.Message}");
-                throw ex;
+                throw;
             }
             finally
             {

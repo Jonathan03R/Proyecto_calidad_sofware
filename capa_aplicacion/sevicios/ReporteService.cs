@@ -26,35 +26,15 @@ namespace capa_aplicacion.Servicios
 
         public List<ReporteNominaDTO> ConsultarNominaPorPeriodo(int periodoId, int? cargoId = null)
         {
-            List<ReporteNominaDTO> listaReporte;
             try
             {
                 conexion.AbrirConexion();
-                listaReporte = reporteNomina.ConsultarNominaPorPeriodo(periodoId, cargoId);
+                return reporteNomina.ConsultarNominaPorPeriodo(periodoId, cargoId);
+            }
+            finally
+            {
                 conexion.CerrarConexion();
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return listaReporte;
         }
-
-        /// JUGADOR 120 ELIMIDAO POR TRACA
-        //public List<Periodo> ListarPeriodos(int? periodoId = null, string periodoNombre = null)
-        //{
-        //    List<Periodo> listaPeriodo;
-        //    try
-        //    {
-        //        conexion.AbrirConexion();
-        //        listaPeriodo = periodosRepositorio.ListarTodosPeriodos(periodoId, periodoNombre);
-        //        conexion.CerrarConexion();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //    return listaPeriodo;
-        //}
     }
 }

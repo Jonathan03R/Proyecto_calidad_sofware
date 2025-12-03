@@ -8,18 +8,11 @@ namespace capa_dominio
 {
     public class Contacto
     {
-        private int contactoId;
-        private string telefono;
-        private string email;
-        private string direccion;
-        private char estado = 'A';
-
-        public int ContactoId { get => contactoId; set => contactoId = value; }
-        public string Telefono { get => telefono; set => telefono = value; }
-        public string Email { get => email; set => email = value; }
-        public string Direccion { get => direccion; set => direccion = value; }
-        public char Estado { get => estado; set => estado = value; }
-
+        public int ContactoId { get; set; }
+        public string Telefono { get; set; }
+        public string Email { get; set; }
+        public string Direccion { get; set; }
+        public char Estado { get; set; } = 'A';
         public bool EstaActivo() => Estado == 'A';
     }
 }
