@@ -112,7 +112,6 @@ namespace capa_persistencia.modulo_principal
                                 PeriodoId = reader.GetInt32(reader.GetOrdinal("periodo_id"))
                             },
 
-                            // 👇 Aquí evitamos reventar si nomina_fecha viene NULL
                             NominaFecha = reader.IsDBNull(reader.GetOrdinal("nomina_fecha"))
                                 ? DateTime.MinValue
                                 : reader.GetDateTime(reader.GetOrdinal("nomina_fecha")),

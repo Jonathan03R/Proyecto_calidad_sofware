@@ -183,6 +183,7 @@
     <Compile Include="modulo_principal\HijosRepositorios.cs" />
     <Compile Include="modulo_principal\HorasTrabajadasRepositorio.cs" />
     <Compile Include="modulo_principal\ImpuestoRenta.cs" />
+    <Compile Include="modulo_principal\ModosPagoRepositorio.cs" />
     <Compile Include="modulo_principal\NominasRepositorio.cs" />
     <Compile Include="modulo_principal\Parametros.cs" />
     <Compile Include="modulo_principal\PeriodosRepositorio.cs" />

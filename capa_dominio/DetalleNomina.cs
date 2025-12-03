@@ -171,9 +171,7 @@ namespace capa_dominio
                 //);
             }
 
-            horasExtras = Math.Round(totalExtras, 2);
-
-            //System.Diagnostics.Trace.WriteLine($"HORAS_EXTRAS -> Total general: {horasExtras:F2}");
+            HorasExtras = Math.Round(totalExtras, 2);
         }
 
 
@@ -197,12 +195,12 @@ namespace capa_dominio
 
             if (!tieneRemuneracionFamiliar)
             {
-                asignacionFamiliar = 113m;
+                AsignacionFamiliar = 0;
                 return 0;
             }
 
-            asignacionFamiliar = 0;
-            return asignacionFamiliar;
+            AsignacionFamiliar = 113m;
+            return AsignacionFamiliar;
         }
 
 

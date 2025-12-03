@@ -31,7 +31,7 @@ namespace capa_persistencia.modulo_principal
                 comando.Parameters.AddWithValue("@areaid", contrato.AreaId);
                 comando.Parameters.AddWithValue("@tipopensionid", contrato.TipoPensionId);
                 comando.Parameters.AddWithValue("@tiposalarioid", contrato.TipoSalarioId);
-                comando.Parameters.AddWithValue("@tipojornadaid", contrato.TipoJornadaId);
+                comando.Parameters.AddWithValue("@modopagoid", contrato.ModoPagoId);
                 comando.Parameters.AddWithValue("@fechainicio", contrato.FechaInicio);
                 comando.Parameters.AddWithValue("@fechafin", contrato.FechaFin ?? (object)DBNull.Value);
                 var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
@@ -40,7 +40,6 @@ namespace capa_persistencia.modulo_principal
                 comando.Parameters.AddWithValue("@horas_semanales", horas);
                 comando.Parameters.AddWithValue("@salario", contrato.Salario ?? (object)DBNull.Value);
                 comando.Parameters.AddWithValue("@tarifahora", contrato.TarifaHora ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@modopago", contrato.ModoPago ?? (object)DBNull.Value);
                 comando.Parameters.AddWithValue("@documentourl", "");
                 comando.Parameters.AddWithValue("@descripcionfunciones", contrato.DescripcionFunciones ?? (object)DBNull.Value);
                 comando.Parameters.AddWithValue("@observaciones", contrato.Observaciones ?? (object)DBNull.Value);
@@ -89,45 +88,24 @@ namespace capa_persistencia.modulo_principal
             {
                 _accesoSQL.AbrirConexion();
                 var comando = _accesoSQL.ObtenerComandoDeProcedimiento("Personal.actualizar_contrato");
-
-                // Parámetros de auditoría
                 comando.Parameters.AddWithValue("@contrato_id", contratoId);
                 comando.Parameters.AddWithValue("@usuario", usuario);
                 comando.Parameters.AddWithValue("@motivo", motivo);
-                comando.Parameters.AddWithValue("@observaciones", contrato.Observaciones ?? (object)DBNull.Value); // observación del CAMBIO
-
-                // ==== CAMPOS DEL CONTRATO (TODOS OPCIONALES EN EL SP) ====
-
-                // Los que ya tenías
+                comando.Parameters.AddWithValue("@observaciones", contrato.Observaciones ?? (object)DBNull.Value); 
                 comando.Parameters.AddWithValue("@cargo_id", (object)contrato.CargoId ?? DBNull.Value);
                 comando.Parameters.AddWithValue("@tipo_salario_id", (object)contrato.TipoSalarioId ?? DBNull.Value);
                 comando.Parameters.AddWithValue("@contrato_salario", contrato.Salario ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@contrato_modo_pago", contrato.ModoPago ?? (object)DBNull.Value);
-
-                // NUEVOS CAMPOS (los mismos que usas al crear)
-
                 comando.Parameters.AddWithValue("@area_id", (object)contrato.AreaId ?? DBNull.Value);
                 comando.Parameters.AddWithValue("@tipo_pension_id", (object)contrato.TipoPensionId ?? DBNull.Value);
-                comando.Parameters.AddWithValue("@tipo_jornada_id", (object)contrato.TipoJornadaId ?? DBNull.Value);
-
-                // Fechas
-                comando.Parameters.AddWithValue("@contrato_fecha_inicio", contrato.FechaInicio); // es DateTime no-nullable
+                comando.Parameters.AddWithValue("@modo_pago_id", (object)contrato.ModoPagoId ?? DBNull.Value);
+                comando.Parameters.AddWithValue("@contrato_fecha_inicio", contrato.FechaInicio); 
                 comando.Parameters.AddWithValue("@contrato_fecha_fin", contrato.FechaFin ?? (object)DBNull.Value);
-
-                // Horas semanales: si quieres que solo se actualice cuando venga un valor, respeta el null
                 int? horas = null;
                 if (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
                     horas = contrato.HorasSemanales.Value;
-
                 comando.Parameters.AddWithValue("@contrato_horas_semanales", (object)horas ?? DBNull.Value);
-
-                // Tarifa hora
                 comando.Parameters.AddWithValue("@contrato_tarifa_hora", contrato.TarifaHora ?? (object)DBNull.Value);
-
-                // Documento URL (si tu DTO tiene esta propiedad; si aún no, la puedes agregar)
                 comando.Parameters.AddWithValue("@contrato_documento_url", contrato.DocumentoUrl ?? (object)DBNull.Value);
-
-                // Descripción y observaciones del CONTRATO
                 comando.Parameters.AddWithValue("@contrato_descripcion_funciones", contrato.DescripcionFunciones ?? (object)DBNull.Value);
                 comando.Parameters.AddWithValue("@contrato_observaciones", contrato.Observaciones ?? (object)DBNull.Value);
 
@@ -205,79 +183,67 @@ namespace capa_persistencia.modulo_principal
         public List<ContratoDTO> ListarConContratoActivo()
         {
             var lista = new List<ContratoDTO>();
+
             try
             {
-                _accesoSQL.AbrirConexion();
                 var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("Personal.proc_contratos_activos_listar");
 
                 using (var dr = cmd.ExecuteReader())
                 {
-                    int iContratoId = dr.GetOrdinal("contrato_id");
-                    int iTrabajadorId = dr.GetOrdinal("trabajador_id");
-                    int iPersonaNombre = dr.GetOrdinal("persona_nombre");
-                    int iDocumento = dr.GetOrdinal("persona_identificacion");
-                    int iCargoId = dr.GetOrdinal("cargo_id");
-                    int iCargoNombre = dr.GetOrdinal("cargo_nombre");
-                    int iTipoSalarioId = dr.GetOrdinal("tipo_salario_id");
-                    int iEstadoContratoNom = dr.GetOrdinal("estado_contrato_nombre");
-                    int iAreaId = dr.GetOrdinal("area_id");
-                    int iTipoPensionId = dr.GetOrdinal("tipo_pension_id");
-                    int iTipoJornadaId = dr.GetOrdinal("tipo_jornada_id");
-                    int iFechaInicio = dr.GetOrdinal("contrato_fecha_inicio");
-                    int iFechaFin = dr.GetOrdinal("contrato_fecha_fin");
-                    int iSalario = dr.GetOrdinal("contrato_salario");
-                    int iModoPago = dr.GetOrdinal("contrato_modo_pago");
-                    int iObs = dr.GetOrdinal("contrato_observaciones");
-                    int iTarifaHora = dr.GetOrdinal("contrato_tarifa_hora");
-                    int iHorasSem = dr.GetOrdinal("contrato_horas_semanales");
-                    int iDescFunciones = dr.GetOrdinal("contrato_descripcion_funciones");
-                    int iDocUrl = dr.GetOrdinal("contrato_documento_url");
-
                     while (dr.Read())
                     {
                         lista.Add(new ContratoDTO
                         {
                             // Claves
-                            ContratoId = dr.GetInt32(iContratoId),
-                            TrabajadorId = dr.IsDBNull(iTrabajadorId) ? (int?)null : dr.GetInt32(iTrabajadorId),
+                            ContratoId = dr.GetInt32(dr.GetOrdinal("contrato_id")),
+                            TrabajadorId = dr["trabajador_id"] as int?,
 
                             // Persona
-                            EmpleadoNombre = dr.IsDBNull(iPersonaNombre) ? "" : dr.GetString(iPersonaNombre),
-                            Documento = dr.IsDBNull(iDocumento) ? "" : dr.GetString(iDocumento),
+                            EmpleadoNombre = dr["persona_nombre"] as string,
+                            Documento = dr["persona_identificacion"] as string,
 
-                            // Cargo / tipo salario / estado
-                            CargoId = dr.IsDBNull(iCargoId) ? (int?)null : dr.GetInt32(iCargoId),
-                            CargoNombre = dr.IsDBNull(iCargoNombre) ? "" : dr.GetString(iCargoNombre),
-                            TipoSalarioId = dr.IsDBNull(iTipoSalarioId) ? (int?)null : dr.GetInt32(iTipoSalarioId),
-                            EstadoContratoNombre = dr.IsDBNull(iEstadoContratoNom) ? "" : dr.GetString(iEstadoContratoNom),
+                            // Cargo / salario / estado
+                            CargoId = dr["cargo_id"] as int?,
+                            CargoNombre = dr["cargo_nombre"] as string,
+                            TipoSalarioId = dr["tipo_salario_id"] as int?,
+                            EstadoContratoNombre = dr["estado_contrato_nombre"] as string,
 
                             // Contrato
-                            AreaId = dr.IsDBNull(iAreaId) ? (int?)null : dr.GetInt32(iAreaId),
-                            TipoPensionId = dr.IsDBNull(iTipoPensionId) ? (int?)null : dr.GetInt32(iTipoPensionId),
-                            TipoJornadaId = dr.IsDBNull(iTipoJornadaId) ? (int?)null : dr.GetInt32(iTipoJornadaId),
+                            AreaId = dr["area_id"] as int?,
+                            TipoPensionId = dr["tipo_pension_id"] as int?,
 
-                            FechaInicio = dr.IsDBNull(iFechaInicio) ? DateTime.MinValue : dr.GetDateTime(iFechaInicio),
-                            FechaFin = dr.IsDBNull(iFechaFin) ? (DateTime?)null : dr.GetDateTime(iFechaFin),
+                            FechaInicio = dr["contrato_fecha_inicio"] == DBNull.Value
+                                          ? DateTime.MinValue
+                                          : (DateTime)dr["contrato_fecha_inicio"],
 
-                            Salario = dr.IsDBNull(iSalario) ? (decimal?)null : dr.GetDecimal(iSalario),
-                            ModoPago = dr.IsDBNull(iModoPago) ? null : dr.GetString(iModoPago),
-                            Observaciones = dr.IsDBNull(iObs) ? null : dr.GetString(iObs),
+                            FechaFin = dr["contrato_fecha_fin"] as DateTime?,
 
-                            TarifaHora = dr.IsDBNull(iTarifaHora) ? (decimal?)null : dr.GetDecimal(iTarifaHora),
-                            HorasSemanales = dr.IsDBNull(iHorasSem) ? (int?)null : dr.GetInt32(iHorasSem),
-                            DescripcionFunciones = dr.IsDBNull(iDescFunciones) ? null : dr.GetString(iDescFunciones),
-                            DocumentoUrl = dr.IsDBNull(iDocUrl) ? null : dr.GetString(iDocUrl)
+                            Salario = dr["contrato_salario"] as decimal?,
+                            Observaciones = dr["contrato_observaciones"] as string,
+
+                            TarifaHora = dr["contrato_tarifa_hora"] as decimal?,
+                            HorasSemanales = dr["contrato_horas_semanales"] as int?,
+                            DescripcionFunciones = dr["contrato_descripcion_funciones"] as string,
+
+                            ModoPagoId = (int)(dr.IsDBNull(dr.GetOrdinal("modo_pago_id"))
+                            ? (int?)null
+                            : dr.GetInt32(dr.GetOrdinal("modo_pago_id"))),
+
+                            ModoPagoNombre = dr["modo_pago_nombre"] as string,
+
+                            DocumentoUrl = dr["contrato_documento_url"] as string
                         });
                     }
                 }
             }
-            finally
+            catch
             {
-                _accesoSQL.CerrarConexion();
+                throw;
             }
 
             return lista;
         }
+
 
 
 
