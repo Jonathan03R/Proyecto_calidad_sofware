@@ -69,6 +69,7 @@
     <Compile Include="HoraTrabajada.cs" />
     <Compile Include="ImpuestoRentaAcumulado.cs" />
     <Compile Include="ImpuestoRentaTramo.cs" />
+    <Compile Include="ModoPago.cs" />
     <Compile Include="Nominas.cs" />
     <Compile Include="Parametro.cs" />
     <Compile Include="Periodo.cs" />
