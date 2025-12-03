@@ -26,8 +26,10 @@ namespace capa_aplicacion.sevicios
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al obtener tipos de jornada", ex);
+                System.Diagnostics.Debug.WriteLine($"Error al obtener tipos de jornada: {ex.Message}");
+                throw; 
             }
+
             finally
             {
                 _conexion.CerrarConexion();

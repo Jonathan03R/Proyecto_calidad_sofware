@@ -20,7 +20,6 @@ namespace capa_aplicacion.servicios
         private readonly TiposHorasExtrasRepositorio _tiposHorasExtras;
         private readonly PeriodosRepositorio _periodos;
 
-
         public NominasServicios()
         {
             _conexion = new AccesoSQLServer();
@@ -48,7 +47,6 @@ namespace capa_aplicacion.servicios
             if (periodo.EsProcesado())
                 throw new InvalidOperationException("el periodo ya está procesado.");
 
-
             var nomina = new Nomina
             {
                 Periodo = periodo,
@@ -59,8 +57,6 @@ namespace capa_aplicacion.servicios
             {
                 ValidarExistenciaNomina(periodo.PeriodoId);
                 var trabajadores = ObtenerTrabajadoresConContratoActivo();
-                //var tiposHorasExtras = _tiposHorasExtras.ObtenerTiposHorasExtrasActivos();
-
                 var nominaId = CrearCabeceraNomina(periodo.PeriodoId);
                 nomina.NominaId = nominaId;
                 nomina.NominaEstado = "Procesando";
@@ -87,7 +83,7 @@ namespace capa_aplicacion.servicios
             var nominas = _nominas.ObtenerNominasEnPeriodo(periodoId);
             if (!nominas.Any()) return;
 
-            var nomina = nominas.First();
+            var nomina = nominas[0];
             if (nomina.EsExitosa())
                 throw new InvalidOperationException($"La nómina ya fue procesada exitosamente para el periodo {periodoId}.");
             if (nomina.EstaProcesando())
@@ -116,8 +112,6 @@ namespace capa_aplicacion.servicios
         {
             return _nominas.IniciarProcesoPorPeriodo(periodoId, "Nómina generada automáticamente");
         }
-
-        // Nota: aquí ya NO pasamos fechaInicio/fechaFin sueltos.
         private bool ProcesarDetallesNomina(
             Nomina nomina,
             List<Trabajador> trabajadores,
@@ -233,7 +227,6 @@ namespace capa_aplicacion.servicios
             return algunError;
         }
 
-
         private void FinalizarNomina(Nomina nomina, bool huboErrores)
         {
             nomina.CalcularTotales();
@@ -249,30 +242,29 @@ namespace capa_aplicacion.servicios
                 estado
             );
         }
-
         public List<NominasProcesadasDTO> ListarDetallesNominasProcesadas(
             int? trabajadorId = null,
             int? nominaId = null,
             int? periodoId = null,
             string estadoNomina = null)
-        {
-            List<NominasProcesadasDTO> listaDetalles;
-            try
-            {
-                _conexion.AbrirConexion();
-                listaDetalles = _detalleNomina.ListarDetallesNominasProcesadas(
-                    trabajadorId,
-                    nominaId,
-                    periodoId,
-                    estadoNomina);
-                _conexion.CerrarConexion();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return listaDetalles;
-        }
+                {
+                    try
+                    {
+                        _conexion.AbrirConexion();
+
+                        return _detalleNomina.ListarDetallesNominasProcesadas(
+                            trabajadorId,
+                            nominaId,
+                            periodoId,
+                            estadoNomina
+                        );
+                    }
+                    finally
+                    {
+                        _conexion.CerrarConexion();
+                    }
+                }
+
         public List<ContratoPorPeriodoDTO> ListarContratosPorPeriodo(int periodoId)
         {
             _conexion.AbrirConexion();
@@ -307,9 +299,5 @@ namespace capa_aplicacion.servicios
                 _conexion.CerrarConexion();
             }
         }
-
-
-
-
     }
 }

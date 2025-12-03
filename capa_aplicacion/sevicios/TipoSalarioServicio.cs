@@ -22,18 +22,10 @@ namespace capa_aplicacion.sevicios.Tipos_salarios
 
         public List<TipoSalario> ObtenerTiposSalarios()
         {
-            List<TipoSalario> tiposSalariosData;
             try
             {
                 conexion.AbrirConexion();
-
-                tiposSalariosData = tiposSalariosRepositorio.ObtenerTiposSalarios();
-
-                return tiposSalariosData;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al obtener los tipos de salarios", ex);
+                return tiposSalariosRepositorio.ObtenerTiposSalarios();
             }
             finally
             {

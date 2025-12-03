@@ -19,7 +19,6 @@ namespace capa_aplicacion.sevicios
             conexion = new AccesoSQLServer();
             cargosDAO = new CargosRepositorio(conexion);
 
-
         }
 
         public List<Cargo> ObtenerCargos(int? cargoId = null, string cargoNombre = null)

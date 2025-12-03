@@ -333,7 +333,6 @@ namespace capa_persistencia.modulo_principal
                 {
                     if (dr.Read())
                     {
-                        // OJO: mismos nombres de columnas que en el SELECT del SP
                         resumen.TotalContratos = dr.IsDBNull(dr.GetOrdinal("TotalContratos"))
                             ? 0 : dr.GetInt32(dr.GetOrdinal("TotalContratos"));
 
