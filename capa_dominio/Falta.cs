@@ -8,38 +8,29 @@ namespace capa_dominio
 {
     public class Falta
     {
-       
-        private int faltaId;
-        private Trabajador trabajador;
-        private DateTime faltaFecha; // 24-10-2025
-        private string faltaTipo;
-        private decimal faltaDiasNombres; // 3 dias
-        private string faltaObservaciones;
-        private string faltaDocumentoSoporte;
-
         
-        public int FaltaId { get => faltaId; set => faltaId = value; }
-        public Trabajador Trabajador { get => trabajador; set => trabajador = value; }
-        public DateTime FaltaFecha { get => faltaFecha; set => faltaFecha = value; }
-        public string FaltaTipo { get => faltaTipo; set => faltaTipo = value; }
-        public decimal faltaDias { get => faltaDiasNombres; set => faltaDiasNombres = value; }
-        public string FaltaObservaciones { get => faltaObservaciones; set => faltaObservaciones = value; }
-        public string FaltaDocumentoSoporte { get => faltaDocumentoSoporte; set => faltaDocumentoSoporte = value; }
+        public int FaltaId { get ; set; }
+        public Trabajador Trabajador { get; set ; }
+        public DateTime FaltaFecha { get ; set ; }
+        public string FaltaTipo { get ; set ; }
+        public decimal faltaDias { get ; set ; }
+        public string FaltaObservaciones { get ; set ; }
+        public string FaltaDocumentoSoporte { get ; set ; }
 
         
         public bool EsJustificada()
         {
-            return faltaTipo == "Justificada";
+            return FaltaTipo == "Justificada";
         }
 
         public bool EsInjustificada()
         {
-            return faltaTipo == "Injustificada";
+            return FaltaTipo == "Injustificada";
         }
 
         public bool EsPorEnfermedad()
         {
-            return faltaTipo == "Enfermedad";
+            return FaltaTipo == "Enfermedad";
         }
 
     }
