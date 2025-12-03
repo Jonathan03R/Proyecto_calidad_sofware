@@ -193,11 +193,11 @@ const NominaUI = (function () {
 
     function obtenerTipoPension(id) {
         const map = {
-            1: 'AFP Integra',
-            2: 'AFP Prima',
-            3: 'AFP Hábitat',
-            4: 'AFP Profuturo',
-            5: 'ONP'
+            1: 'ONP',
+            2: 'AFP Integra',
+            3: 'AFP Prima',
+            4: 'AFP Habitat',
+            5: 'AFP Profuturo'
         };
         return map[id] || '—';
     }
