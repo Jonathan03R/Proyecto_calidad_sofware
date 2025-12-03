@@ -531,7 +531,6 @@
     </Compile>
     <Compile Include="Models\Menu\MenuItem.cs" />
     <Compile Include="Models\ViewModels\EmpleadoResultadoVM.cs" />
-    <Compile Include="Models\ViewModels\NominaPeriodoVM.cs" />
     <Compile Include="Models\ViewModels\ParametrosOficialesVM.cs" />
     <Compile Include="Models\ViewModels\ProcesarNominaResultadoVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -554,14 +553,12 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\css\contratos.css" />
-    <Content Include="Content\css\empleados.css" />
     <Content Include="Content\css\historial.css" />
     <Content Include="Content\css\layout.css" />
     <Content Include="Content\css\listavigente.css" />
     <Content Include="Content\css\nomina.css" />
     <Content Include="Content\css\reporte.css" />
     <Content Include="Content\css\parametros.css" />
-    <Content Include="Content\css\procesar.css" />
     <Content Include="Content\css\_CardResumenContratos.css" />
     <Content Include="Content\css\_FiltrosContratos.css" />
     <Content Include="Content\css\_ModalNuevoContrato.css" />
@@ -595,6 +592,16 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
+    <Content Include="Scripts\contrato\contratos.events.js" />
+    <Content Include="Scripts\contrato\contratos.api.js" />
+    <Content Include="Scripts\contrato\contratos.form.js" />
+    <Content Include="Scripts\contrato\contratos.data.js" />
+    <Content Include="Scripts\contrato\contratos.render.js" />
+    <Content Include="Scripts\contrato\contratos.catalogs.js" />
+    <Content Include="Scripts\contrato\contratos.modal.js" />
+    <Content Include="Scripts\contrato\contratos.validation.js" />
+    <Content Include="Scripts\contrato\contratos.utils.js" />
+    <Content Include="Scripts\contrato\contratos.config.js" />
     <Content Include="Scripts\contrato\contratos.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />

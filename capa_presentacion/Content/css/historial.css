@@ -107,7 +107,6 @@ select, input[type="date"] {
     }
 
     .tabla-historial thead th {
-        /*        background: #f7f8fb;*/
         text-align: left;
         font-size: 16px;
         font-weight: 500;
