@@ -20,6 +20,7 @@ namespace capa_dominio.dto
         private decimal? tarifaHora;
 
         private int modoPagoId;
+        private string modoPagoNombre;
         private string documentoUrl;
         private string descripcionFunciones;
         private string observaciones;
@@ -35,6 +36,7 @@ namespace capa_dominio.dto
         public decimal? TarifaHora { get => tarifaHora; set => tarifaHora = value; }
         public int? HorasSemanales { get; set; }
         public int ModoPagoId { get => modoPagoId; set => modoPagoId = value; }
+        public string ModoPagoNombre { get => modoPagoNombre; set => modoPagoNombre = value; }
         public string DocumentoUrl { get => documentoUrl; set => documentoUrl = value; }
         public string DescripcionFunciones { get => descripcionFunciones; set => descripcionFunciones = value; }
         public string Observaciones { get => observaciones; set => observaciones = value; }
