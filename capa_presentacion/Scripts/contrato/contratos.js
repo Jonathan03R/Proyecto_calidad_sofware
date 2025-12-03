@@ -316,16 +316,12 @@
                     );
                 });
 
-                // Para NUEVO contrato sigues dejando por defecto 1
+                // Para NUEVO contrato → NO seleccionar nada por defecto
                 if (selector === undefined || selector === '#nc_tipo_jornada_id') {
                     if (selectedId != null) {
                         $select.val(String(selectedId));
-                    } else {
-                        $select.val("1");
-                    }
-                } else if (selectedId != null) {
-                    $select.val(String(selectedId));
-                }
+                    } 
+                } 
             })
             .fail(function () {
                 console.error('Error al cargar tipos de jornada');
@@ -343,7 +339,7 @@
             AreaId: $('#nc_area_id').val() ? Number($('#nc_area_id').val()) : null,
             TipoPensionId: $('#nc_tipo_pension_id').val() ? Number($('#nc_tipo_pension_id').val()) : null,
             TipoSalarioId: $('#nc_tipo_salario_id').val() ? Number($('#nc_tipo_salario_id').val()) : null,
-            TipoJornadaId: $('#nc_tipo_jornada_id').val() ? Number($('#nc_tipo_jornada_id').val()) : 1,
+            TipoJornadaId: $('#nc_tipo_jornada_id').val() ? Number($('#nc_tipo_jornada_id').val()) : null,
 
             FechaInicio: $('#nc_fecha_inicio').val(),
             FechaFin: $('#nc_fecha_fin').val() || null,
@@ -389,6 +385,11 @@
             $('#nc_mensaje').text('Ingrese la fecha de inicio.');
             return;
         }
+        if (!contrato.TipoJornadaId) {
+            $('#nc_mensaje').text('Seleccione el tipo de jornada.');
+            return;
+        }
+
 
         // Salario válido (> 0)
         if (!contrato.Salario || isNaN(contrato.Salario) || contrato.Salario <= 0) {
@@ -409,6 +410,20 @@
         if (fIni && fFin && fFin < fIni) {
             $('#nc_mensaje').text('La fecha de fin no puede ser anterior a la fecha de inicio.');
             return;
+        }
+
+        // ===============================
+        // 🔵 VALIDACIÓN MÍNIMO 3 MESES
+        // ===============================
+        if (fIni && fFin) {
+            const diffMeses =
+                (fFin.getFullYear() - fIni.getFullYear()) * 12 +
+                (fFin.getMonth() - fIni.getMonth());
+
+            if (diffMeses < 3) {
+                $('#nc_mensaje').text('El tiempo mínimo de contrato debe ser de al menos 3 meses.');
+                return;
+            }
         }
 
         // --------------------------------------------
