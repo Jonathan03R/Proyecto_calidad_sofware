@@ -595,6 +595,16 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
+    <Content Include="Scripts\contrato\contratos.events.js" />
+    <Content Include="Scripts\contrato\contratos.api.js" />
+    <Content Include="Scripts\contrato\contratos.form.js" />
+    <Content Include="Scripts\contrato\contratos.data.js" />
+    <Content Include="Scripts\contrato\contratos.render.js" />
+    <Content Include="Scripts\contrato\contratos.catalogs.js" />
+    <Content Include="Scripts\contrato\contratos.modal.js" />
+    <Content Include="Scripts\contrato\contratos.validation.js" />
+    <Content Include="Scripts\contrato\contratos.utils.js" />
+    <Content Include="Scripts\contrato\contratos.config.js" />
     <Content Include="Scripts\contrato\contratos.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
