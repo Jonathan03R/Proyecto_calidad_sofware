@@ -1,8 +1,17 @@
-(function () {
+(function ($) {
 
     'use strict';
 
     const $page = $('#page-contratos');
+    if (!$page.length) {
+        return; // No estamos en la página de contratos
+    }
+
+    console.log('contratos.js cargado');
+
+    // ================================
+    //  URLs (desde data-* del <section>)
+    // ================================
     const URLS = {
         listarActivos: $page.data('url-listar-activos'),
         listarSin: $page.data('url-listar-sin'),
@@ -16,13 +25,23 @@
         resumenContratos: $page.data('url-resumen-contratos')
     };
 
-    const Cache = { activos: [], sin: [] };
+    // Cache en memoria
+    const Cache = {
+        activos: [],
+        sin: []
+    };
 
+    // Pestaña actual: 'activos' | 'sin'
+    let currentTab = 'activos';
+
+    // ================================
+    //  Helpers
+    // ================================
     const norm = s => (s ?? '').toString()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         .toLowerCase().trim();
 
-    const coincide = (it, qn) =>
+    const coincideTexto = (it, qn) =>
         !qn ||
         norm(it.EmpleadoNombre).includes(qn) ||
         norm(it.Documento).includes(qn);
@@ -32,28 +51,70 @@
         const d = new Date(v);
         return isNaN(d)
             ? String(v)
-            : d.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            : d.toLocaleDateString('es-PE', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
     };
 
     const esc = t => {
         if (t == null) return '';
-        const m = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        const m = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
         return String(t).replace(/[&<>"']/g, s => m[s]);
     };
 
     const emptyRow = (c, t) =>
-        `<tr><td colspan="${c}"><div class="empty-state"><div class="empty-state-icon">📋</div><p>${esc(t)}</p></div></td></tr>`;
+        `<tr><td colspan="${c}">
+            <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <p>${esc(t)}</p>
+            </div>
+        </td></tr>`;
 
     const loadingRow = c =>
-        `<tr><td colspan="${c}"><div class="loading"><div class="spinner"></div><p>Cargando...</p></div></td></tr>`;
+        `<tr><td colspan="${c}">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Cargando...</p>
+            </div>
+        </td></tr>`;
 
-    const tabActiva = () => $('.tab-btn.is-active').data('tab') || 'activos';
+    const tabActiva = () => currentTab;
 
-    // ---------- Render tablas ----------
+    // ================================
+    //  Mostrar / ocultar filtro Estado + botones
+    // ================================
+    function toggleFiltroEstado(tab) {
+        // bloque que contiene el select de estado
+        const $estadoBlock = $('#fc_estado_block');
+        // bloque que contiene los botones Filtro / Limpiar
+        const $acciones = $('.filtro-acciones');
+
+        if (tab === 'activos') {
+            $estadoBlock.show();
+            $acciones.show();
+        } else {
+            $estadoBlock.hide();
+            $acciones.hide();
+        }
+    }
+
+    // ================================
+    //  Render de tablas
+    // ================================
     function renderActivos(items) {
         const $tb = $('#tbody-contratos');
+        if (!$tb.length) return;
+
         if (!items.length) {
-            $tb.html(emptyRow(7, 'Sin contratos activos'));
+            $tb.html(emptyRow(7, 'Sin contratos para los filtros seleccionados'));
             $('#txt-total').text('0');
             return;
         }
@@ -83,6 +144,8 @@
 
     function renderSin(items) {
         const $tb = $('#tbody-sin-contrato');
+        if (!$tb.length) return;
+
         if (!items.length) {
             $tb.html(emptyRow(3, 'No hay empleados sin contrato'));
             $('#txt-total-sin').text('0');
@@ -104,71 +167,159 @@
         $('#txt-total-sin').text(`${items.length} sin contrato`);
     }
 
+    // ================================
+    //  Carga desde servidor
+    // ================================
     function cargarActivos() {
         const $tb = $('#tbody-contratos');
-        $tb.html(loadingRow(7));
-        $('#txt-total').text('');
-        $('#paginador').empty();
+        if ($tb.length) {
+            $tb.html(loadingRow(7));
+            $('#txt-total').text('');
+        }
 
-        $.get(URLS.listarActivos, resp => {
-            if (!resp || !resp.consultaExitosa) {
-                $tb.html(emptyRow(7, resp?.mensaje || 'No se pudieron obtener los contratos activos'));
-                return;
-            }
-            Cache.activos = resp.data || [];
-            aplicarFiltro();
-        }).fail(() => $tb.html(emptyRow(7, 'Error de conexión')));
+        $.getJSON(URLS.listarActivos)
+            .done(function (resp) {
+                console.log('respuesta ListarActivos', resp);
+                if (!resp || !resp.consultaExitosa) {
+                    if ($tb.length) {
+                        $tb.html(emptyRow(7, resp && resp.mensaje
+                            ? resp.mensaje
+                            : 'No se pudieron obtener los contratos activos'));
+                    }
+                    return;
+                }
+
+                Cache.activos = resp.data || [];
+                aplicarFiltro(); // aplica filtros en cliente
+            })
+            .fail(function () {
+                if ($tb.length) {
+                    $tb.html(emptyRow(7, 'Error de conexión al obtener los contratos activos'));
+                }
+            });
     }
 
     function cargarSin() {
         const $tb = $('#tbody-sin-contrato');
+        if (!$tb.length) return;
+
         $tb.html(loadingRow(3));
-        $.get(URLS.listarSin, resp => {
-            if (!resp || !resp.consultaExitosa) {
-                $tb.html(emptyRow(3, resp?.mensaje || 'No se pudo obtener la lista'));
-                return;
-            }
-            Cache.sin = resp.data || [];
-            aplicarFiltro();
-        }).fail(() => $tb.html(emptyRow(3, 'Error de conexión')));
+
+        $.getJSON(URLS.listarSin)
+            .done(function (resp) {
+                if (!resp || !resp.consultaExitosa) {
+                    $tb.html(emptyRow(3, resp && resp.mensaje
+                        ? resp.mensaje
+                        : 'No se pudo obtener la lista de empleados sin contrato'));
+                    return;
+                }
+
+                Cache.sin = resp.data || [];
+                if (tabActiva() === 'sin') {
+                    aplicarFiltro();
+                }
+            })
+            .fail(function () {
+                $tb.html(emptyRow(3, 'Error de conexión al obtener empleados sin contrato'));
+            });
     }
 
+    // ================================
+    //  Aplicar filtros (texto + estado)
+    // ================================
     function aplicarFiltro() {
-        const qn = norm($('#fc_query').val());
-        if (tabActiva() === 'activos') {
-            renderActivos((Cache.activos || []).filter(x => coincide(x, qn)));
+        const qn = norm($('#fc_query').val() || '');
+        const tab = tabActiva();
+
+        if (tab === 'activos') {
+            const estadoVal = ($('#fc_estado').val() || 'TODOS').toString().toUpperCase();
+            let lista = (Cache.activos || []).slice();
+
+            if (qn) {
+                lista = lista.filter(x => coincideTexto(x, qn));
+            }
+
+            if (estadoVal !== 'TODOS') {
+                // "ACTIVOS" -> "ACTIVO", "INACTIVOS" -> "INACTIVO", etc.
+                const valorEstado = estadoVal.replace(/S$/, '');
+                lista = lista.filter(x =>
+                    (x.EstadoContratoNombre || '')
+                        .toString()
+                        .toUpperCase()
+                        .indexOf(valorEstado) >= 0
+                );
+            }
+
+            renderActivos(lista);
         } else {
-            renderSin((Cache.sin || []).filter(x => coincide(x, qn)));
+            // SIN CONTRATOS: solo filtro por texto
+            let lista = (Cache.sin || []).slice();
+            if (qn) {
+                lista = lista.filter(x => coincideTexto(x, qn));
+            }
+            renderSin(lista);
         }
     }
 
-    // ---------- Eventos de tabs / filtro ----------
-    $(document).on('click', '.tab-btn', function () {
+    // ================================
+    //  Tabs y filtros
+    // ================================
+    $(document).on('click', '[data-tab]', function (e) {
+        e.preventDefault();
+
         const tab = $(this).data('tab');
-        $('.tab-btn').removeClass('is-active');
+        if (!tab) return;
+
+        currentTab = tab;
+
+        // Clases visuales (si existen)
+        $('[data-tab]').removeClass('is-active');
         $(this).addClass('is-active');
+
         $('.tab-panel').removeClass('is-active');
         $('#tab-' + tab).addClass('is-active');
-        tab === 'activos' ? cargarActivos() : cargarSin();
+
+        toggleFiltroEstado(tab);
+
+        if (tab === 'activos') {
+            aplicarFiltro();
+        } else {
+            if (!Cache.sin.length) {
+                cargarSin();
+            } else {
+                aplicarFiltro();
+            }
+        }
     });
 
-    $(document).on('click', '#fc_filtrar', aplicarFiltro);
-    $(document).on('keydown', '#fc_query', e => {
+    $(document).on('click', '#fc_filtrar', function () {
+        aplicarFiltro();
+    });
+
+    $(document).on('keydown', '#fc_query', function (e) {
         if (e.key === 'Enter') {
             e.preventDefault();
             aplicarFiltro();
         }
     });
 
-    let t;
+    let tFiltro;
     $(document).on('input', '#fc_query', function () {
-        clearTimeout(t);
-        t = setTimeout(aplicarFiltro, 150);
+        clearTimeout(tFiltro);
+        tFiltro = setTimeout(aplicarFiltro, 150);
     });
 
-    $(document).on('reset', '#form-filtros-contratos', () => setTimeout(aplicarFiltro, 0));
+    $(document).on('reset', '#form-filtros-contratos', function () {
+        setTimeout(function () {
+            $('#fc_query').val('');
+            $('#fc_estado').val('TODOS');
+            aplicarFiltro();
+        }, 0);
+    });
 
-    // ---------- Modal helpers ----------
+    // ================================
+    //  Modales abrir/cerrar
+    // ================================
     function openModal(id) {
         const $m = $('#' + id);
         $m.attr('aria-hidden', 'false').addClass('is-open');
@@ -190,12 +341,19 @@
     });
 
     $(document).on('keydown', function (e) {
-        if (e.key === 'Escape') closeModal('modal-nuevo-contrato');
+        if (e.key === 'Escape') {
+            closeModal('modal-nuevo-contrato');
+            closeModal('modal-editar-contrato');
+        }
     });
 
-    // ---------- Cargar Áreas ----------
+    // ================================
+    //  Cargar combos (área, cargo, etc.)
+    // ================================
     function cargarAreas(selector, selectedId) {
         const $select = $(selector || '#nc_area_id');
+        if (!$select.length) return;
+
         $select.empty().append('<option value="">Seleccione área</option>');
 
         $.getJSON(URLS.obtenerAreas)
@@ -218,10 +376,10 @@
             });
     }
 
-
-    // ---------- Cargar Cargos (nuevo / editar) ----------
     function cargarCargos(selector, selectedId) {
         const $select = $(selector || '#nc_cargo_id');
+        if (!$select.length) return;
+
         $select.empty().append('<option value="">Seleccione cargo</option>');
 
         $.getJSON(URLS.obtenerCargos)
@@ -244,14 +402,26 @@
             });
     }
 
-    // ---------- Cargar Pensiones ----------
     function cargarPensiones(selector, selectedId) {
-        const $select = $(selector || '#nc_tipo_pension_id');
+        const $select = (selector ? $(selector) : $('#nc_tipo_pension_id'));
+        if (!$select.length) return;
+
         $select.empty().append('<option value="">Seleccione</option>');
 
         $.getJSON(URLS.obtenerPensiones)
-            .done(function (data) {
-                (data || []).forEach(function (p) {
+            .done(function (resp) {
+                // resp puede venir como {consultaExitosa, data} o como array
+                let lista = [];
+
+                if (Array.isArray(resp)) {
+                    lista = resp;
+                } else if (resp && resp.consultaExitosa && Array.isArray(resp.data)) {
+                    lista = resp.data;
+                } else {
+                    console.error('Error lógico al cargar pensiones:', resp && resp.mensaje);
+                }
+
+                (lista || []).forEach(function (p) {
                     const texto = p.entidad
                         ? `${p.nombre} (${p.entidad})`
                         : p.nombre;
@@ -268,15 +438,15 @@
                     $select.val(String(selectedId));
                 }
             })
-            .fail(function () {
-                console.error('Error al cargar pensiones');
+            .fail(function (xhr) {
+                console.error('Error al cargar pensiones', xhr.status, xhr.responseText);
             });
     }
 
-
-    // ---------- Cargar Tipos de Salario (nuevo / editar) ----------
     function cargarTiposSalarios(selector, selectedId) {
         const $select = $(selector || '#nc_tipo_salario_id');
+        if (!$select.length) return;
+
         $select.empty().append('<option value="">Seleccione</option>');
 
         $.getJSON(URLS.obtenerTiposSalarios)
@@ -299,10 +469,10 @@
             });
     }
 
-
-    // ---------- Cargar jornadas ----------
     function cargarJornadas(selector, selectedId) {
         const $select = $(selector || '#nc_tipo_jornada_id');
+        if (!$select.length) return;
+
         $select.empty().append('<option value="">Seleccione</option>');
 
         $.getJSON(URLS.obtenerJornadas)
@@ -316,7 +486,6 @@
                     );
                 });
 
-                // Para NUEVO contrato sigues dejando por defecto 1
                 if (selector === undefined || selector === '#nc_tipo_jornada_id') {
                     if (selectedId != null) {
                         $select.val(String(selectedId));
@@ -332,9 +501,10 @@
             });
     }
 
+    // ================================
+    //  Crear contrato (modal nuevo)
+    // ================================
 
-    // ===== Confirmar creación de contrato =====
-    // ===== Confirmar creación de contrato =====
     $(document).on('click', '#nc_confirmar', function () {
 
         const contrato = {
@@ -348,7 +518,10 @@
             FechaInicio: $('#nc_fecha_inicio').val(),
             FechaFin: $('#nc_fecha_fin').val() || null,
 
-            Salario: $('#nc_remuneracion').val() ? parseFloat($('#nc_remuneracion').val()) : null,
+            Salario: $('#nc_remuneracion').val()
+                ? parseFloat($('#nc_remuneracion').val())
+                : null,
+
             HorasSemanales: $('#nc_horas_semanales').val()
                 ? parseInt($('#nc_horas_semanales').val(), 10)
                 : null,
@@ -362,9 +535,7 @@
             Observaciones: $('#nc_observaciones').val() || null
         };
 
-        // ---------- VALIDACIONES EN CLIENTE ----------
-
-        // Campos obligatorios
+        // Validaciones (igual que antes)
         if (!contrato.TrabajadorId) {
             $('#nc_mensaje').text('Falta el trabajador.');
             return;
@@ -389,20 +560,15 @@
             $('#nc_mensaje').text('Ingrese la fecha de inicio.');
             return;
         }
-
-        // Salario válido (> 0)
         if (!contrato.Salario || isNaN(contrato.Salario) || contrato.Salario <= 0) {
             $('#nc_mensaje').text('Ingrese un salario mayor a 0.');
             return;
         }
-
-        // Horas semanales válidas (> 0)
         if (!contrato.HorasSemanales || isNaN(contrato.HorasSemanales) || contrato.HorasSemanales <= 0) {
             $('#nc_mensaje').text('Ingrese las horas semanales (mayores a 0).');
             return;
         }
 
-        // Validar fechas (fin >= inicio si hay fecha fin)
         const fIni = contrato.FechaInicio ? new Date(contrato.FechaInicio) : null;
         const fFin = contrato.FechaFin ? new Date(contrato.FechaFin) : null;
 
@@ -411,7 +577,6 @@
             return;
         }
 
-        // --------------------------------------------
         $('#nc_mensaje').text('Guardando contrato...');
 
         $.ajax({
@@ -424,6 +589,7 @@
                     $('#nc_mensaje').text('Contrato creado correctamente.');
                     setTimeout(function () {
                         $('#nc_mensaje').text('');
+
                         if (window.ContratosUI) {
                             window.ContratosUI.recargarActivos();
                             window.ContratosUI.recargarSin && window.ContratosUI.recargarSin();
@@ -433,7 +599,9 @@
                         $('[data-modal-close="modal-nuevo-contrato"]').click();
                     }, 700);
                 } else {
-                    $('#nc_mensaje').text(resp && resp.mensaje ? resp.mensaje : 'No se pudo crear el contrato.');
+                    $('#nc_mensaje').text(resp && resp.mensaje
+                        ? resp.mensaje
+                        : 'No se pudo crear el contrato.');
                 }
             },
             error: function () {
@@ -442,8 +610,7 @@
         });
     });
 
-
-    // ===== Click en "Nuevo Contrato" desde TAB SIN CONTRATO =====
+    // Click en "Nuevo Contrato" desde TAB SIN CONTRATO
     $(document).on('click', '#tbody-sin-contrato [data-trabid]', function () {
         const id = Number($(this).data('trabid'));
         const item = (Cache.sin || []).find(x => Number(x.TrabajadorId) === id);
@@ -453,7 +620,7 @@
         $('#nc_nombre').val(item.EmpleadoNombre || '');
         $('#nc_dni').val(item.Documento || '');
 
-        // Limpiar campos del contrato
+        // limpiar
         $('#nc_cargo_id').val('');
         $('#nc_area_id').val('');
         $('#nc_tipo_pension_id').val('');
@@ -479,7 +646,9 @@
         setTimeout(() => $('#nc_cargo_id').trigger('focus'), 50);
     });
 
-    // ---------- Recalcular tarifa hora ----------
+    // ================================
+    //  Recalcular tarifa hora
+    // ================================
     function recalcularTarifaHora() {
         const salario = parseFloat($('#nc_remuneracion').val());
         const horas = parseInt($('#nc_horas_semanales').val(), 10);
@@ -501,7 +670,9 @@
 
     $(document).on('input', '#nc_remuneracion, #nc_horas_semanales', recalcularTarifaHora);
 
-    // ===== Abrir modal Editar desde contratos activos =====
+    // ================================
+    //  Editar contrato (modal editar)
+    // ================================
     $(document).on('click', '.btn-editar-contrato', function () {
         const contratoId = Number($(this).data('contratoid'));
         const item = (Cache.activos || []).find(x => Number(x.ContratoId) === contratoId);
@@ -513,7 +684,6 @@
         $('#ec_motivo').val('');
         $('#ec_mensaje').text('');
 
-        // Inputs simples
         $('#ec_salario').val(item.Salario || '');
         $('#ec_modo_pago').val(item.ModoPago || '');
         $('#ec_horas_semanales').val(item.HorasSemanales || '');
@@ -523,7 +693,6 @@
         $('#ec_descripcion_funciones').val(item.DescripcionFunciones || '');
         $('#ec_observaciones').val(item.Observaciones || '');
 
-        // Llenar combos + seleccionar el valor de ese contrato
         cargarAreas('#ec_area_id', item.AreaId);
         cargarPensiones('#ec_tipo_pension_id', item.TipoPensionId);
         cargarCargos('#ec_cargo_id', item.CargoId);
@@ -533,8 +702,6 @@
         openModal('modal-editar-contrato');
     });
 
-
-    // ===== Guardar cambios del contrato =====
     $(document).on('click', '#ec_confirmar', function () {
         const contratoId = Number($('#ec_contrato_id').val());
         const motivo = $('#ec_motivo').val().trim();
@@ -575,8 +742,6 @@
             Observaciones: $('#ec_observaciones').val() || null
         };
 
-        // ---------- VALIDACIONES EN CLIENTE (EDICIÓN) ----------
-
         if (data.Salario == null || isNaN(data.Salario) || data.Salario <= 0) {
             $('#ec_mensaje').text('Ingrese un salario mayor a 0.');
             return;
@@ -595,7 +760,6 @@
             return;
         }
 
-        // -------------------------------------------------------
         $('#ec_mensaje').text('Guardando cambios...');
 
         $.ajax({
@@ -607,6 +771,7 @@
                     $('#ec_mensaje').text('Contrato actualizado correctamente.');
                     if (window.ContratosUI) {
                         window.ContratosUI.recargarActivos();
+                        window.ContratosUI.recargarResumen && window.ContratosUI.recargarResumen();
                     }
                     setTimeout(function () {
                         $('#ec_mensaje').text('');
@@ -624,7 +789,9 @@
         });
     });
 
-
+    // ================================
+    //  Resumen de tarjetas
+    // ================================
     function cargarResumenContratos() {
         $.get(URLS.resumenContratos, function (resp) {
             if (!resp || !resp.exito || !resp.data) {
@@ -643,14 +810,21 @@
         });
     }
 
-
-    // ---------- Primera carga ----------
-
+    // ================================
+    //  Inicialización
+    // ================================
     $(function () {
-        cargarResumenContratos();
-        cargarActivos();
-    });
+        console.log('inicializando página de contratos...');
 
+        currentTab = 'activos';
+        toggleFiltroEstado('activos');
+
+        try { cargarResumenContratos(); } catch (e) { console.warn(e); }
+        try { cargarActivos(); } catch (e) { console.error(e); }
+        try { cargarSin(); } catch (e) { console.error(e); }
+
+        console.log('Página de contratos inicializada correctamente.');
+    });
 
     // Exponer recargas globales
     window.ContratosUI = {

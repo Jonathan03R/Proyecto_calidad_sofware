@@ -19,12 +19,19 @@
 
     @Html.Partial("_CardResumenContratos")
     @Html.Partial("_FiltrosContratos")
-    @Html.Partial("_TablaActivos")
-    @Html.Partial("_TablaSinContrato")
+
+    <!-- Panel para CONTRATOS ACTIVOS -->
+    <div id="tab-activos" class="tab-panel is-active">
+        @Html.Partial("_TablaActivos")
+    </div>
+
+    <!-- Panel para SIN CONTRATOS -->
+    <div id="tab-sin" class="tab-panel">
+        @Html.Partial("_TablaSinContrato")
+    </div>
+
     @Html.Partial("_ModalNuevoContrato")
     @Html.Partial("_ModalEditarContrato")
-
-
 </section>
 
 <link rel="stylesheet" href="~/Content/css/contratos.css" />
@@ -34,7 +41,7 @@
 <link rel="stylesheet" href="~/Content/css/_ModalNuevoContrato.css" />
 
 @section Scripts{
-    <script src="~/Scripts/jquery-3.7.1.min.js"></script> <!-- importante -->
-
-    <script src="~/Scripts/contrato/contratos.js"></script>
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <!-- le ponemos versión para romper caché -->
+    <script src="~/Scripts/contrato/contratos.js?v=4"></script>
 }
