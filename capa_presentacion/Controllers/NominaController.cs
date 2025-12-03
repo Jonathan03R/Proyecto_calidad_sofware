@@ -13,16 +13,16 @@ using System.Web.Mvc;
 public class NominaController : Controller
 {
     private readonly NominasServicios _servicio;
-    private readonly ImpuestoRenta _repoImpuestoRenta;
-    private readonly Parametros _repoParametros;
+    private readonly ImpuestoRentaRepositorio _repoImpuestoRenta;
+    private readonly ParametrosRepositorio _repoParametros;
     private readonly ReporteService _reporteService;
     private readonly PeriodoService _periodoService;
 
     public NominaController()
     {
         _servicio = new NominasServicios();
-        _repoImpuestoRenta = new ImpuestoRenta();
-        _repoParametros = new Parametros();
+        _repoImpuestoRenta = new ImpuestoRentaRepositorio();
+        _repoParametros = new ParametrosRepositorio();
         _reporteService = new ReporteService();
         _periodoService = new PeriodoService();
     }
