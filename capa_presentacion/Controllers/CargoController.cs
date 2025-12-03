@@ -25,30 +25,6 @@ namespace capa_presentacion.Controllers
             return View();
         }
 
-        //[HttpGet]
-        //public JsonResult ObtenerCargos(int? cargoId = null, string cargoNombre = null)
-        //{
-        //    Boolean accionExitosa;
-        //    String mensajeRetorno;
-        //    List<Cargo> listaCargo = new List<Cargo>();
-        //    try
-        //    {
-        //        listaCargo = cargoService.ObtenerCargos(cargoId, cargoNombre);
-        //        accionExitosa = true;
-        //        mensajeRetorno = "";
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        listaCargo = null;
-        //        accionExitosa = false;
-        //        mensajeRetorno = e.Message;
-
-        //        System.Diagnostics.Debug.WriteLine("Error completo: " + e.ToString());
-        //    }
-
-        //    return Json(new { data = listaCargo, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
-
-        //}
         [HttpGet]
         public JsonResult ObtenerCargos()
         {
