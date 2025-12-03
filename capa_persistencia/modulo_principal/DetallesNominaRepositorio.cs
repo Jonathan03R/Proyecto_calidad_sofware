@@ -189,27 +189,27 @@ namespace capa_persistencia.modulo_principal
             var lista = new List<DetalleNomina>();
 
             string sql = @"
-        select 
-            contrato_id,
-            remuneracion_bruta,
-            sueldo_basico,
-            asignacion_familiar,
-            horas_extras,
-            bonos_regulares,
-            otros_ingresos,
-            aporte_essalud,
-            aporte_onp,
-            descuento_afp,
-            descuento_tardanzas,
-            descuento_faltas,
-            descuento_adelantos,
-            otros_descuentos,
-            total_ingresos,
-            total_descuentos,
-            neto_pagar
-        from nomina.detalle_nomina
-        where nomina_id = @nomina_id;
-    ";
+                select 
+                    contrato_id,
+                    remuneracion_bruta,
+                    sueldo_basico,
+                    asignacion_familiar,
+                    horas_extras,
+                    bonos_regulares,
+                    otros_ingresos,
+                    aporte_essalud,
+                    aporte_onp,
+                    descuento_afp,
+                    descuento_tardanzas,
+                    descuento_faltas,
+                    descuento_adelantos,
+                    otros_descuentos,
+                    total_ingresos,
+                    total_descuentos,
+                    neto_pagar
+                from nomina.detalle_nomina
+                where nomina_id = @nomina_id;
+            ";
 
             var cmd = _accesoSQL.ObtenerComandoSQL(sql);
             cmd.Parameters.AddWithValue("@nomina_id", nominaId);

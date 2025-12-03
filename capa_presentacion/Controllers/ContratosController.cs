@@ -65,13 +65,13 @@ namespace capa_presentacion.Controllers
                     CargoId = x.CargoId,
                     TipoSalarioId = x.TipoSalarioId,
                     Salario = x.Salario,
-                    ModoPago = x.ModoPago,
+                    ModoPago = x.ModoPagoId,
                     Observaciones = x.Observaciones,
 
                     // Otros datos por si luego los usas
                     AreaId = x.AreaId,
                     TipoPensionId = x.TipoPensionId,
-                    TipoJornadaId = x.TipoJornadaId,
+                    TipoJornadaId = 1,
                     TarifaHora = x.TarifaHora,
                     HorasSemanales = x.HorasSemanales,
                     DescripcionFunciones = x.DescripcionFunciones

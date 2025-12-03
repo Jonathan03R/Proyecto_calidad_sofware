@@ -225,9 +225,9 @@ namespace capa_persistencia.modulo_principal
                             HorasSemanales = dr["contrato_horas_semanales"] as int?,
                             DescripcionFunciones = dr["contrato_descripcion_funciones"] as string,
 
-                            ModoPagoId = dr.IsDBNull(dr.GetOrdinal("modo_pago_id"))
+                            ModoPagoId = (int)(dr.IsDBNull(dr.GetOrdinal("modo_pago_id"))
                             ? (int?)null
-                            : dr.GetInt32(dr.GetOrdinal("modo_pago_id")),
+                            : dr.GetInt32(dr.GetOrdinal("modo_pago_id"))),
 
                             ModoPagoNombre = dr["modo_pago_nombre"] as string,
 
