@@ -357,11 +357,17 @@ namespace capa_persistencia.modulo_principal
 
         public List<ContratoPorPeriodoDTO> ListarContratosPorPeriodo(int periodoId)
         {
+            if (periodoId <= 0)
+                throw new ArgumentException("Periodo inválido.");
+
             var lista = new List<ContratoPorPeriodoDTO>();
+
             try
             {
-                _accesoSQL.AbrirConexion();
-                var comando = _accesoSQL.ObtenerComandoDeProcedimiento("nomina.proc_listar_contratos_por_periodo");
+                var comando = _accesoSQL.ObtenerComandoDeProcedimiento(
+                    "nomina.proc_listar_contratos_por_periodo"
+                );
+
                 comando.Parameters.AddWithValue("@periodo_id", periodoId);
 
                 using (var reader = comando.ExecuteReader())
@@ -371,16 +377,27 @@ namespace capa_persistencia.modulo_principal
                         var dto = new ContratoPorPeriodoDTO
                         {
                             ContratoId = reader.GetInt32(reader.GetOrdinal("contrato_id")),
-                            TrabajadorId = reader.IsDBNull(reader.GetOrdinal("trabajador_id")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("trabajador_id")),
+                            TrabajadorId = reader.IsDBNull(reader.GetOrdinal("trabajador_id"))
+                                ? (int?)null
+                                : reader.GetInt32(reader.GetOrdinal("trabajador_id")),
                             TrabajadorCodigo = reader["trabajador_codigo"]?.ToString(),
                             PersonaNombre = reader["persona_nombre"]?.ToString(),
                             PersonaApellido = reader["persona_apellido"]?.ToString(),
-                            ContratoSalario = reader.IsDBNull(reader.GetOrdinal("contrato_salario")) ? (decimal?)null : reader.GetDecimal(reader.GetOrdinal("contrato_salario")),
-                            TipoPensionId = reader.IsDBNull(reader.GetOrdinal("tipo_pension_id")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("tipo_pension_id")),
-                            TieneAsignacionFamiliar = reader.GetInt32(reader.GetOrdinal("tiene_asignacion_familiar")) == 1,
-                            CargoId = reader.IsDBNull(reader.GetOrdinal("cargo_id")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("cargo_id")),
+                            ContratoSalario = reader.IsDBNull(reader.GetOrdinal("contrato_salario"))
+                                ? (decimal?)null
+                                : reader.GetDecimal(reader.GetOrdinal("contrato_salario")),
+                            TipoPensionId = reader.IsDBNull(reader.GetOrdinal("tipo_pension_id"))
+                                ? (int?)null
+                                : reader.GetInt32(reader.GetOrdinal("tipo_pension_id")),
+                            TieneAsignacionFamiliar =
+                                reader.GetInt32(reader.GetOrdinal("tiene_asignacion_familiar")) == 0,
+                            CargoId = reader.IsDBNull(reader.GetOrdinal("cargo_id"))
+                                ? (int?)null
+                                : reader.GetInt32(reader.GetOrdinal("cargo_id")),
                             CargoNombre = reader["cargo_nombre"]?.ToString(),
-                            AreaId = reader.IsDBNull(reader.GetOrdinal("area_id")) ? (int?)null : reader.GetInt32(reader.GetOrdinal("area_id")),
+                            AreaId = reader.IsDBNull(reader.GetOrdinal("area_id"))
+                                ? (int?)null
+                                : reader.GetInt32(reader.GetOrdinal("area_id")),
                             AreaNombre = reader["area_nombre"]?.ToString(),
                             EstadoContratoId = reader.GetInt32(reader.GetOrdinal("estado_contrato_id")),
                             EstadoContratoNombre = reader["estado_contrato_nombre"]?.ToString(),
@@ -390,16 +407,18 @@ namespace capa_persistencia.modulo_principal
                             PeriodoFechaFin = reader.GetDateTime(reader.GetOrdinal("periodo_fecha_fin")),
                             Procesado = reader.GetInt32(reader.GetOrdinal("procesado")) == 1
                         };
+
                         lista.Add(dto);
                     }
                 }
-            }
-            finally
-            {
-                _accesoSQL.CerrarConexion();
-            }
 
-            return lista;
+                return lista;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al listar contratos por periodo.", ex);
+            }
         }
+
     }
 }

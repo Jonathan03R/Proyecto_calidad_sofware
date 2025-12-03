@@ -55,13 +55,9 @@ namespace capa_persistencia.modulo_principal
                                                   : Convert.ToDateTime(dr["FechaFinContrato"]).ToString("yyyy-MM-dd"),
 
                             // ===== JORNADA =====
-                            TipoDeJornadaPactada = dr["TipoDeJornadaPactada"].ToString(),
                             HorasSemanalesPactadas = dr["HorasSemanalesPactadas"] == DBNull.Value
                                                      ? null
                                                      : (decimal?)Convert.ToDecimal(dr["HorasSemanalesPactadas"]),
-
-                            // tu SP NO devuelve HorasTrabajadasEstimadas
-                            HorasTrabajadasEstimadas = null,
 
                             HorasExtrasReales = dr["HorasExtrasReales"] == DBNull.Value
                                                 ? null
@@ -78,8 +74,6 @@ namespace capa_persistencia.modulo_principal
 
                             // ===== DESCUENTOS =====
                             AporteSistemaPension = Convert.ToDecimal(dr["AporteSistemaPension"]),
-                            DescuentoONP = Convert.ToDecimal(dr["DescuentoONP"]),
-                            DescuentoAFP = Convert.ToDecimal(dr["DescuentoAFP"]),
                             RetencionImpuestoRenta = Convert.ToDecimal(dr["RetencionImpuestoRenta"]),
 
                             // ===== EMPLEADOR =====
@@ -87,16 +81,12 @@ namespace capa_persistencia.modulo_principal
                             BaseImponibleEsSalud = Convert.ToDecimal(dr["BaseImponibleEsSalud"]),
 
                             // ===== OTROS DESCUENTOS =====
+                            DescuentoTardanzas = Convert.ToDecimal(dr["DescuentoTardanzas"]),
                             DescuentoFaltas = Convert.ToDecimal(dr["DescuentoFaltas"]),
-                            DescuentoAdelantos = Convert.ToDecimal(dr["DescuentoAdelantos"]),
-                            OtrosDescuentos = Convert.ToDecimal(dr["OtrosDescuentos"]),
 
                             // ===== TOTALES =====
                             TotalDescuentos = Convert.ToDecimal(dr["TotalDescuentos"]),
                             NetoPagar = Convert.ToDecimal(dr["NetoPagar"]),
-
-                            // ===== CONTEXTO =====
-                            PeriodoNomina = dr["PeriodoNomina"].ToString()
                         };
 
                         lista.Add(dto);
