@@ -19,24 +19,18 @@ namespace capa_aplicacion.sevicios
             accesoSQLServer = new AccesoSQLServer();
             pensionDAO = new SistemasPensionesRepositorio(accesoSQLServer);
         }
-
         public List<TipoPension> ObtenerSistemasPensiones()
         {
-            List<TipoPension> listaPensiones;
             try
             {
                 accesoSQLServer.AbrirConexion();
-                listaPensiones = pensionDAO.ObtenerSistemasPensiones();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                return pensionDAO.ObtenerSistemasPensiones();
             }
             finally
             {
                 accesoSQLServer.CerrarConexion();
             }
-            return listaPensiones;
         }
+
     }
 }

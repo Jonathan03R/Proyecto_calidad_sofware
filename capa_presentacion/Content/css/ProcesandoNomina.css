@@ -1,0 +1,200 @@
+﻿
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 9999;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 40px;
+}
+
+    .modal-overlay.show {
+        display: flex;
+    }
+
+.modal-proceso {
+    background: #fff;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 900px;
+    padding: 20px 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    background: #fff;
+}
+
+.modal-header-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .modal-header-title h4,
+    .modal-header-title small {
+        color: #333;
+        text-align: center;
+    }
+
+    .modal-header-title h4 {
+        font-size: 1.3rem;
+    }
+
+    .modal-header-title small {
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+.progreso-general {
+    margin-bottom: 20px;
+}
+
+.progreso-barra {
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    height: 8px;
+}
+
+.progreso-barra-fill {
+    height: 100%;
+    background: #1976d2;
+    width: 0%;
+    transition: width .3s ease;
+}
+
+.progreso-log {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+    .progreso-log li {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+        font-size: 13px;
+    }
+
+.progreso-kpis {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.kpi-card {
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.kpi-procesados {
+    display: flex;
+    flex-direction: column;
+    background: #F0FDF4;
+    color: #2e7d32;
+    border-color: #BBF7D0;
+}
+
+.kpi-advertencias {
+    display: flex;
+    flex-direction: column;
+    background: #FEFCE8;
+    color: #f9a825;
+    border-color: #FEF08A;
+}
+
+.kpi-errores {
+    display: flex;
+    flex-direction: column;
+    background: #FEF2F2;
+    color: #c62828;
+    border-color: #FECACA;
+}
+
+.kpi-pendientes {
+    display: flex;
+    flex-direction: column;
+    background: #F9FAFB;
+    color: #455a64;
+    border-color: #E5E7EB;
+}
+
+.kpi-numero {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.btn-cancelar-proceso {
+    background: #e53935;
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+
+    .modal-overlay.show {
+        display: flex;
+    }
+
+.modal-card {
+    background: #fff;
+    padding: 18px;
+    border-radius: 8px;
+    width: 380px;
+    max-width: 94%;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+}
+
+#modalConfirmarProcesamiento {
+    z-index: 10001 !important;
+}
+
+
+.badge {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-activo {
+    background: #16a34a20;
+    color: #16a34a;
+    border: 1px solid #16a34a50;
+}
+
+.badge-suspendido {
+    background: #facc1520;
+    color: #d97706;
+    border: 1px solid #fbbf2440;
+}
+
+.badge-cesado {
+    background: #dc262620;
+    color: #dc2626;
+    border: 1px solid #dc262640;
+}
+
+.badge-af {
+    background: #3b82f620;
+    color: #2563eb;
+    border: 1px solid #3b82f650;
+}
+
+.badge-af-no {
+    background: #6b728020;
+    color: #6b7280;
+    border: 1px solid #6b728040;
+}

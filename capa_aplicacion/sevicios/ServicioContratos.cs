@@ -23,9 +23,26 @@ namespace capa_aplicacion.Servicios
             if (contrato == null)
                 throw new ArgumentNullException(nameof(contrato), "El contrato no puede ser nulo.");
 
-            var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
-                ? contrato.HorasSemanales.Value
-                : 48;
+                // ============================================================
+                // VALIDACIÓN: MÍNIMO 3 MESES
+                // ============================================================
+                if (contrato.FechaInicio != DateTime.MinValue &&
+                    contrato.FechaFin.HasValue && contrato.FechaFin != DateTime.MinValue)
+                {
+                    var inicio = contrato.FechaInicio;
+                    var fin = contrato.FechaFin.Value;
+
+                    int meses = ((fin.Year - inicio.Year) * 12) + (fin.Month - inicio.Month);
+
+                    if (meses < 3)
+                        throw new Exception("El tiempo mínimo de contrato debe ser de 3 meses.");
+                }
+                // ============================================================
+
+
+                var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
+                    ? contrato.HorasSemanales.Value
+                    : 48;
 
             var entidad = new Contrato
             {
@@ -80,11 +97,66 @@ namespace capa_aplicacion.Servicios
             if (string.IsNullOrWhiteSpace(motivo))
                 throw new ArgumentException("Debe indicar el motivo de la actualización.");
 
-            var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
-                ? contrato.HorasSemanales.Value
-                : 48;
+                // ============================================================
+                // VALIDACIÓN: MÍNIMO 3 MESES
+                // ============================================================
+                if (contrato.FechaInicio != DateTime.MinValue &&
+                    contrato.FechaFin.HasValue && contrato.FechaFin != DateTime.MinValue)
+                {
+                    var inicio = contrato.FechaInicio;
+                    var fin = contrato.FechaFin.Value;
 
-            var entidad = new Contrato
+                    int meses = ((fin.Year - inicio.Year) * 12) + (fin.Month - inicio.Month);
+
+                    if (meses < 3)
+                        throw new Exception("El tiempo mínimo de contrato debe ser de 3 meses.");
+                }
+                // ============================================================
+
+
+                var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
+                    ? contrato.HorasSemanales.Value
+                    : 48;
+
+
+                var entidad = new Contrato
+                {
+                    Trabajador = new Trabajador
+                    {
+                        TrabajadorId = contrato.TrabajadorId ?? 0
+                    },
+                    Cargo = new Cargo
+                    {
+                        CargoId = contrato.CargoId ?? 0
+                    },
+                    Area = new Area
+                    {
+                        AreaId = contrato.AreaId ?? 0
+                    },
+                    TipoPension = new TipoPension
+                    {
+                        TipoPensionId = contrato.TipoPensionId ?? 0
+                    },
+                    TipoSalario = new TipoSalario
+                    {
+                        TipoSalarioId = contrato.TipoSalarioId ?? 0
+                    },
+
+                    ContratoFechaInicio = contrato.FechaInicio,
+                    ContratoFechaFin = contrato.FechaFin,
+                    ContratoSalario = contrato.Salario ?? 0,
+                    ContratoHorasSemanales = horas,
+                    ContratoTarifaHora = contrato.TarifaHora ?? 0 
+                };
+
+                entidad.ValidarParaCreacion();
+
+                contrato.HorasSemanales = entidad.ContratoHorasSemanales;
+                contrato.TarifaHora = entidad.ContratoTarifaHora;
+
+                contratosRepo.ActualizarContrato(contratoId, usuario, motivo, contrato);
+            }
+            finally
             {
                 Trabajador = new Trabajador
                 {
@@ -161,19 +233,28 @@ namespace capa_aplicacion.Servicios
             return contratosRepo.ListarSinContratoActivo();
         }
 
-        public ResumenContratosDTO ObtenerResumen()
+        public ResumenContratosDto ObtenerResumen()
         {
             return contratosRepo.ObtenerResumenContratos();
         }
 
-        public class DatosNuevoContrato
+        /// se le tiene que pasar por default el periodo actual antes de que carge la pantalla
+        public List<ContratoPorPeriodoDTO> ListarContratosPorPeriodo(int periodoId)
         {
-            public Trabajador Trabajador { get; set; }
-            public List<Area> Areas { get; set; }
-            public List<Cargo> Cargos { get; set; }
-            public List<TipoPension> Pensiones { get; set; }
-            public List<TipoSalario> TiposSalario { get; set; }
-            public List<TipoJornada> TiposJornada { get; set; }
+            accesoSQLServer.AbrirConexion();
+            try
+            {
+                if (periodoId <= 0)
+                    throw new ArgumentException("El ID del periodo no es válido.");
+
+                return contratosRepo.ListarContratosPorPeriodo(periodoId);
+            }
+            finally
+            {
+                accesoSQLServer.CerrarConexion();
+            }
         }
+
+       
     }
 }

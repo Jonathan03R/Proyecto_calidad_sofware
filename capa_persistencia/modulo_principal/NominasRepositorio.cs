@@ -35,7 +35,7 @@ namespace capa_persistencia.modulo_principal
             {
 
                 System.Diagnostics.Debug.WriteLine($"Mensaje: {ex.Message}");
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CREACION);
+                throw new NominaException(NominaException.ERROR_DE_CREACION);
             }
         }
 
@@ -65,7 +65,7 @@ namespace capa_persistencia.modulo_principal
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Mensaje: {ex.Message}");
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_ACTUALIZACION);
+                throw new NominaException(NominaException.ERROR_DE_ACTUALIZACION);
             }
         }
 
@@ -81,9 +81,10 @@ namespace capa_persistencia.modulo_principal
 
                 cmd.ExecuteNonQuery();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_ACTUALIZACION);
+                //System.Diagnostics.Debug.WriteLine($"Error actualizando estado de nómina ID {nominaId}: {ex.Message}");
+                throw new NominaException(NominaException.ERROR_DE_ACTUALIZACION);
             }
         }
 
@@ -111,7 +112,6 @@ namespace capa_persistencia.modulo_principal
                                 PeriodoId = reader.GetInt32(reader.GetOrdinal("periodo_id"))
                             },
 
-                            // 👇 Aquí evitamos reventar si nomina_fecha viene NULL
                             NominaFecha = reader.IsDBNull(reader.GetOrdinal("nomina_fecha"))
                                 ? DateTime.MinValue
                                 : reader.GetDateTime(reader.GetOrdinal("nomina_fecha")),
@@ -142,6 +142,44 @@ namespace capa_persistencia.modulo_principal
             }
 
             return nominas;
+        }
+        public List<ResumenNominaDto> ListarResumenNominas()
+        {
+            var lista = new List<ResumenNominaDto>();
+
+            try
+            {
+                var comando = _accesoSQL.ObtenerComandoDeProcedimiento("nomina.proc_listar_resumen_nominas");
+
+                using (var reader = comando.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var resumen = new ResumenNominaDto
+                        {
+                            PeriodoNombre = reader.GetString(reader.GetOrdinal("periodo_nombre")),
+                            NominaFechaProcesamiento = reader.GetDateTime(reader.GetOrdinal("nomina_fecha_procesamiento")),
+                            NominaTotalEmpleados = reader.GetInt32(reader.GetOrdinal("nomina_total_empleados")),
+                            NominaEstado = reader.GetString(reader.GetOrdinal("nomina_estado")),
+                            NominaTotalNeto = reader.GetDecimal(reader.GetOrdinal("nomina_total_neto"))
+                        };
+
+                        lista.Add(resumen);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"Error al consultar el resumen de nóminas: {ex}");
+
+                throw new NominaException(
+                    NominaException.ERROR_DE_CONSULTA,
+                    "Error al consultar el resumen de nóminas."
+                );
+            }
+
+            return lista;
         }
 
 

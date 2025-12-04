@@ -1,47 +1,99 @@
-﻿@*@model IEnumerable<capa_presentacion.Models.ViewModels.NominaHistorialItemVM>*@
-@model IEnumerable<capa_dominio.dto.NominasProcesadasDTO>
-
+﻿@*@model IEnumerable<capa_dominio.dto.ResumenNominaDTO>*@
 
 @{
     ViewBag.Title = "Historial de Nóminas";
     ViewBag.PageTitle = "Historial de Nóminas";
     ViewBag.PageSubtitle = "Revisa y gestiona las ejecuciones anteriores de nómina";
-    ViewBag.PagePeriodo = "";
-    var tipos = new[] { "Mensual", "Quincenal" };
+    ViewBag.PagePeriodo = DateTime.Now.ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-PE"));
 }
 
 @section Head {
-    <link rel="stylesheet" href="~/Content/css/historial.css" />
+    <link rel="stylesheet" href="~/Content/css/historial.css?v=@DateTime.Now.Ticks" />
 }
 
 <div class="historial-wrapper">
+
+    <!-- FILTROS -->
+    <div class="filter-bar">
+        <div class="filter-item">
+            <label for="txtBuscar">Buscar</label>
+            <div class="input-icon">
+                <input type="text" id="txtBuscar" placeholder="Buscar por período..." />
+            </div>
+        </div>
+
+        <div class="filter-item">
+            <label for="filtroFechaEjecucion">Fecha de ejecución</label>
+            <input type="date" id="filtroFechaEjecucion" />
+        </div>
+
+        <div class="filter-item">
+            <label for="filtroEstado">Estado</label>
+            <select id="filtroEstado">
+                <option value="">Todos los estados</option>
+                <option value="Exitoso">Exitoso</option>
+                <option value="Incompleto">Incompleto</option>
+                <option value="Con Errores">Con errores</option>
+            </select>
+        </div>
+
+        <div class="filter-item" style="max-width:180px;">
+            <label>&nbsp;</label>
+            <button type="button" class="btn-primary"" id="btnLimpiarFiltros">
+                Limpiar filtros
+            </button>
+        </div>
+
+        @*<div class="filter-item" style="max-width:180px;">
+            <label>&nbsp;</label>
+            <button type="button" class="btn-primary" id="btnExportar">
+                Exportar historial
+            </button>
+        </div>*@
+    </div>
+
+
+    <!-- TABLA -->
     <div class="historial">
         <table class="tabla-historial" id="tblHistorial">
+            <thead>
+                <tr>
+                    <th><h2>Período</h2></th>
+                    <th><h2>Fecha de ejecución</h2></th>
+                    <th><h2>Empleados</h2></th>
+                    <th><h2>Estado</h2></th>
+                    <th><h2>Total neto</h2></th>
+                    <th><h2>Acciones</h2></th>
+                </tr>
+            </thead>
             <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var p in Model)
-                    {
-                        <tr data-periodo="@p.PeriodoId"
-                            data-tipo="@p.EstadoContratoNombre"
-                            data-estado="@p.NominaEstado">
-
-                            @* agrega aquí tus celdas reales *@
-
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="7" class="t-center">Sin datos</td>
-                    </tr>
-                }
+                <!-- Fila plantilla (se clona en JS) -->
+                <tr id="row-template" style="display:none;">
+                    <td class="td-periodo"></td>
+                    <td class="td-fecha"></td>
+                    <td class="td-empleados"></td>
+                    <td class="td-estado"></td>
+                    <td class="td-total"></td>
+                    <td class="td-acciones">
+                        <button type="button" class="btn-mini slate btn-reprocesar">Re-exportar</button>
+                        <button type="button" class="btn-mini warn btn-auditoria">Auditoría</button>
+                    </td>
+                </tr>
             </tbody>
         </table>
+
+        <!-- Footer tipo "Mostrando X registros / paginador" -->
+        <div class="hist-footer">
+            <span class="muted" id="hist-resumen">Mostrando 0 registros</span>
+
+            <div class="pager">
+                <button type="button" class="pg" id="pg-prev" disabled>Anterior</button>
+                <button type="button" class="pg current" id="pg-1">1</button>
+                <button type="button" class="pg" id="pg-next" disabled>Siguiente</button>
+            </div>
+        </div>
     </div>
 </div>
-
 
 @section Scripts {
     <script src="~/Scripts/nomina/nomina.historial.js"></script>

@@ -7,10 +7,10 @@ using System.Data.SqlClient;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class Tardanzas
+    public class TardanzasRepositorio
     {
         private readonly string _cs;
-        public Tardanzas(string connectionString) { _cs = connectionString; }
+        public TardanzasRepositorio(string connectionString) { _cs = connectionString; }
 
         public List<Tardanza> ObtenerPorTrabajador(int trabajadorId)
         {
@@ -61,8 +61,6 @@ namespace capa_persistencia.modulo_principal
 
                                 if (t.TardanzaValorHoraNormal == 0m || t.TardanzaValorDescuento == 0m)
                                 {
-                                    // Aquí puedes agregar lógica adicional si es necesario
-                                    // Por ejemplo, registrar un mensaje o realizar alguna acción específica
                                 }
 
                                 lista.Add(t);
@@ -75,7 +73,7 @@ namespace capa_persistencia.modulo_principal
             }
             catch (Exception ex)
             {
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CONSULTA, ex.Message);
+                throw new NominaException(NominaException.ERROR_DE_CONSULTA, ex.Message);
             }
         }
     }

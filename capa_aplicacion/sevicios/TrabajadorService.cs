@@ -11,8 +11,9 @@ namespace capa_aplicacion.sevicios
 {
     public class TrabajadorService
     {
-        private readonly TrabajadoresRepositorio trabajadorDAO;
         private readonly AccesoSQLServer conexion;
+        private readonly TrabajadoresRepositorio trabajadorDAO;
+        
 
         public TrabajadorService()
         {
@@ -29,7 +30,6 @@ namespace capa_aplicacion.sevicios
             }
             catch (Exception ex)
             {
-        
                 System.Diagnostics.Debug.WriteLine("Error en TrabajadorService: " + ex.ToString());
                 throw;  
             }

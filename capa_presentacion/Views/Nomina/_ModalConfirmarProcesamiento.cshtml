@@ -1,13 +1,20 @@
 ﻿@* Views/Nomina/Partials/_ModalConfirmarProcesamiento.cshtml *@
-<div id="modalConfirmar" class="modal-overlay" style="display:none;">
-    <div class="modal-card">
-        <h5>Confirmar procesamiento</h5>
-        <p>El período seleccionado ya fue procesado. ¿Deseas continuar de todas formas?</p>
-        <div class="d-flex gap-2">
-            <button type="button" class="btn btn-danger" id="btnConfirmarProcesar">
-                Procesar de todos modos
+<div id="modalConfirmarProcesamiento" class="modal-overlay" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalConfirmarTitulo">
+        <h5 id="modalConfirmarTitulo">Confirmar procesamiento</h5>
+
+        <!-- Texto dinámico rellenado por JS -->
+        <p>
+            Período: <strong class="periodo-nombre">—</strong><br />
+            Empleados a procesar: <strong class="total-empleados">0</strong>
+        </p>
+
+        <div class="d-flex gap-2" style="margin-top:12px;">
+            <button type="button" class="btn btn-danger btn-confirmar-procesamiento" id="btnConfirmarProcesar">
+                Procesar ahora
             </button>
-            <button type="button" class="btn btn-outline-secondary" data-close="modalConfirmar">
+
+            <button type="button" class="btn btn-outline-secondary btn-cancelar" data-close="modalConfirmarProcesamiento">
                 Cancelar
             </button>
         </div>

@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class AsignacionFamiliar
+    public class AsignacionFamiliarRepositorio
     {
         private readonly AccesoSQLServer _accesoSQL;
 
-        public AsignacionFamiliar()
+        public AsignacionFamiliarRepositorio()
         {
             _accesoSQL = new AccesoSQLServer();
         }
@@ -33,7 +33,7 @@ namespace capa_persistencia.modulo_principal
             }
             catch (Exception)
             {
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CONSULTA);
+                throw new NominaException(NominaException.ERROR_DE_CONSULTA);
             }
             finally
             {

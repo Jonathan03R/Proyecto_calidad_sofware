@@ -14,7 +14,7 @@ namespace capa_dominio.dto
         private int? areaId;
         private int? tipoPensionId;
         private int? tipoSalarioId;
-        private int? tipoJornadaId;
+
 
         private DateTime fechaInicio;
         private DateTime? fechaFin;
@@ -22,7 +22,8 @@ namespace capa_dominio.dto
         private decimal? salario;
         private decimal? tarifaHora;
 
-        private string modoPago;
+        private int modoPagoId;
+        private string modoPagoNombre;
         private string documentoUrl;
         private string descripcionFunciones;
         private string observaciones;
@@ -32,13 +33,13 @@ namespace capa_dominio.dto
         public int? AreaId { get => areaId; set => areaId = value; }
         public int? TipoPensionId { get => tipoPensionId; set => tipoPensionId = value; }
         public int? TipoSalarioId { get => tipoSalarioId; set => tipoSalarioId = value; }
-        public int? TipoJornadaId { get => tipoJornadaId; set => tipoJornadaId = value; }
         public DateTime FechaInicio { get => fechaInicio; set => fechaInicio = value; }
         public DateTime? FechaFin { get => fechaFin; set => fechaFin = value; }
         public decimal? Salario { get => salario; set => salario = value; }
         public decimal? TarifaHora { get => tarifaHora; set => tarifaHora = value; }
         public int? HorasSemanales { get; set; }
-        public string ModoPago { get => modoPago; set => modoPago = value; }
+        public int ModoPagoId { get => modoPagoId; set => modoPagoId = value; }
+        public string ModoPagoNombre { get => modoPagoNombre; set => modoPagoNombre = value; }
         public string DocumentoUrl { get => documentoUrl; set => documentoUrl = value; }
         public string DescripcionFunciones { get => descripcionFunciones; set => descripcionFunciones = value; }
         public string Observaciones { get => observaciones; set => observaciones = value; }

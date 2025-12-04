@@ -5,14 +5,12 @@ using System.Collections.Generic;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class Parametros
+    public class ParametrosRepositorio
     {
         private readonly AccesoSQLServer _accesoSQL;
-        public Parametros() { _accesoSQL = new AccesoSQLServer(); }
+        public ParametrosRepositorio() { _accesoSQL = new AccesoSQLServer(); }
 
-        
-
-        // C-05: lista de parámetros vigentes para nómina
+       
         public List<Parametro> ListarParametrosVigentesParaNomina()
         {
             var lista = new List<Parametro>();
@@ -31,14 +29,13 @@ namespace capa_persistencia.modulo_principal
                             ParametroNombre = reader.GetString(reader.GetOrdinal("parametro_nombre")),
                             ParametroValor = reader.GetDecimal(reader.GetOrdinal("parametro_valor")),
                             ParametroFechaVigencia = reader.GetDateTime(reader.GetOrdinal("parametro_fecha_vigencia")),
-                            //FechaVigencia = reader.GetDateTime(reader.GetOrdinal("parametro_fecha_vigencia"))
                         };
                         lista.Add(p);
                     }
             }
             catch (Exception)
             {
-                throw new ExcepcionNomina(ExcepcionNomina.ERROR_DE_CONSULTA);
+                throw new NominaException(NominaException.ERROR_DE_CONSULTA);
             }
             finally { _accesoSQL.CerrarConexion(); }
 

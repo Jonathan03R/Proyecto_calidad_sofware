@@ -27,6 +27,7 @@
 /* ==== HISTORIAL (FILTROS) ==== */
 .historial-wrapper {
     display: flex;
+    padding: 5px;
     flex-direction: column;
     padding: 20px;
     gap: 20px
@@ -57,7 +58,7 @@ label, select {
 }
 
 .input-icon input[type="text"],
-select {
+select, input[type="date"] {
     padding: 8px 10px;
     border-radius: 5px;
     border: 1px solid #D1D5DB;
@@ -86,11 +87,12 @@ select {
     border: 1px solid #E5E7EB;
     border-radius: 10px;
     border-color: #E5E7EB;
+    padding: 20px;
 }
-
 .tabla-historial {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
     .tabla-historial thead th h2 {
@@ -105,7 +107,6 @@ select {
     }
 
     .tabla-historial thead th {
-        /*        background: #f7f8fb;*/
         text-align: left;
         font-size: 16px;
         font-weight: 500;
@@ -202,3 +203,4 @@ select {
 .t-center {
     text-align: center;
 }
+

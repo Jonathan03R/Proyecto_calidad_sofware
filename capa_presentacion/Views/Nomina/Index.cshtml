@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="~/Content/css/nomina.css" />
     <link rel="stylesheet" href="~/Content/css/listavigente.css?v=@DateTime.Now.Ticks" />
     <link rel="stylesheet" href="~/Content/css/reporte.css?v=@DateTime.Now.Ticks" />
+    <link rel="stylesheet" href="~/Content/css/ProcesandoNomina.css" />
 }
 
 <div class="procesar-nomina">
@@ -24,15 +25,12 @@
         </div>
     </div>
 
-    <div class="row mt-4">
-        <div class="col-lg-12">
-            @Html.Partial("_TablaErrores")
-        </div>
-    </div>
 </div>
 
 @Html.Partial("_ModalConfirmarProcesamiento")
 @Html.Partial("_Toast")
+@Html.Partial("_ProcesandoNomina")
+
 
 @section Scripts {
 
@@ -40,11 +38,15 @@
         window.NominaConfig = {
             urls: {
                 listarPeriodos: '@Url.Action("ListarPeriodos", "Nomina")',
-                procesarNomina: '@Url.Action("ProcesarNomina", "Nomina")',
-                obtenerDetallesNominas: '@Url.Action("ObtenerDetalleNominasProcesadas", "Nomina")'
+                iniciarProceso: '@Url.Action("IniciarProceso", "Nomina")',
+                procesarTrabajador: '@Url.Action("ProcesarTrabajador", "Nomina")',
+                cerrarProceso: '@Url.Action("CerrarProceso", "Nomina")',
+                obtenerEmpleadosVigentesPorPeriodo: '@Url.Action("ObtenerEmpleadosVigentesPorPeriodo", "Nomina")',
+                obtenerResumenProcesoNomina: '@Url.Action("ObtenerResumenProcesoNomina", "Nomina")'
             }
         };
     </script>
+
 
     <!-- ORDEN OBLIGATORIO -->
     <script src="~/Scripts/nomina/nomina.config.js?v=@DateTime.Now.Ticks"></script>
@@ -56,7 +58,18 @@
 
     <script>
         $(function () {
-            NominaUI.init();
+            if (window.NominaUI && typeof NominaUI.init === 'function') {
+                NominaUI.init();
+            } else {
+                console.error('NominaUI no disponible. Revisa errores previos en consola.');
+            }
         });
+
     </script>
+    @*<script>
+            $(function () {
+                // ⛔ Solo para diseñar el modal — luego BORRAR
+                $('#modalProcesandoNomina').addClass('show');
+            });
+        </script>*@
 }

@@ -5,20 +5,15 @@ using capa_dominio;
 
 namespace capa_persistencia.modulo_principal
 {
-    public class Sedes
+    public class SedesRepositorio
     {
         private readonly AccesoSQLServer _accesoSQL;
 
-        public Sedes()
+        public SedesRepositorio()
         {
             _accesoSQL = new AccesoSQLServer();
         }
 
-        /// <summary>
-        /// obtnego 2 listas, por cada sede obtengo sus areas de las mismas
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="ExcepcionTrabajador"></exception>
         public List<Sede> ObtenerSedesConAreas()
         {
             var sedes = new List<Sede>();
@@ -64,7 +59,7 @@ namespace capa_persistencia.modulo_principal
             }
             catch (Exception)
             {
-                throw new ExcepcionTrabajador(ExcepcionTrabajador.ERROR_DE_CONSULTA);
+                throw new TrabajadorException(TrabajadorException.ERROR_DE_CONSULTA);
             }
             finally
             {

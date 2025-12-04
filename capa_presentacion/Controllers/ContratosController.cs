@@ -60,12 +60,12 @@ namespace capa_presentacion.Controllers
                     CargoId = x.CargoId,
                     TipoSalarioId = x.TipoSalarioId,
                     Salario = x.Salario,
-                    ModoPago = x.ModoPago,
+                    ModoPago = x.ModoPagoId,
                     Observaciones = x.Observaciones,
 
                     AreaId = x.AreaId,
                     TipoPensionId = x.TipoPensionId,
-                    TipoJornadaId = x.TipoJornadaId,
+                    TipoJornadaId = 1,
                     TarifaHora = x.TarifaHora,
                     HorasSemanales = x.HorasSemanales,
                     DescripcionFunciones = x.DescripcionFunciones
@@ -202,14 +202,36 @@ namespace capa_presentacion.Controllers
         [HttpPost]
         public JsonResult ActualizarContrato(ContratoDTO contrato, string motivo)
         {
+            // ✔ Validaciones de entrada SIN lanzar Exception
+            if (contrato == null)
+            {
+                return Json(new
+                {
+                    exito = false,
+                    mensaje = "El contrato enviado es nulo."
+                });
+            }
+
+            if (!contrato.ContratoId.HasValue || contrato.ContratoId.Value <= 0)
+            {
+                return Json(new
+                {
+                    exito = false,
+                    mensaje = "El contrato a actualizar no es válido."
+                });
+            }
+
+            if (string.IsNullOrWhiteSpace(motivo))
+            {
+                return Json(new
+                {
+                    exito = false,
+                    mensaje = "Debes indicar el motivo de la actualización."
+                });
+            }
+
             try
             {
-                if (!contrato.ContratoId.HasValue || contrato.ContratoId.Value <= 0)
-                    throw new Exception("El contrato a actualizar no es válido.");
-
-                if (string.IsNullOrWhiteSpace(motivo))
-                    throw new Exception("Debes indicar el motivo de la actualización.");
-
                 var usuario = User?.Identity != null && User.Identity.IsAuthenticated
                     ? User.Identity.Name
                     : Environment.UserName;
@@ -227,10 +249,11 @@ namespace capa_presentacion.Controllers
                 return Json(new
                 {
                     exito = false,
-                    mensaje = ex.Message
+                    mensaje = ex.Message  
                 });
             }
         }
+
 
         [HttpGet]
         public JsonResult ResumenContratos()
