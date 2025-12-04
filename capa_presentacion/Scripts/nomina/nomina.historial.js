@@ -148,7 +148,7 @@ function formatearPeriodo(periodo) {
     const año = parseInt(partes[0], 10);
     const mes = parseInt(partes[1], 10) - 1;
 
-    const fecha = new Date(año, mes, 1); 
+    const fecha = new Date(año, mes, 1);
 
     return fecha.toLocaleDateString("es-PE", {
         month: "long",
