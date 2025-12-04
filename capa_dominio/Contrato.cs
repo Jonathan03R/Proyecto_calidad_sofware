@@ -134,23 +134,24 @@ namespace capa_dominio
             {
                 throw new InvalidOperationException("Debe seleccionar el sistema de pensiones.");
             }
-
-            //if (TipoSalario?.TipoSalarioId <= 0)
-            //{
-            //    throw new InvalidOperationException("Debe seleccionar el tipo de salario.");
-            //}
         }
 
         private void ValidarFechas()
         {
             if (ContratoFechaInicio == DateTime.MinValue)
-            {
                 throw new InvalidOperationException("Debe especificar una fecha de inicio válida.");
-            }
 
-            if (ContratoFechaFin.HasValue && ContratoFechaFin.Value < ContratoFechaInicio)
+            if (ContratoFechaFin.HasValue)
             {
-                throw new InvalidOperationException("La fecha de fin no puede ser anterior a la fecha de inicio.");
+                if (ContratoFechaFin.Value < ContratoFechaInicio)
+                    throw new InvalidOperationException("La fecha de fin no puede ser anterior a la fecha de inicio.");
+
+                // REGLA DE NEGOCIO: MÍNIMO 3 MESES
+                int meses = ((ContratoFechaFin.Value.Year - ContratoFechaInicio.Year) * 12)
+                            + (ContratoFechaFin.Value.Month - ContratoFechaInicio.Month);
+
+                if (meses < 3)
+                    throw new InvalidOperationException("La duración mínima del contrato es de 3 meses.");
             }
         }
 

@@ -19,37 +19,32 @@ namespace capa_persistencia.modulo_principal
 
         public int CrearContratoEmpleado(ContratoDTO contrato)
         {
-            try
-            {
-                _accesoSQL.AbrirConexion();
-                var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_crear_contrato_empleado");
+            var comando = _accesoSQL.ObtenerComandoDeProcedimiento("proc_crear_contrato_empleado");
 
-                comando.Parameters.AddWithValue("@trabajadorid", contrato.TrabajadorId);
-                comando.Parameters.AddWithValue("@cargoid", contrato.CargoId);
-                comando.Parameters.AddWithValue("@areaid", contrato.AreaId);
-                comando.Parameters.AddWithValue("@tipopensionid", contrato.TipoPensionId);
-                comando.Parameters.AddWithValue("@tiposalarioid", contrato.TipoSalarioId);
-                comando.Parameters.AddWithValue("@modopagoid", contrato.ModoPagoId);
-                comando.Parameters.AddWithValue("@fechainicio", contrato.FechaInicio);
-                comando.Parameters.AddWithValue("@fechafin", contrato.FechaFin ?? (object)DBNull.Value);
-                var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
+            comando.Parameters.AddWithValue("@trabajadorid", contrato.TrabajadorId);
+            comando.Parameters.AddWithValue("@cargoid", contrato.CargoId);
+            comando.Parameters.AddWithValue("@areaid", contrato.AreaId);
+            comando.Parameters.AddWithValue("@tipopensionid", contrato.TipoPensionId);
+            comando.Parameters.AddWithValue("@tiposalarioid", contrato.TipoSalarioId);
+            comando.Parameters.AddWithValue("@modopagoid", contrato.ModoPagoId);
+            comando.Parameters.AddWithValue("@fechainicio", contrato.FechaInicio);
+            comando.Parameters.AddWithValue("@fechafin", contrato.FechaFin ?? (object)DBNull.Value);
+
+            var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
                 ? contrato.HorasSemanales.Value
                 : 48;
-                comando.Parameters.AddWithValue("@horas_semanales", horas);
-                comando.Parameters.AddWithValue("@salario", contrato.Salario ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@tarifahora", contrato.TarifaHora ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@documentourl", "");
-                comando.Parameters.AddWithValue("@descripcionfunciones", contrato.DescripcionFunciones ?? (object)DBNull.Value);
-                comando.Parameters.AddWithValue("@observaciones", contrato.Observaciones ?? (object)DBNull.Value);
 
-                var result = comando.ExecuteScalar();
-                return Convert.ToInt32(result);
-            }
-            finally
-            {
-                _accesoSQL.CerrarConexion();
-            }
+            comando.Parameters.AddWithValue("@horas_semanales", horas);
+            comando.Parameters.AddWithValue("@salario", contrato.Salario ?? (object)DBNull.Value);
+            comando.Parameters.AddWithValue("@tarifahora", contrato.TarifaHora ?? (object)DBNull.Value);
+            comando.Parameters.AddWithValue("@documentourl", "");
+            comando.Parameters.AddWithValue("@descripcionfunciones", contrato.DescripcionFunciones ?? (object)DBNull.Value);
+            comando.Parameters.AddWithValue("@observaciones", contrato.Observaciones ?? (object)DBNull.Value);
+
+            var result = comando.ExecuteScalar();
+            return Convert.ToInt32(result);
         }
+
 
         public (int contratoActualizado, int cambioRegistrado) FinalizarContrato(int contratoId, string observaciones = null)
         {
@@ -241,35 +236,31 @@ namespace capa_persistencia.modulo_principal
         public List<ContratoDTO> ListarSinContratoActivo()
         {
             var lista = new List<ContratoDTO>();
-            try
+
+            var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("Personal.proc_obtener_personas_sin_contrato_activo");
+
+            using (var dr = cmd.ExecuteReader())
             {
-                _accesoSQL.AbrirConexion();
-                var cmd = _accesoSQL.ObtenerComandoDeProcedimiento("Personal.proc_obtener_personas_sin_contrato_activo");
+                int iTrabId = dr.GetOrdinal("trabajador_id");
+                int iAp = dr.GetOrdinal("persona_apellido");
+                int iNom = dr.GetOrdinal("persona_nombre");
+                int iDoc = dr.GetOrdinal("persona_identificacion");
+                int iEstado = dr.GetOrdinal("EstadoContrato");
 
-                using (var dr = cmd.ExecuteReader())
+                while (dr.Read())
                 {
-                    int iTrabId = dr.GetOrdinal("trabajador_id");
-                    int iAp = dr.GetOrdinal("persona_apellido");
-                    int iNom = dr.GetOrdinal("persona_nombre");
-                    int iDoc = dr.GetOrdinal("persona_identificacion");
-                    int iEstado = dr.GetOrdinal("EstadoContrato"); 
+                    string ap = dr.IsDBNull(iAp) ? "" : dr.GetString(iAp);
+                    string no = dr.IsDBNull(iNom) ? "" : dr.GetString(iNom);
 
-                    while (dr.Read())
+                    lista.Add(new ContratoDTO
                     {
-                        string ap = dr.IsDBNull(iAp) ? "" : dr.GetString(iAp);
-                        string no = dr.IsDBNull(iNom) ? "" : dr.GetString(iNom);
-
-                        lista.Add(new ContratoDTO
-                        {
-                            TrabajadorId = dr.IsDBNull(iTrabId) ? (int?)null : dr.GetInt32(iTrabId),
-                            EmpleadoNombre = (ap + " " + no).Trim(),
-                            Documento = dr.IsDBNull(iDoc) ? "" : dr.GetString(iDoc),
-                            EstadoContratoNombre = dr.IsDBNull(iEstado) ? "" : dr.GetString(iEstado)
-                        });
-                    }
+                        TrabajadorId = dr.IsDBNull(iTrabId) ? (int?)null : dr.GetInt32(iTrabId),
+                        EmpleadoNombre = (ap + " " + no).Trim(),
+                        Documento = dr.IsDBNull(iDoc) ? "" : dr.GetString(iDoc),
+                        EstadoContratoNombre = dr.IsDBNull(iEstado) ? "" : dr.GetString(iEstado)
+                    });
                 }
             }
-            finally { _accesoSQL.CerrarConexion(); }
 
             return lista;
         }
