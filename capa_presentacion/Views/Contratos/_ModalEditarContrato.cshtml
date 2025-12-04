@@ -53,10 +53,13 @@
                     </div>
 
                     <div class="form-field">
-                        <label for="ec_tipo_salario_id">Tipo salario</label>
-                        <select id="ec_tipo_salario_id" name="TipoSalarioId">
-                            <option value="">Seleccione</option>
-                        </select>
+                        <label for="ec_modo_pago">Modo de pago</label>
+                        <input id="ec_modo_pago"
+                               name="ModoPago"
+                               type="text"
+                               value="Depósito"
+                               readonly />
+                        <input type="hidden" id="ec_modo_pago_id" name="ModoPagoId" value="1" />
                     </div>
 
                     <div class="form-field">
@@ -142,6 +145,8 @@
                 <div id="ec_mensaje" class="form-mensaje" aria-live="polite"></div>
             </form>
         </div>
+
+        <input type="hidden" id="ec_tipo_salario_id" name="TipoSalarioId" value="1" />
 
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-modal-close="modal-editar-contrato">Cancelar</button>
