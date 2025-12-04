@@ -1,21 +1,17 @@
 ﻿@* ======================================
     PARCIAL: _FiltrosContratos.cshtml
-    Descripción: Barra de búsqueda + tabs
+    Descripción: Barra de búsqueda y división de contratos
     ====================================== *@
 
 <div class="filtros-contratos-container">
 
     <!-- 🔹 Tabs de Contratos -->
     <div class="tabs-contratos">
-        <button type="button" class="tab-btn is-active" data-tab="activos">
-            Contratos Activos
-        </button>
-        <button type="button" class="tab-btn" data-tab="sin">
-            Sin Contratos
-        </button>
+        <button type="button" class="tab-btn is-active" data-tab="activos">Contratos Activos</button>
+        <button type="button" class="tab-btn" data-tab="sin">Sin Contratos</button>
     </div>
 
-    <!-- 🔹 Formulario de Filtros (compartido) -->
+    <!-- 🔹 Formulario de Filtros -->
     <form id="form-filtros-contratos" class="filtros-contratos" role="search">
         <!-- Buscar -->
         <div class="filtro-item filtro-busqueda">
@@ -27,28 +23,20 @@
                    autocomplete="off" />
         </div>
 
-        <!-- 🔹 BLOQUE DE ESTADO + BOTONES (se oculta en "Sin Contratos") -->
-        <div id="fc_estado_block" class="filtros-estado-y-botones">
-            <div class="filtro-item">
-                <label for="fc_estado">Estado</label>
-                <select id="fc_estado" name="estadoContratoId">
-                    <option value="0">Todos</option>
-                    <option value="1">Activos</option>
-                    <option value="2">Inactivos</option>
-                    <option value="3">Suspendidos</option>
-                    <option value="4">Finalizados</option>
-                    <option value="5">Anulados</option>
-                </select>
-            </div>
 
-            <div class="filtro-botones">
-                <button type="button" id="fc_filtrar" class="btn btn-primary">
-                    Filtro
-                </button>
-                <button type="reset" class="btn btn-secondary">
-                    Limpiar
-                </button>
-            </div>
+    <!-- Sección avanzada opcional -->
+    <div id="filtros-avanzados" class="filtros-avanzados" hidden>
+        <div class="filtro-item">
+            <label for="fc_fecha_inicio">Inicio desde</label>
+            <input id="fc_fecha_inicio" name="fechaInicioDesde" type="date" />
         </div>
-    </form>
+        <div class="filtro-item">
+            <label for="fc_fecha_fin">Fin hasta</label>
+            <input id="fc_fecha_fin" name="fechaFinHasta" type="date" />
+        </div>
+        <div class="filtro-item">
+            <label for="fc_cargo">Cargo</label>
+            <input id="fc_cargo" name="cargo" type="text" placeholder="Cargo" />
+        </div>
+    </div>
 </div>
