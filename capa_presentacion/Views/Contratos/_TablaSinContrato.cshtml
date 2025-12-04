@@ -1,7 +1,25 @@
-﻿<div id="tab-sin" class="tab-panel">
-    <table class="tabla-contratos">
-        <thead><tr><th>Empleado</th><th>Documento</th><th>Acciones</th></tr></thead>
-        <tbody id="tbody-sin-contrato"></tbody>
-    </table>
-    <div class="tabla-footer"><span id="txt-total-sin"></span></div>
+﻿@* PARCIAL: Lista de trabajadores sin contrato *@
+
+<div id="tab-sin" class="tab-panel">
+    <div class="card card-table">
+        <div class="card-header">
+            <h3 class="card-title">Sin Contratos</h3>
+            <p id="txt-total-sin" class="card-subtitle">0 registro(s)</p>
+        </div>
+
+        <div class="card-body table-wrapper">
+            <table class="table table-contratos">
+                <thead>
+                    <tr>
+                        <th>Empleado</th>
+                        <th>Documento</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-sin-contrato">
+                    @* Filas generadas por contratos.js *@
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
