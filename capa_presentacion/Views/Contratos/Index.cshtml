@@ -19,19 +19,12 @@
 
     @Html.Partial("_CardResumenContratos")
     @Html.Partial("_FiltrosContratos")
-
-    <!-- Panel para CONTRATOS ACTIVOS -->
-    <div id="tab-activos" class="tab-panel is-active">
-        @Html.Partial("_TablaActivos")
-    </div>
-
-    <!-- Panel para SIN CONTRATOS -->
-    <div id="tab-sin" class="tab-panel">
-        @Html.Partial("_TablaSinContrato")
-    </div>
-
+    @Html.Partial("_TablaActivos")
+    @Html.Partial("_TablaSinContrato")
     @Html.Partial("_ModalNuevoContrato")
     @Html.Partial("_ModalEditarContrato")
+
+
 </section>
 
 <link rel="stylesheet" href="~/Content/css/contratos.css" />

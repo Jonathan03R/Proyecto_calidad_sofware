@@ -1,7 +1,4 @@
-﻿using capa_dominio.dto;
-using System;
-using System.Collections.Generic;
-
+﻿using System;
 
 namespace capa_dominio.dto
 {

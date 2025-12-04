@@ -17,6 +17,9 @@ namespace capa_presentacion.Controllers
         private readonly TipoSalarioServicio _tipoSalarioService;
         private readonly TipoJornadaService _jornadaService;
 
+
+
+
         public ContratosController()
         {
             servicio = new ServicioContratos();
@@ -48,6 +51,7 @@ namespace capa_presentacion.Controllers
                 var data = servicio.ListarContratosActivos();
                 var resultado = data.Select(x => new
                 {
+                    // Para tabla
                     ContratoId = x.ContratoId,
                     TrabajadorId = x.TrabajadorId,
                     EmpleadoNombre = x.EmpleadoNombre,
@@ -57,12 +61,14 @@ namespace capa_presentacion.Controllers
                     FechaInicio = x.FechaInicio == DateTime.MinValue ? "" : x.FechaInicio.ToString("yyyy-MM-dd"),
                     FechaFin = x.FechaFin.HasValue ? x.FechaFin.Value.ToString("yyyy-MM-dd") : "",
 
+                    // Para modal
                     CargoId = x.CargoId,
                     TipoSalarioId = x.TipoSalarioId,
                     Salario = x.Salario,
                     ModoPago = x.ModoPagoId,
                     Observaciones = x.Observaciones,
 
+                    // Otros datos por si luego los usas
                     AreaId = x.AreaId,
                     TipoPensionId = x.TipoPensionId,
                     TipoJornadaId = 1,
@@ -70,7 +76,6 @@ namespace capa_presentacion.Controllers
                     HorasSemanales = x.HorasSemanales,
                     DescripcionFunciones = x.DescripcionFunciones
                 });
-
                 return Json(new { consultaExitosa = true, data = resultado }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -100,81 +105,82 @@ namespace capa_presentacion.Controllers
                 return Json(new { consultaExitosa = false, mensaje = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
-
+        // ✅ Obtener Areas
         [HttpGet]
         public JsonResult ObtenerAreas()
         {
             var areas = _areaService.ObtenerAreas()
-                .Select(a => new { id = a.AreaId, nombre = a.AreaNombre })
+                .Select(a => new
+                {
+                    id = a.AreaId,
+                    nombre = a.AreaNombre
+                })
                 .ToList();
 
             return Json(areas, JsonRequestBehavior.AllowGet);
         }
-
+        // ✅ Obtener Cargos
         [HttpGet]
         public JsonResult ObtenerCargos()
         {
             var cargos = _cargoService.ObtenerCargos()
-                .Select(c => new { id = c.CargoId, nombre = c.CargoNombre })
+                .Select(c => new
+                {
+                    id = c.CargoId,
+                    nombre = c.CargoNombre
+                })
                 .ToList();
 
             return Json(cargos, JsonRequestBehavior.AllowGet);
         }
 
+        // ✅ Obtener sistemas de pensiones (AFP / ONP)
         [HttpGet]
-    
         public JsonResult ObtenerPensiones()
         {
-            try
-            {
-                var pensiones = _pensionService.ObtenerSistemasPensiones()
-                    .Select(p => new
-                    {
-                        id = p.TipoPensionId,
-                        nombre = p.Nombre,
-                        entidad = p.Entidad   
-                    })
-                    .ToList();
+            var pensiones = _pensionService.ObtenerSistemasPensiones()
+                .Select(p => new
+                {
+                    id = p.TipoPensionId,
+                    nombre = p.Nombre,
+                    entidad = p.Entidad
+                })
+                .ToList();
 
-            
-                return Json(new
-                {
-                    consultaExitosa = true,
-                    data = pensiones
-                }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                
-                return Json(new
-                {
-                    consultaExitosa = false,
-                    mensaje = ex.ToString()
-                }, JsonRequestBehavior.AllowGet);
-            }
+            return Json(pensiones, JsonRequestBehavior.AllowGet);
         }
 
-
+        // ✅ Obtener tipos de salario
         [HttpGet]
         public JsonResult ObtenerTiposSalarios()
         {
             var tipos = _tipoSalarioService.ObtenerTiposSalarios()
-                .Select(t => new { id = t.TipoSalarioId, nombre = t.TipoSalarioNombre })
+                .Select(t => new
+                {
+                    id = t.TipoSalarioId,
+                    nombre = t.TipoSalarioNombre
+                })
                 .ToList();
 
             return Json(tipos, JsonRequestBehavior.AllowGet);
         }
 
+        // ✅ Obtener tipos de jornadas
         [HttpGet]
         public JsonResult ObtenerTiposJornadas()
         {
             var tipos = _jornadaService.ObtenerTiposJornadas()
-                .Select(j => new { id = j.TipoJornadaId, nombre = j.TipoJornadaNombre })
+                .Select(j => new
+                {
+                    id = j.TipoJornadaId,
+                    nombre = j.TipoJornadaNombre
+                })
                 .ToList();
 
             return Json(tipos, JsonRequestBehavior.AllowGet);
         }
 
+        // ✅ CRear Contrato
         [HttpPost]
         public JsonResult CrearContrato(ContratoDTO contrato)
         {
@@ -193,12 +199,12 @@ namespace capa_presentacion.Controllers
                 return Json(new
                 {
                     exito = false,
-                    mensaje = ex.Message
+                    mensaje = ex.Message  
                 });
             }
         }
 
-
+        // ✅ Actualizar Contrato
         [HttpPost]
         public JsonResult ActualizarContrato(ContratoDTO contrato, string motivo)
         {
@@ -277,47 +283,7 @@ namespace capa_presentacion.Controllers
             }
         }
 
-        // =============================================================
-        // NUEVO: OBTENER CONTRATOS FILTRADOS (BOTÓN FILTRO)
-        // =============================================================
-        [HttpGet]
-        public JsonResult ObtenerContratosFiltrados(int? estadoContratoId, string buscar)
-        {
-            try
-            {
-                var data = servicio.ObtenerContratosFiltrados(estadoContratoId, buscar);
 
-                var resultado = data.Select(x => new
-                {
-                    ContratoId = x.ContratoId,
-                    TrabajadorId = x.TrabajadorId,
-                    EmpleadoNombre = x.EmpleadoNombre,
-                    Documento = x.Documento,
-                    CargoNombre = x.CargoNombre,
-                    EstadoContratoNombre = x.EstadoContratoNombre,
-                    FechaInicio = x.FechaInicio == DateTime.MinValue ? "" : x.FechaInicio.ToString("yyyy-MM-dd"),
-                    FechaFin = x.FechaFin.HasValue ? x.FechaFin.Value.ToString("yyyy-MM-dd") : "",
 
-                    CargoId = x.CargoId,
-                    TipoSalarioId = x.TipoSalarioId,
-                    Salario = x.Salario,
-                    ModoPago = x.ModoPago,
-                    Observaciones = x.Observaciones,
-
-                    AreaId = x.AreaId,
-                    TipoPensionId = x.TipoPensionId,
-                    TipoJornadaId = x.TipoJornadaId,
-                    TarifaHora = x.TarifaHora,
-                    HorasSemanales = x.HorasSemanales,
-                    DescripcionFunciones = x.DescripcionFunciones
-                });
-
-                return Json(new { consultaExitosa = true, data = resultado }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                return Json(new { consultaExitosa = false, mensaje = ex.Message }, JsonRequestBehavior.AllowGet);
-            }
-        }
     }
 }
