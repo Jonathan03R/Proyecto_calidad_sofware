@@ -151,19 +151,19 @@ namespace capa_presentacion.Controllers
         }
 
         // ✅ Obtener tipos de salario
-        [HttpGet]
-        public JsonResult ObtenerTiposSalarios()
-        {
-            var tipos = _tipoSalarioService.ObtenerTiposSalarios()
-                .Select(t => new
-                {
-                    id = t.TipoSalarioId,
-                    nombre = t.TipoSalarioNombre
-                })
-                .ToList();
+        //[HttpGet]
+        //public JsonResult ObtenerTiposSalarios()
+        //{
+        //    var tipos = _tipoSalarioService.ObtenerTiposSalarios()
+        //        .Select(t => new
+        //        {
+        //            id = t.TipoSalarioId,
+        //            nombre = t.TipoSalarioNombre
+        //        })
+        //        .ToList();
 
-            return Json(tipos, JsonRequestBehavior.AllowGet);
-        }
+        //    return Json(tipos, JsonRequestBehavior.AllowGet);
+        //}
 
         // ✅ Obtener tipos de jornadas
         [HttpGet]
@@ -186,6 +186,8 @@ namespace capa_presentacion.Controllers
         {
             try
             {
+                contrato.TipoSalarioId = 1;
+
                 var nuevoId = servicio.CrearContrato(contrato);
 
                 return Json(new

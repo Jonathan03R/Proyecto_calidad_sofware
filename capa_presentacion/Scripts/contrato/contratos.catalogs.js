@@ -167,7 +167,7 @@
             this.cargarAreas('#ec_area_id', item.AreaId);
             this.cargarPensiones('#ec_tipo_pension_id', item.TipoPensionId);
             this.cargarCargos('#ec_cargo_id', item.CargoId);
-            this.cargarTiposSalarios('#ec_tipo_salario_id', item.TipoSalarioId);
+            /*this.cargarTiposSalarios('#ec_tipo_salario_id', item.TipoSalarioId);*/
             this.cargarJornadas('#ec_tipo_jornada_id', item.TipoJornadaId);
         }
 

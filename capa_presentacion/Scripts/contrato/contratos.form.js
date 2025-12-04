@@ -50,7 +50,8 @@
 
             // Llenar campos del contrato
             $('#ec_salario').val(item.Salario || '');
-            $('#ec_modo_pago').val(item.ModoPago || '');
+            $('#ec_modo_pago').val('Depósito');
+            $('#ec_modo_pago_id').val('1');
             $('#ec_horas_semanales').val(item.HorasSemanales || '');
             $('#ec_fecha_inicio').val(item.FechaInicio || '');
             $('#ec_fecha_fin').val(item.FechaFin || '');
@@ -74,7 +75,8 @@
             $('#nc_tipo_pension_id').val('');
             $('#nc_tipo_salario_id').val('');
             $('#nc_tipo_jornada_id').val('');
-            $('#nc_modo_pago').val('');
+            $('#nc_modo_pago').val('Depósito');
+            $('#nc_modo_pago_id').val('1');
             $('#nc_fecha_inicio').val('');
             $('#nc_fecha_fin').val('');
             $('#nc_remuneracion').val('');
@@ -94,14 +96,14 @@
                 CargoId: $('#nc_cargo_id').val() ? Number($('#nc_cargo_id').val()) : null,
                 AreaId: $('#nc_area_id').val() ? Number($('#nc_area_id').val()) : null,
                 TipoPensionId: $('#nc_tipo_pension_id').val() ? Number($('#nc_tipo_pension_id').val()) : null,
-                TipoSalarioId: $('#nc_tipo_salario_id').val() ? Number($('#nc_tipo_salario_id').val()) : null,
+                TipoSalarioId: 1,
                 TipoJornadaId: $('#nc_tipo_jornada_id').val() ? Number($('#nc_tipo_jornada_id').val()) : null,
                 FechaInicio: $('#nc_fecha_inicio').val(),
                 FechaFin: $('#nc_fecha_fin').val() || null,
                 Salario: $('#nc_remuneracion').val() ? parseFloat($('#nc_remuneracion').val()) : null,
                 HorasSemanales: $('#nc_horas_semanales').val() ? parseInt($('#nc_horas_semanales').val(), 10) : null,
                 TarifaHora: $('#nc_tarifa_hora').val() ? parseFloat($('#nc_tarifa_hora').val()) : null,
-                ModoPago: $('#nc_modo_pago').val() || null,
+                ModoPagoId: 1,
                 DescripcionFunciones: $('#nc_descripcion_funciones').val() || null,
                 Observaciones: $('#nc_observaciones').val() || null
             };
@@ -118,14 +120,14 @@
                 CargoId: $('#ec_cargo_id').val() ? Number($('#ec_cargo_id').val()) : null,
                 AreaId: $('#ec_area_id').val() ? Number($('#ec_area_id').val()) : null,
                 TipoPensionId: $('#ec_tipo_pension_id').val() ? Number($('#ec_tipo_pension_id').val()) : null,
-                TipoSalarioId: $('#ec_tipo_salario_id').val() ? Number($('#ec_tipo_salario_id').val()) : null,
+                TipoSalarioId: 1,
                 TipoJornadaId: $('#ec_tipo_jornada_id').val() ? Number($('#ec_tipo_jornada_id').val()) : null,
                 FechaInicio: $('#ec_fecha_inicio').val(),
                 FechaFin: $('#ec_fecha_fin').val() || null,
                 HorasSemanales: $('#ec_horas_semanales').val() ? parseInt($('#ec_horas_semanales').val(), 10) : null,
                 Salario: $('#ec_salario').val() ? parseFloat($('#ec_salario').val()) : null,
                 TarifaHora: $('#ec_tarifa_hora').val() ? parseFloat($('#ec_tarifa_hora').val()) : null,
-                ModoPago: $('#ec_modo_pago').val() || null,
+                ModoPago: 1,
                 DescripcionFunciones: $('#ec_descripcion_funciones').val() || null,
                 Observaciones: $('#ec_observaciones').val() || null
             };

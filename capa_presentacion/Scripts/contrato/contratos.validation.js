@@ -10,6 +10,11 @@
 
         validarNuevoContrato: function (contrato) {
 
+            // Establecer TipoSalarioId por defecto (Mensual = 1) si no está definido
+            if (!contrato.TipoSalarioId) {
+                contrato.TipoSalarioId = 1;
+            }
+
             // Validar TrabajadorId
             if (!contrato.TrabajadorId) {
                 return { valido: false, mensaje: 'Falta el trabajador.' };
@@ -30,10 +35,7 @@
                 return { valido: false, mensaje: 'Seleccione el sistema de pensiones.' };
             }
 
-            // Validar TipoSalarioId
-            if (!contrato.TipoSalarioId) {
-                return { valido: false, mensaje: 'Seleccione el tipo de salario.' };
-            }
+            // TipoSalarioId ya no requiere validación, se establece por defecto
 
             // Validar FechaInicio
             if (!contrato.FechaInicio) {
@@ -71,6 +73,11 @@
         },
 
         validarEdicionContrato: function (data, motivo) {
+
+            // Establecer TipoSalarioId por defecto (Mensual = 1) si no está definido
+            if (!data.TipoSalarioId) {
+                data.TipoSalarioId = 1;
+            }
 
             // Validar motivo
             if (!motivo || motivo.trim() === '') {

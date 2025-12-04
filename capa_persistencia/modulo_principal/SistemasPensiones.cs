@@ -37,7 +37,9 @@ namespace capa_persistencia.modulo_principal
                             TipoPensionId = reader.GetInt32(ordId),
                             Nombre = reader.IsDBNull(ordNombre) ? null : reader.GetString(ordNombre),
                             Entidad = reader.IsDBNull(ordEntidad) ? null : reader.GetString(ordEntidad),
-                            ComisionSobreFlujo = reader.IsDBNull(ordComision)? (double?)null: reader.GetDouble(ordComision)
+                            ComisionSobreFlujo = reader.IsDBNull(reader.GetOrdinal("comision_sobre_flujo"))
+                                ? (decimal?)null
+                                : reader.GetDecimal(reader.GetOrdinal("comision_sobre_flujo"))
                         });
                     }
                 }

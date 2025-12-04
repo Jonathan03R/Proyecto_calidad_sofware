@@ -135,10 +135,10 @@ namespace capa_dominio
                 throw new InvalidOperationException("Debe seleccionar el sistema de pensiones.");
             }
 
-            if (TipoSalario?.TipoSalarioId <= 0)
-            {
-                throw new InvalidOperationException("Debe seleccionar el tipo de salario.");
-            }
+            //if (TipoSalario?.TipoSalarioId <= 0)
+            //{
+            //    throw new InvalidOperationException("Debe seleccionar el tipo de salario.");
+            //}
         }
 
         private void ValidarFechas()
