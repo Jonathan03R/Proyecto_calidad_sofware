@@ -17,7 +17,7 @@
             elements.kpiPendientes.text('0');
             elements.kpiProcesadas.text('0');
             elements.kpiInactivos.text('0');
-            elements.kpiTotalNomina.text('S/ 0.00');
+            elements.kpiTotalNomina.text('0.00');
             return;
         }
 
@@ -31,9 +31,22 @@
         elements.kpiTotalNomina.text('S/ ' + formatearMoneda(totalNeto));
     }
 
+    // ✅ NUEVO: KPIs que vienen del backend
+    function desdeResumen(kpis, elements, formatearMoneda) {
+        if (!elements || !kpis) return;
+
+        elements.kpiPendientes.text(kpis.totalPeriodosAbiertos || 0);
+        elements.kpiProcesadas.text(kpis.totalPeriodosProcesados || 0);
+        elements.kpiInactivos.text(kpis.totalTrabajadoresInactivos || 0);
+
+        const totalNeto = kpis.totalNetoGeneral || 0;
+        elements.kpiTotalNomina.text('S/ ' + formatearMoneda(totalNeto));
+    }
+
     global.NominaKPIs = {
         init,
-        desdeEmpleados
+        desdeEmpleados,
+        desdeResumen // 👈 IMPORTANTE: ahora también exportamos esta
     };
 
     console.log('✅ nomina.kpis.js cargado');
