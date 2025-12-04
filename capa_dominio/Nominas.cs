@@ -19,10 +19,10 @@ namespace capa_dominio
         public DateTime NominaFecha { get; set; }
         public DateTime NominaFechaProcesamiento { get; set; }
         public string NominaEstado { get; set; }
-        public int NominaTotalEmpleados { get; set; }
-        public decimal NominaTotalBruto { get; set; }
-        public decimal NominaTotalDescuentos { get; set; }
-        public decimal NominaTotalNeto { get; set; }
+        public int NominaTotalEmpleados { get; private set; }
+        public decimal NominaTotalBruto { get; private set; }
+        public decimal NominaTotalDescuentos { get; private set; }
+        public decimal NominaTotalNeto { get; private set; }
         public string NominaObservaciones { get; set; }
 
         public List<DetalleNomina> Detalles { get; set; } = new List<DetalleNomina>();
