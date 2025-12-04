@@ -233,10 +233,22 @@ namespace capa_dominio
                     var aporteObligatorio = RemuneracionBruta * 0.10m;
 
                     var comision = 0m;
+                    Debug.WriteLine("=== DEBUG COMISION SOBRE FLUJO ===");
+                    Debug.WriteLine($"remuneracion_bruta: {RemuneracionBruta}");
+                    Debug.WriteLine($"comision_sobre_flujo_raw: {Contrato.TipoPension.ComisionSobreFlujo}");
+
                     if (Contrato.TipoPension.ComisionSobreFlujo != null)
+                    {
                         comision = RemuneracionBruta * (decimal)Contrato.TipoPension.ComisionSobreFlujo;
+                        Debug.WriteLine($"comision_calculada: {comision}");
+                    }
+                    else
+                    {
+                        Debug.WriteLine("comision_sobre_flujo_es_null");
+                    }
 
                     DescuentoAFP = Math.Round(aporteObligatorio + comision, 2, MidpointRounding.AwayFromZero);
+                    Debug.WriteLine($"descuento_afp_total: {DescuentoAFP}");
                     break;
 
                 case 6:

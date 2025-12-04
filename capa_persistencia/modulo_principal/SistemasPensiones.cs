@@ -37,16 +37,16 @@ namespace capa_persistencia.modulo_principal
                             TipoPensionId = reader.GetInt32(ordId),
                             Nombre = reader.IsDBNull(ordNombre) ? null : reader.GetString(ordNombre),
                             Entidad = reader.IsDBNull(ordEntidad) ? null : reader.GetString(ordEntidad),
-                            ComisionSobreFlujo = reader.IsDBNull(reader.GetOrdinal("comision_sobre_flujo"))
-                                ? (decimal?)null
-                                : reader.GetDecimal(reader.GetOrdinal("comision_sobre_flujo"))
+                            ComisionSobreFlujo = reader.IsDBNull(ordComision)
+                            ? (decimal?)null
+                            : reader.GetDecimal(ordComision)
                         });
                     }
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Mensaje: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Mensaje Sitema Pensiones: {ex.Message}");
                 throw new TrabajadorException(TrabajadorException.ERROR_DE_CONSULTA);
             }
 

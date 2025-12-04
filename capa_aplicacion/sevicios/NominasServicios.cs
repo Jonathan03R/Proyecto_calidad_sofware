@@ -19,6 +19,7 @@ namespace capa_aplicacion.servicios
         private readonly HorasTrabajadasRepositorio _horasTrabajadas;
         private readonly TiposHorasExtrasRepositorio _tiposHorasExtras;
         private readonly PeriodosRepositorio _periodos;
+        private readonly SistemasPensionesRepositorio _sistemasPensionesRepositorio;
 
         public NominasServicios()
         {
@@ -31,6 +32,7 @@ namespace capa_aplicacion.servicios
             _horasTrabajadas = new HorasTrabajadasRepositorio(_conexion);
             _tiposHorasExtras = new TiposHorasExtrasRepositorio(_conexion);
             _periodos = new PeriodosRepositorio(_conexion);
+            _sistemasPensionesRepositorio = new SistemasPensionesRepositorio(_conexion);
         }
 
         // ============================================================
@@ -55,12 +57,16 @@ namespace capa_aplicacion.servicios
             {
                 contrato = _contratos.ObtenerContratosPorTrabajador(trabajadorId)
                                      .FirstOrDefault(c => c.EsActivo());
-
+                
                 if (contrato == null)
                 {
                     _conexion.CancelarTransaccion();
                     return new ResultadoEmpleadoDTO(trabajadorId, false, "sin contrato activo");
                 }
+                var sistemasPensiones = _sistemasPensionesRepositorio.ObtenerSistemasPensiones();
+
+                contrato.TipoPension = sistemasPensiones
+                    .FirstOrDefault(p => p.TipoPensionId == contrato.TipoPension.TipoPensionId);
 
                 var hijos = _hijos.ObtenerHijosPorTrabajador(trabajadorId);
 
