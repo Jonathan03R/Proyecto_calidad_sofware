@@ -145,10 +145,10 @@ function formatearPeriodo(periodo) {
     const partes = periodo.split("-");
     if (partes.length !== 2) return periodo;
 
-    const año = partes[0];
-    const mes = partes[1];
+    const año = Number.parseInt(partes[0], 10);
+    const mes = Number.parseInt(partes[1], 10) - 1;
 
-    const fecha = new Date(`${año}-${mes}-01`);
+    const fecha = new Date(año, mes, 1);
 
     return fecha.toLocaleDateString("es-PE", {
         month: "long",
