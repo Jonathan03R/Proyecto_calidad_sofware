@@ -86,7 +86,6 @@ namespace capa_dominio
             if (jornada_diaria <= 0)
                 return 0;
 
-            // si no trabajó nada, no contar como tardanza
             if (HorasNormales == 0)
                 return 0;
 

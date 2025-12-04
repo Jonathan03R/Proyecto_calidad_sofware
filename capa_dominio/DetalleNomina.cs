@@ -295,45 +295,38 @@ namespace capa_dominio
                 return;
             }
 
-            decimal remuneracionBrutaAnual = RemuneracionBruta * 12;
-            decimal deduccionAnual = 7 * valorUIT;
-            decimal baseImponibleAnual = remuneracionBrutaAnual - deduccionAnual;
+            decimal rba = RemuneracionBruta * 12;
+            decimal deduccion = 7 * valorUIT;
+            decimal bia = rba - deduccion;
 
-            if (baseImponibleAnual <= 0)
+            if (bia <= 0)
             {
                 ImpuestoRentaMensual = 0;
                 return;
             }
 
-            decimal baseImponibleUIT = baseImponibleAnual / valorUIT;
-            decimal impuestoAnual = 0m;
+            decimal biaUIT = bia / valorUIT;
+            decimal impuesto = 0m;
 
-            foreach (var tramo in tramos.OrderBy(t => t.NumeroTramo))
+            foreach (var t in tramos.OrderBy(t => t.NumeroTramo))
             {
-                decimal limiteInferior = tramo.LimiteInferiorUIT;
-                decimal limiteSuperior = tramo.LimiteSuperiorUIT ?? baseImponibleUIT;
+                decimal li = t.LimiteInferiorUIT;
+                decimal ls = t.LimiteSuperiorUIT ?? decimal.MaxValue;
 
-                if (limiteSuperior == 0)
-                {
-                    limiteSuperior = baseImponibleUIT;
-                }
-
-                decimal rangoTramo = Math.Min(baseImponibleUIT, limiteSuperior) - limiteInferior;
-
-                if (rangoTramo > 0)
-                {
-                    decimal montoTramo = rangoTramo * valorUIT;
-                    decimal tasa = tramo.TasaPorcentaje / 100m;
-                    impuestoAnual += montoTramo * tasa;
-                }
-
-                if (baseImponibleUIT <= limiteSuperior)
-                {
+                if (biaUIT <= li)
                     break;
+
+                decimal rangoUIT = Math.Min(biaUIT, ls) - li;
+
+                if (rangoUIT > 0)
+                {
+                    decimal montoSoles = rangoUIT * valorUIT;
+                    decimal tasa = t.TasaPorcentaje / 100m;
+                    impuesto += montoSoles * tasa;
                 }
             }
 
-            ImpuestoRentaMensual = Math.Round(impuestoAnual / 12, 2, MidpointRounding.AwayFromZero);
+            ImpuestoRentaMensual = Math.Round(impuesto / 12, 2);
         }
 
 
@@ -349,7 +342,7 @@ namespace capa_dominio
                               DescuentoAFP +
                               ImpuestoRentaMensual +
                               DescuentoFaltas +
-                              DescuentoAdelantos;
+                              DescuentoAdelantos + DescuentoTardanzas;
 
             NetoPagar = TotalIngresos - TotalDescuentos;
 
