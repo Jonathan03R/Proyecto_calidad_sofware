@@ -63,7 +63,7 @@ namespace capa_presentacion.Controllers
 
                     // Para modal
                     CargoId = x.CargoId,
-                    TipoSalarioId = x.TipoSalarioId,
+                    TipoSalarioId = 1,
                     Salario = x.Salario,
                     ModoPago = x.ModoPagoId,
                     Observaciones = x.Observaciones,
@@ -166,19 +166,19 @@ namespace capa_presentacion.Controllers
         //}
 
         // ✅ Obtener tipos de jornadas
-        [HttpGet]
-        public JsonResult ObtenerTiposJornadas()
-        {
-            var tipos = _jornadaService.ObtenerTiposJornadas()
-                .Select(j => new
-                {
-                    id = j.TipoJornadaId,
-                    nombre = j.TipoJornadaNombre
-                })
-                .ToList();
+        //[HttpGet]
+        //public JsonResult ObtenerTiposJornadas()
+        //{
+        //    var tipos = _jornadaService.ObtenerTiposJornadas()
+        //        .Select(j => new
+        //        {
+        //            id = j.TipoJornadaId,
+        //            nombre = j.TipoJornadaNombre
+        //        })
+        //        .ToList();
 
-            return Json(tipos, JsonRequestBehavior.AllowGet);
-        }
+        //    return Json(tipos, JsonRequestBehavior.AllowGet);
+        //}
 
         // ✅ CRear Contrato
         [HttpPost]
@@ -187,6 +187,7 @@ namespace capa_presentacion.Controllers
             try
             {
                 contrato.TipoSalarioId = 1;
+                contrato.TipoJornadaId = 1;
 
                 var nuevoId = servicio.CrearContrato(contrato);
 
@@ -240,6 +241,9 @@ namespace capa_presentacion.Controllers
 
             try
             {
+                contrato.TipoSalarioId = 1;
+                contrato.TipoJornadaId = 1;
+
                 var usuario = User?.Identity != null && User.Identity.IsAuthenticated
                     ? User.Identity.Name
                     : Environment.UserName;
