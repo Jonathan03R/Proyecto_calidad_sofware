@@ -235,4 +235,34 @@ public class NominaController : Controller
             return Json(new { data = (object)null, consultaExitosa = false, mensaje = ex.Message }, JsonRequestBehavior.AllowGet);
         }
     }
+    [HttpGet]
+public JsonResult ObtenerKpisNomina()
+{
+    try
+    {
+        var resumen = _servicio.ObtenerResumenKpisNomina();
+
+        return Json(new
+        {
+            exito = true,
+            kpis = new
+            {
+                totalPeriodosAbiertos = resumen.TotalPeriodosAbiertos,
+                totalPeriodosProcesados = resumen.TotalPeriodosProcesados,
+                totalTrabajadoresInactivos = resumen.TotalTrabajadoresInactivos,
+                totalNetoGeneral = resumen.TotalNetoGeneral
+            }
+        }, JsonRequestBehavior.AllowGet);
+    }
+        catch (Exception ex)
+        {
+            return Json(new
+            {
+                exito = false,
+                mensaje = ex.ToString()
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+    }
+
 }

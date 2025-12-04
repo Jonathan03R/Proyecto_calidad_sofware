@@ -118,9 +118,25 @@ const NominaUI = (function () {
     // ===== DATOS =====
     function cargarDatosIniciales() {
         NominaService.listarPeriodos()
-            .done(r => { if (r.consultaExitosa) renderizarSelectPeriodos(r.data); });
+            .done(r => {
+                if (r.consultaExitosa) renderizarSelectPeriodos(r.data);
+            });
+
         NominaKPIs.init(elements);
+
+        NominaService.obtenerKpisNomina()
+            .done(function (response) {
+                if (!response || !response.exito) {
+                    console.warn('No se pudo obtener KPIs de nómina');
+                    return;
+                }
+                NominaKPIs.desdeResumen(response.kpis, elements, formatearMoneda);
+            })
+            .fail(function (xhr, status, error) {
+                console.error('Error al obtener KPIs de nómina:', error);
+            });
     }
+
 
     function cargarEmpleadosVigentes() {
         if (!periodoSeleccionado) return limpiarTablaVigentes();

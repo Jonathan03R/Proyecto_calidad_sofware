@@ -488,5 +488,11 @@ namespace capa_aplicacion.servicios
                 _conexion.CerrarConexion();
             }
         }
+
+        public ResumenKpisNominaDto ObtenerResumenKpisNomina()
+        {
+            // Simplemente delega al repositorio
+            return _nominas.ObtenerResumenKpisNomina();
+        }
     }
 }
