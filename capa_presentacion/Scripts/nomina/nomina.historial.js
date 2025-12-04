@@ -145,8 +145,8 @@ function formatearPeriodo(periodo) {
     const partes = periodo.split("-");
     if (partes.length !== 2) return periodo;
 
-    const año = parseInt(partes[0], 10);
-    const mes = parseInt(partes[1], 10) - 1;
+    const año = Number.parseInt(partes[0], 10);
+    const mes = Number.parseInt(partes[1], 10) - 1;
 
     const fecha = new Date(año, mes, 1);
 
