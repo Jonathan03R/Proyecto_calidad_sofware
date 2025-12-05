@@ -127,10 +127,7 @@ namespace capa_dominio
             }
 
             DescuentoFaltas = totalFaltas * sueldoPorDia;
-
-            System.Diagnostics.Trace.WriteLine(
-                $"DESCUENTO FALTAS -> Faltas:{totalFaltas} | SueldoDia:{sueldoPorDia:F2} | TotalDescuento:{DescuentoFaltas:F2}"
-            );
+            
         }
 
         // =========================
