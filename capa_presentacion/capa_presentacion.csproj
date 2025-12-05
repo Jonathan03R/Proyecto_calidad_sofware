@@ -526,6 +526,7 @@
     <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\NominaController.cs" />
     <Compile Include="Controllers\GenerarReporteController.cs" />
+    <Compile Include="Controllers\ParametrosController .cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -658,6 +659,7 @@
     <Content Include="Views\Nomina\_FormProcesarNomina.cshtml" />
     <Content Include="Views\Nomina\_ModalDetalleEmpleado.cshtml" />
     <Content Include="Views\Nomina\_ProcesandoNomina.cshtml" />
+    <Content Include="Views\Parametros\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
