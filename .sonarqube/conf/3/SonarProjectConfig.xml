@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SonarProjectConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonarsource.com/msbuild/analyzer/2021/1">
+  <AnalysisConfigPath>C:\Users\Jonathan\Documents\GitHub\calidad_sof\.sonarqube\conf\SonarQubeAnalysisConfig.xml</AnalysisConfigPath>
+  <ProjectPath>C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_aplicacion\capa_aplicacion.csproj</ProjectPath>
+  <FilesToAnalyzePath>C:\Users\Jonathan\Documents\GitHub\calidad_sof\.sonarqube\conf\3\FilesToAnalyze.txt</FilesToAnalyzePath>
+  <OutPath>C:\Users\Jonathan\Documents\GitHub\calidad_sof\.sonarqube\out\3</OutPath>
+  <ProjectType>Product</ProjectType>
+</SonarProjectConfig>

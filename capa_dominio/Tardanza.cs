@@ -8,25 +8,13 @@ namespace capa_dominio
 {
     public class Tardanza
     {
-
-        private int tardanzaId;
-        private Trabajador trabajador;
-        private DateTime tardanzaFecha;
-        private int tardanzaMinutos;
-        private decimal tardanzaHoras;
-        private decimal tardanzaValorHoraNormal;
-        private decimal tardanzaValorDescuento;
-        private string tardanzaObservaciones;
-
-
-        public int TardanzaId { get => tardanzaId; set => tardanzaId = value; }
-        public Trabajador Trabajador { get => trabajador; set => trabajador = value; }
-        public DateTime TardanzaFecha { get => tardanzaFecha; set => tardanzaFecha = value; }
-        public int TardanzaMinutos { get => tardanzaMinutos; set => tardanzaMinutos = value; }
-        public decimal TardanzaHoras { get => tardanzaHoras; set => tardanzaHoras = value; }
-        public decimal TardanzaValorHoraNormal { get => tardanzaValorHoraNormal; set => tardanzaValorHoraNormal = value; }
-        public decimal TardanzaValorDescuento { get => tardanzaValorDescuento; set => tardanzaValorDescuento = value; }
-        public string TardanzaObservaciones { get => tardanzaObservaciones; set => tardanzaObservaciones = value; }
-
+        public int TardanzaId { get; set; }
+        public Trabajador Trabajador { get; set; }
+        public DateTime TardanzaFecha { get; set; }
+        public int TardanzaMinutos { get; set; }
+        public decimal TardanzaHoras { get; set; }
+        public decimal TardanzaValorHoraNormal { get; set; }
+        public decimal TardanzaValorDescuento { get; set; }
+        public string TardanzaObservaciones { get; set; }
     }
 }

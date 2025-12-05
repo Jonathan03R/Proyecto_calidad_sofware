@@ -144,7 +144,6 @@ namespace capa_dominio
                 if (ContratoFechaFin.Value < ContratoFechaInicio)
                     throw new InvalidOperationException("La fecha de fin no puede ser anterior a la fecha de inicio.");
 
-                // REGLA DE NEGOCIO: MÍNIMO 3 MESES
                 int meses = ((ContratoFechaFin.Value.Year - ContratoFechaInicio.Year) * 12)
                             + (ContratoFechaFin.Value.Month - ContratoFechaInicio.Month);
 

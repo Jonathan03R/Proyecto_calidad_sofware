@@ -1,0 +1,13 @@
+﻿C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_aplicacion\Properties\AssemblyInfo.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_aplicacion\sevicios\AreaService.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_aplicacion\sevicios\JornadaService.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_aplicacion\sevicios\ModoPagoService.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_aplicacion\sevicios\PensionService.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_aplicacion\sevicios\ServicioContratos.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_aplicacion\sevicios\TipoSalarioServicio.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_aplicacion\sevicios\TrabajadorService.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_aplicacion\sevicios\CargoService.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_aplicacion\sevicios\ReporteService.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_aplicacion\sevicios\PeriodoService.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_aplicacion\sevicios\NominasServicios.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_aplicacion\app.config

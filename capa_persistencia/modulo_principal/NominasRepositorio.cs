@@ -183,7 +183,6 @@ namespace capa_persistencia.modulo_principal
         }
         public ResumenKpisNominaDto ObtenerResumenKpisNomina()
         {
-            _accesoSQL.AbrirConexion(); 
 
             try
             {
@@ -210,10 +209,13 @@ namespace capa_persistencia.modulo_principal
 
                 return resumen;
             }
-            finally
+            catch (Exception )
             {
-                _accesoSQL.CerrarConexion(); // ← CERRAR SIEMPRE
+                throw new NominaException(
+                    NominaException.ERROR_DE_CONSULTA
+                );
             }
+
         }
 
 

@@ -100,23 +100,6 @@ namespace capa_aplicacion.Servicios
                 if (string.IsNullOrWhiteSpace(motivo))
                     throw new ArgumentException("Debe indicar el motivo de la actualización.");
 
-                // ============================================================
-                // VALIDACIÓN: MÍNIMO 3 MESES
-                // ============================================================
-                if (contrato.FechaInicio != DateTime.MinValue &&
-                    contrato.FechaFin.HasValue && contrato.FechaFin != DateTime.MinValue)
-                {
-                    var inicio = contrato.FechaInicio;
-                    var fin = contrato.FechaFin.Value;
-
-                    int meses = ((fin.Year - inicio.Year) * 12) + (fin.Month - inicio.Month);
-
-                    if (meses < 3)
-                        throw new Exception("El tiempo mínimo de contrato debe ser de 3 meses.");
-                }
-                // ============================================================
-
-
                 var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
                     ? contrato.HorasSemanales.Value
                     : 48;
