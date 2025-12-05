@@ -63,7 +63,7 @@ namespace capa_presentacion.Controllers
 
                     // Para modal
                     CargoId = x.CargoId,
-                    TipoSalarioId = x.TipoSalarioId,
+                    TipoSalarioId = 1,
                     Salario = x.Salario,
                     ModoPago = x.ModoPagoId,
                     Observaciones = x.Observaciones,
@@ -162,8 +162,8 @@ namespace capa_presentacion.Controllers
                 })
                 .ToList();
 
-            return Json(tipos, JsonRequestBehavior.AllowGet);
-        }
+        //    return Json(tipos, JsonRequestBehavior.AllowGet);
+        //}
 
         [HttpPost]
         public JsonResult CrearContrato(ContratoDTO contrato)
@@ -171,6 +171,7 @@ namespace capa_presentacion.Controllers
             try
             {
                 contrato.TipoSalarioId = 1;
+                contrato.TipoJornadaId = 1;
 
                 var nuevoId = servicio.CrearContrato(contrato);
 
@@ -224,6 +225,9 @@ namespace capa_presentacion.Controllers
 
             try
             {
+                contrato.TipoSalarioId = 1;
+                contrato.TipoJornadaId = 1;
+
                 var usuario = User?.Identity != null && User.Identity.IsAuthenticated
                     ? User.Identity.Name
                     : Environment.UserName;
