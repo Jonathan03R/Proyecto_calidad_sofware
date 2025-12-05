@@ -74,7 +74,8 @@
                 const filtered = (config.Cache.sin || []).filter(x => utils.coincide(x, qn));
                 globalThis.ContratoRender.renderSin(filtered);
             }
-        }      
+        } 
+        
 
     };
 
