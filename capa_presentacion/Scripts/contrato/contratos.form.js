@@ -60,10 +60,10 @@
             $('#ec_observaciones').val(item.Observaciones || '');
 
             // Cargar catálogos con valores seleccionados
-            window.ContratoCatalogs.cargarTodosEdicion(item);
+            globalthis.ContratoCatalogs.cargarTodosEdicion(item);
 
             // Abrir modal
-            window.ContratoModal.open('modal-editar-contrato');
+            globalthis.ContratoModal.open('modal-editar-contrato');
         },
 
         /**
@@ -73,8 +73,6 @@
             $('#nc_cargo_id').val('');
             $('#nc_area_id').val('');
             $('#nc_tipo_pension_id').val('');
-            //$('#nc_tipo_salario_id').val('');
-            //$('#nc_tipo_jornada_id').val('');
             $('#nc_modo_pago').val('Depósito');
             $('#nc_modo_pago_id').val('1');
             $('#nc_fecha_inicio').val('');
