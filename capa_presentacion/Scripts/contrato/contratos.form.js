@@ -53,11 +53,11 @@
             $('#ec_descripcion_funciones').val(item.DescripcionFunciones || '');
             $('#ec_observaciones').val(item.Observaciones || '');
 
-   
-            window.ContratoCatalogs.cargarTodosEdicion(item);
+            // Cargar catálogos con valores seleccionados
+            globalthis.ContratoCatalogs.cargarTodosEdicion(item);
 
-          
-            window.ContratoModal.open('modal-editar-contrato');
+            // Abrir modal
+            globalthis.ContratoModal.open('modal-editar-contrato');
         },
 
       

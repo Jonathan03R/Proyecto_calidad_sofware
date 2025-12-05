@@ -62,7 +62,7 @@
             const $select = $(selector || '#nc_tipo_pension_id');
             $select.empty().append('<option value="">Seleccione</option>');
 
-            $.getJSON(window.ContratoConfig.URLS.obtenerPensiones)
+            $.getJSON(globalthis.ContratoConfig.URLS.obtenerPensiones)
                 .done(function (data) {
                     (data || []).forEach(function (p) {
                         const texto = p.entidad
@@ -140,8 +140,6 @@
             this.cargarAreas();
             this.cargarCargos();
             this.cargarPensiones();
-            //this.cargarTiposSalarios();
-            //this.cargarJornadas();
         },
 
         cargarTodosEdicion: function (item) {
