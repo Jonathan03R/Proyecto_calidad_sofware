@@ -115,8 +115,6 @@ public class NominaController : Controller
             if (nominaId <= 0 || trabajadorId <= 0 || periodoId <= 0)
                 return Json(new { ok = false, msg = "Parametros invalidos" });
 
-            // obtener tramos y parametros (se repite en cada llamada; si quieres optimizar,
-            // haz que el frontend obtenga estos y los envíe)
             int anio = DateTime.Now.Year;
             var tramos = _repoImpuestoRenta.ObtenerTramosIRPorAnio(anio);
             if (tramos == null || tramos.Count == 0)
@@ -126,6 +124,9 @@ public class NominaController : Controller
             var parametroEssalud = parametros.FirstOrDefault(p => p.ParametroCodigo == "APORTE_ESSALUD");
             var parametroUIT = parametros.FirstOrDefault(p => p.ParametroCodigo.StartsWith("UIT"));
 
+            System.Diagnostics.Debug.WriteLine(
+                $"[DEBUG] UIT recibida: Código={parametroUIT.ParametroCodigo}, Valor={parametroUIT.ParametroValor}"
+            );
             if (parametroEssalud == null || parametroUIT == null)
                 return Json(new { ok = false, msg = "Faltan parámetros ESSALUD o UIT." });
 
@@ -235,4 +236,34 @@ public class NominaController : Controller
             return Json(new { data = (object)null, consultaExitosa = false, mensaje = ex.Message }, JsonRequestBehavior.AllowGet);
         }
     }
+    [HttpGet]
+public JsonResult ObtenerKpisNomina()
+{
+    try
+    {
+        var resumen = _servicio.ObtenerResumenKpisNomina();
+
+        return Json(new
+        {
+            exito = true,
+            kpis = new
+            {
+                totalPeriodosAbiertos = resumen.TotalPeriodosAbiertos,
+                totalPeriodosProcesados = resumen.TotalPeriodosProcesados,
+                totalTrabajadoresInactivos = resumen.TotalTrabajadoresInactivos,
+                totalNetoGeneral = resumen.TotalNetoGeneral
+            }
+        }, JsonRequestBehavior.AllowGet);
+    }
+        catch (Exception ex)
+        {
+            return Json(new
+            {
+                exito = false,
+                mensaje = ex.ToString()
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+    }
+
 }

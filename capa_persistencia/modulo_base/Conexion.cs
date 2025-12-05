@@ -13,21 +13,26 @@ namespace capa_persistencia.modulo_base
         // Configuración de conexión para Azure SQL
         private readonly string servidor = "nominas02calidad.database.windows.net";
         private readonly string baseDatos = "nominas02_calidad";
-        //private readonly string baseDatos = "bdProcesarNomina";
 
 
         private readonly string usuario = "nominas02@nominas02calidad";
         private readonly string contrasena = "Grupo02_2025";
 
-        // ConnectionString completo
+        //// ConnectionString completo
         private string ConnectionString =>
             $"Server={servidor};" +
             $"Database={baseDatos};" +
             $"User ID={usuario};" +
-            $"Password={contrasena};"+
+            $"Password={contrasena};" +
             "Encrypt=True;" +
             "TrustServerCertificate=True;" +
             "Connection Timeout=30;";
+
+        //private string ConnectionString =
+        //    "server=DESKTOP-D9BFG02;" +
+        //    "database=nomina_calidad_backup;" +
+        //    "trusted_connection=true;" +
+        //    "trustservercertificate=true;";
 
         public void AbrirConexion()
         {

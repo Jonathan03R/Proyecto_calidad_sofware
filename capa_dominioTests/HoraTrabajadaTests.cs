@@ -302,5 +302,42 @@ namespace capa_dominio.Tests
 
             Console.WriteLine("=== PRUEBA EXITOSA ===\n");
         }
+
+        [TestMethod]
+        public void CalcularPagoHorasExtras_DiaNormal_3Horas()
+        {
+            // datos base
+            var contrato = new Contrato
+            {
+                ContratoTarifaHora = 6.25m
+            };
+
+            var tiposHorasExtras = new List<TipoHoraExtra>
+            {
+                new TipoHoraExtra { TiposHorasExtrasCodigo = "PRIMERAS2", TiposHorasExtrasMultiplicador = 0.25m,  TiposHorasExtrasEstado = 'A' },
+                new TipoHoraExtra { TiposHorasExtrasCodigo = "ADICIONALES", TiposHorasExtrasMultiplicador = 0.35m ,  TiposHorasExtrasEstado = 'A'},
+                new TipoHoraExtra { TiposHorasExtrasCodigo = "SABADO", TiposHorasExtrasMultiplicador = 0.50m,  TiposHorasExtrasEstado = 'A' },
+                new TipoHoraExtra { TiposHorasExtrasCodigo = "DOMINGO", TiposHorasExtrasMultiplicador = 1.00m,  TiposHorasExtrasEstado = 'A' }
+            };
+
+            var horaTrabajada = new HoraTrabajada
+            {
+                Fecha = new DateTime(2025, 10, 2), // jueves
+                HorasExtras = 1,
+                Contrato = contrato,
+                TiposHorasExtras = tiposHorasExtras
+            };
+
+            // ejecucion
+            var resultado = horaTrabajada.CalcularPagoHorasExtras();
+
+            // resultado esperado:
+            // 2 horas * 10 * 1.25 = 25
+            // 1 hora  * 10 * 1.35 = 13.5
+            // total = 38.50
+            decimal esperado = 38.50m;
+
+            Assert.AreEqual(esperado, resultado);
+        }
     }
 }

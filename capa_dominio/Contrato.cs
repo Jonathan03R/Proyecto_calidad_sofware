@@ -65,7 +65,7 @@ namespace capa_dominio
                 throw new InvalidOperationException("El contrato no tiene configuradas las horas semanales.");
             }
 
-            return Math.Round(ContratoHorasSemanales.Value / 6m, 2);
+            return ContratoHorasSemanales.Value / 6m;
         }
 
         public decimal ObtenerSueldoPorDia()
@@ -75,7 +75,7 @@ namespace capa_dominio
                 throw new InvalidOperationException("El salario del contrato no está definido o es inválido.");
             }
 
-            return Math.Round(ContratoSalario / 30m, 2);
+            return ContratoSalario / 30m;
         }
 
         public void CalcularTarifaHora()
@@ -97,10 +97,8 @@ namespace capa_dominio
                 throw new InvalidOperationException("La jornada diaria es inválida.");
             }
 
-            ContratoTarifaHora = Math.Round(
-                ContratoSalario / (30m * jornadaDiaria),
-                2
-            );
+            ContratoTarifaHora = ContratoSalario / (30m * jornadaDiaria);
+          
         }
 
         // ====== Validaciones agrupadas para bajar Cognitive Complexity ======
@@ -134,23 +132,24 @@ namespace capa_dominio
             {
                 throw new InvalidOperationException("Debe seleccionar el sistema de pensiones.");
             }
-
-            //if (TipoSalario?.TipoSalarioId <= 0)
-            //{
-            //    throw new InvalidOperationException("Debe seleccionar el tipo de salario.");
-            //}
         }
 
         private void ValidarFechas()
         {
             if (ContratoFechaInicio == DateTime.MinValue)
-            {
                 throw new InvalidOperationException("Debe especificar una fecha de inicio válida.");
-            }
 
-            if (ContratoFechaFin.HasValue && ContratoFechaFin.Value < ContratoFechaInicio)
+            if (ContratoFechaFin.HasValue)
             {
-                throw new InvalidOperationException("La fecha de fin no puede ser anterior a la fecha de inicio.");
+                if (ContratoFechaFin.Value < ContratoFechaInicio)
+                    throw new InvalidOperationException("La fecha de fin no puede ser anterior a la fecha de inicio.");
+
+                // REGLA DE NEGOCIO: MÍNIMO 3 MESES
+                int meses = ((ContratoFechaFin.Value.Year - ContratoFechaInicio.Year) * 12)
+                            + (ContratoFechaFin.Value.Month - ContratoFechaInicio.Month);
+
+                if (meses < 3)
+                    throw new InvalidOperationException("La duración mínima del contrato es de 3 meses.");
             }
         }
 

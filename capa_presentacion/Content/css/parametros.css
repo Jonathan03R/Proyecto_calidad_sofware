@@ -1,124 +1,85 @@
-﻿.modal-parametros {
-    position: fixed;
-    inset: 0;
-    display: none; /* oculto por defecto */
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-    background-color: #F9FAFB;
-}
-    .modal-parametros.is-open {
-        display: flex; /* se muestra cuando agregamos la clase */
-    }
-    .modal-parametros .modal-backdrop {
-        position: absolute;
-        inset: 0;
-        background: rgba(0,0,0,.45);
-    }
-    .modal-parametros .modal-content {
-        position: relative;
-        z-index: 1;
-        max-width: 960px;
-        max-height: 90vh;
-        overflow: auto;
-        background-color: #FFFFFF;
-        border-radius: 10px;
-        padding: 20px 24px;
-        box-shadow: 0 25px 50px rgba(15,23,42,.35);
-    }
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid #e9ecef;
-    padding-bottom: 10px;
+﻿.parametros-wrapper {
+    padding: 20px 30px;
+    background: #fff;
+    font-family: system-ui, sans-serif;
 }
 
-#tituloPeriodo {
-    margin: 10px 0px;
-    font-size: 18px;
-    font-weight: 700;
-    color: #111827;
-    letter-spacing: .3px;
-    text-transform: uppercase;
-}
-
-.modal-header .close {
-    border: 0;
-    background: transparent;
+.titulo-seccion {
     font-size: 20px;
-    line-height: 1;
-    color: #6B7280;
-    cursor: pointer;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #111827;
 }
 
-.modal-content {
-    display: flex;
-    flex-direction: column;
-    background-color: #FFFFFF;
-    justify-content: center;
-    border-radius: 10px;
-    padding: 20px;
-}
-
-.modal-body {
-    display: flex;
+/* GRID DE DOS COLUMNAS */
+.parametros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 30px;
 }
 
-.modal-content h3 {
+/* FILA: etiqueta – info – valor */
+.kv-row {
+    display: grid;
+    grid-template-columns: 2fr 3fr 1fr;
+    column-gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+    .kv-row dt {
+        font-weight: 600;
+        color: #1D4ED8;
+        font-size: 14px;
+    }
+
+    .kv-row dd {
+        margin: 0;
+        font-size: 14px;
+        color: #4B5563;
+    }
+
+.kv-value {
+    text-align: right;
+    font-weight: 600;
+    color: #111827;
+}
+
+/* SUBTÍTULOS */
+.subtitulo {
     color: #2563EB;
     font-size: 15px;
+    margin: 18px 0 6px 0;
+    font-weight: 600;
 }
 
-.modal-body dt, dd {
-    font-size: 14px;
-}
-
-.kv-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 100px;
-    border-bottom: 1px solid #e9ecef;
-    padding-bottom: 10px;
-}
-
-.kv-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-/* --- TABLA COTIZACIÓN PREVISIONAL --- */
-.tabla-previsional {
+/* TABLAS */
+.tabla-parametros {
+    width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
-    font-size: 0.95rem;
+    font-size: 14px;
     border-radius: 8px;
     overflow: hidden;
-    width: 100%;
-    font-size: 14px;
+    margin-top: 8px;
 }
 
-    .tabla-previsional thead th {
-        text-align: left;
+    .tabla-parametros th {
+        background: #F9FAFB;
         padding: 10px 12px;
         font-weight: 600;
-        background-color: #f8f9fc;
+        border-bottom: 1px solid #E5E7EB;
+        text-align: left;
     }
 
-    .tabla-previsional tbody td {
-        padding: 9px 12px;
-        border-bottom: 1px solid #e5e7eb;
+    .tabla-parametros td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #E5E7EB;
     }
 
-    .tabla-previsional tbody tr:nth-child(even) {
-        background-color: #f8f9fc;
+    .tabla-parametros tr:nth-child(even) {
+        background: #F9FAFB;
     }
 
-    .tabla-previsional tbody tr:hover {
-        background-color: #E5E7EB;
-        transition: background-color 0.2s ease-in-out;
+    .tabla-parametros tr:hover {
+        background: #E5E7EB;
     }
-
-.modal-body-full {
-    width: 100%;
-}

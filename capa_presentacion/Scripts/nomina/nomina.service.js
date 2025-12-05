@@ -70,6 +70,14 @@
                 dataType: 'json',
                 data: { periodoId: periodoId }
             });
+        },
+
+        obtenerKpisNomina: function () {
+            return $.ajax({
+                url: global.NominaConfig.urls.obtenerKpisNomina,
+                type: 'GET',
+                dataType: 'json'
+            });
         }
     };
 

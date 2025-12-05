@@ -181,6 +181,40 @@ namespace capa_persistencia.modulo_principal
 
             return lista;
         }
+        public ResumenKpisNominaDto ObtenerResumenKpisNomina()
+        {
+            _accesoSQL.AbrirConexion(); 
+
+            try
+            {
+                var resumen = new ResumenKpisNominaDto();
+                var comando = _accesoSQL.ObtenerComandoDeProcedimiento("nomina.proc_resumen_kpis_nomina");
+
+                using (var reader = comando.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        resumen.TotalPeriodosAbiertos = reader.IsDBNull(reader.GetOrdinal("total_periodos_abiertos"))
+                            ? 0 : reader.GetInt32(reader.GetOrdinal("total_periodos_abiertos"));
+
+                        resumen.TotalPeriodosProcesados = reader.IsDBNull(reader.GetOrdinal("total_periodos_procesados"))
+                            ? 0 : reader.GetInt32(reader.GetOrdinal("total_periodos_procesados"));
+
+                        resumen.TotalTrabajadoresInactivos = reader.IsDBNull(reader.GetOrdinal("total_trabajadores_inactivos"))
+                            ? 0 : reader.GetInt32(reader.GetOrdinal("total_trabajadores_inactivos"));
+
+                        resumen.TotalNetoGeneral = reader.IsDBNull(reader.GetOrdinal("total_neto_general"))
+                            ? 0 : reader.GetDecimal(reader.GetOrdinal("total_neto_general"));
+                    }
+                }
+
+                return resumen;
+            }
+            finally
+            {
+                _accesoSQL.CerrarConexion(); // ← CERRAR SIEMPRE
+            }
+        }
 
 
     }

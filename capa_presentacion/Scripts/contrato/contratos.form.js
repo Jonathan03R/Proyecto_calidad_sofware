@@ -52,7 +52,7 @@
             $('#ec_salario').val(item.Salario || '');
             $('#ec_modo_pago').val('Depósito');
             $('#ec_modo_pago_id').val('1');
-            $('#ec_horas_semanales').val(item.HorasSemanales || '');
+            $('#ec_horas_semanales').val(item.HorasSemanales || 48).prop('readonly', true);
             $('#ec_fecha_inicio').val(item.FechaInicio || '');
             $('#ec_fecha_fin').val(item.FechaFin || '');
             $('#ec_tarifa_hora').val(item.TarifaHora || '');
@@ -73,8 +73,8 @@
             $('#nc_cargo_id').val('');
             $('#nc_area_id').val('');
             $('#nc_tipo_pension_id').val('');
-            $('#nc_tipo_salario_id').val('');
-            $('#nc_tipo_jornada_id').val('');
+            //$('#nc_tipo_salario_id').val('');
+            //$('#nc_tipo_jornada_id').val('');
             $('#nc_modo_pago').val('Depósito');
             $('#nc_modo_pago_id').val('1');
             $('#nc_fecha_inicio').val('');
@@ -97,7 +97,7 @@
                 AreaId: $('#nc_area_id').val() ? Number($('#nc_area_id').val()) : null,
                 TipoPensionId: $('#nc_tipo_pension_id').val() ? Number($('#nc_tipo_pension_id').val()) : null,
                 TipoSalarioId: 1,
-                TipoJornadaId: $('#nc_tipo_jornada_id').val() ? Number($('#nc_tipo_jornada_id').val()) : null,
+                TipoJornadaId: 1,
                 FechaInicio: $('#nc_fecha_inicio').val(),
                 FechaFin: $('#nc_fecha_fin').val() || null,
                 Salario: $('#nc_remuneracion').val() ? parseFloat($('#nc_remuneracion').val()) : null,
@@ -121,7 +121,7 @@
                 AreaId: $('#ec_area_id').val() ? Number($('#ec_area_id').val()) : null,
                 TipoPensionId: $('#ec_tipo_pension_id').val() ? Number($('#ec_tipo_pension_id').val()) : null,
                 TipoSalarioId: 1,
-                TipoJornadaId: $('#ec_tipo_jornada_id').val() ? Number($('#ec_tipo_jornada_id').val()) : null,
+                TipoJornadaId: 1,
                 FechaInicio: $('#ec_fecha_inicio').val(),
                 FechaFin: $('#ec_fecha_fin').val() || null,
                 HorasSemanales: $('#ec_horas_semanales').val() ? parseInt($('#ec_horas_semanales').val(), 10) : null,

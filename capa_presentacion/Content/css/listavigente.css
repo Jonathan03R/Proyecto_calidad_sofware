@@ -303,7 +303,6 @@ input[type="text"]#txtBuscarEmpleado {
 }
 
     .kpi-value.money::before {
-        content: 'S/ ';
         font-size: 18px;
         color: #666;
     }

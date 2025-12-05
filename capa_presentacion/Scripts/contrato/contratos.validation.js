@@ -44,7 +44,7 @@
 
             // Validar TipoJornadaId
             if (!contrato.TipoJornadaId) {
-                return { valido: false, mensaje: 'Seleccione el tipo de jornada.' };
+                contrato.TipoJornadaId = 1;
             }
 
             // Validar Salario (> 0)
@@ -87,11 +87,6 @@
             // Validar Salario (> 0)
             if (data.Salario == null || isNaN(data.Salario) || data.Salario <= 0) {
                 return { valido: false, mensaje: 'Ingrese un salario mayor a 0.' };
-            }
-
-            // Validar HorasSemanales (> 0)
-            if (data.HorasSemanales == null || isNaN(data.HorasSemanales) || data.HorasSemanales <= 0) {
-                return { valido: false, mensaje: 'Ingrese las horas semanales (mayores a 0).' };
             }
 
             // Validar fechas

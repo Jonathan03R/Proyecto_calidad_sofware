@@ -62,6 +62,7 @@
     <Compile Include="dto\ImpuestoRentaAcumuladoDTO.cs" />
     <Compile Include="dto\ResultadoEmpleadosDTO.cs" />
     <Compile Include="dto\ResumenContratosDTO.cs" />
+    <Compile Include="dto\ResumenKpisNominaDTO.cs" />
     <Compile Include="dto\ResumenNominaDTO.cs" />
     <Compile Include="dto\TrabajadorProcesableDTO.cs" />
     <Compile Include="EstadoContrato.cs" />
