@@ -25,14 +25,13 @@ namespace capa_dominio
             decimal tarifaHora = Contrato.ContratoTarifaHora;
             decimal pagoExtras = 0m;
 
-            decimal recPrimeras2 = ObtenerMultiplicador("PRIMERAS2");     // 0.25
-            decimal recAdicionales = ObtenerMultiplicador("ADICIONALES"); // 0.35
-            decimal recSabado = ObtenerMultiplicador("SABADO");           // 0.50   // QUITAR si ya no se usa
-            decimal recDomingo = ObtenerMultiplicador("DOMINGO");         // 1.00
+            decimal recPrimeras2 = ObtenerMultiplicador("PRIMERAS2");
+            decimal recAdicionales = ObtenerMultiplicador("ADICIONALES");
+            decimal recSabado = ObtenerMultiplicador("SABADO");
+            decimal recDomingo = ObtenerMultiplicador("DOMINGO");
 
             var dia = Fecha.DayOfWeek;
 
-            // DOMINGO -> mantiene 100% adicional
             if (dia == DayOfWeek.Sunday)
             {
                 decimal tarifaConRecargo = tarifaHora * (1 + recDomingo);
@@ -40,17 +39,6 @@ namespace capa_dominio
                 return pagoExtras;
             }
 
-            // SÁBADO -> QUITAR ESTE BLOQUE COMPLETO
-            /*
-            if (dia == DayOfWeek.Saturday)
-            {
-                decimal tarifaConRecargo = tarifaHora * (1 + recSabado);
-                pagoExtras = HorasExtras * tarifaConRecargo;
-                return pagoExtras;
-            }
-            */
-
-            // Lunes a sábado -> mismas reglas
             if (HorasExtras > 0)
             {
                 decimal primerasDos = Math.Min(HorasExtras, 2);

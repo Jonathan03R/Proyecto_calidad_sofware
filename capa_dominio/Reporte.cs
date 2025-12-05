@@ -8,22 +8,12 @@ namespace capa_dominio
 {
     public class Reporte
     {
-        private Trabajador trabajador;
-        private TipoIdentificacion tipoIdentificacion;
-        private Cargo cargo;
-        private Contrato contrato;
-        private Nomina nomina;
-        private DetalleNomina detalleNomina;
-        private Periodo periodo;
-
-        public Trabajador Trabajador { get => trabajador; set => trabajador = value; }
-        public TipoIdentificacion TipoIdentificacion { get => tipoIdentificacion; set => tipoIdentificacion = value; }
-        public Cargo Cargo { get => cargo; set => cargo = value; }
-        public Contrato Contrato { get => contrato; set => contrato = value; }
-        public Nomina Nomina { get => nomina; set => nomina = value; }
-        public DetalleNomina DetalleNomina { get => detalleNomina; set => detalleNomina = value; }
-        public Periodo Periodo { get => periodo; set => periodo = value; }
-
-
+        public Trabajador Trabajador { get; set; }
+        public TipoIdentificacion TipoIdentificacion { get; set; }
+        public Cargo Cargo { get; set; }
+        public Contrato Contrato { get; set; }
+        public Nomina Nomina { get; set; }
+        public DetalleNomina DetalleNomina { get; set; }
+        public Periodo Periodo { get; set; }
     }
 }

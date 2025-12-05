@@ -92,7 +92,7 @@ namespace capa_dominio.dto
         public DetalleNominaDTO(int nominaId, int contratoId, string mensajeError)
         {
             NominaId = nominaId;
-            ContratoId = ContratoId;
+            ContratoId = contratoId;
             SistemaPensionAplicado = "SIN_CALCULAR";
             TieneErrores = true;
             MensajeError = mensajeError;

@@ -8,34 +8,26 @@ namespace capa_dominio
 {
     public class TipoJornada
     {
-        
-        private int tipoJornadaId;
-        private string tipoJornadaNombre;
-        private string tipoJornadaDescripcion;
-        private char tipoJornadaEstado;
-        private DateTime tipoJornadaFechaCreacion;
 
-        
-        public int TipoJornadaId { get => tipoJornadaId; set => tipoJornadaId = value; }
-        public string TipoJornadaNombre { get => tipoJornadaNombre; set => tipoJornadaNombre = value; }
-        public string TipoJornadaDescripcion { get => tipoJornadaDescripcion; set => tipoJornadaDescripcion = value; }
-        public char TipoJornadaEstado { get => tipoJornadaEstado; set => tipoJornadaEstado = value; }
-        public DateTime TipoJornadaFechaCreacion { get => tipoJornadaFechaCreacion; set => tipoJornadaFechaCreacion = value; }
-
+        public int TipoJornadaId { get; set; }
+        public string TipoJornadaNombre { get; set; }
+        public string TipoJornadaDescripcion { get; set; }
+        public char TipoJornadaEstado { get; set; }
+        public DateTime TipoJornadaFechaCreacion { get; set; }
 
         public bool EsTiempoCompleto()
         {
-            return tipoJornadaNombre.ToLower().Contains("completo");
+            return TipoJornadaNombre.ToLower().Contains("completo");
         }
 
         public bool EsMedioTiempo()
         {
-            return tipoJornadaNombre.ToLower().Contains("medio");
+            return TipoJornadaNombre.ToLower().Contains("medio");
         }
 
         public bool EsPorHoras()
         {
-            return tipoJornadaNombre.ToLower().Contains("hora");
+            return TipoJornadaNombre.ToLower().Contains("hora");
         }
 
     }

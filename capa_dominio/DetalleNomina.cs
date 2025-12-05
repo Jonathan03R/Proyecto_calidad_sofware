@@ -88,9 +88,6 @@ namespace capa_dominio
 
             if (HorasTrabajadas == null)
             {
-                System.Diagnostics.Trace.WriteLine(
-                $"las horas han llegado NULL"
-            );
                 DescuentoFaltas = 0;
                 return;
             }
@@ -180,12 +177,6 @@ namespace capa_dominio
 
         public decimal CalculoAsignacionFamiliar(bool tieneRemuneracionFamiliar)
         {
-            System.Diagnostics.Trace.WriteLine("CALCULANDO ASIGNACION FAMILIAR...");
-            System.Diagnostics.Trace.WriteLine(
-                $"ASIG_FAM -> Trabajador:{Contrato?.Trabajador?.TrabajadorId} | " +
-                $"TieneFam:{tieneRemuneracionFamiliar} | Salario:{Contrato?.ContratoSalario:F2}"
-            );
-
             if (!tieneRemuneracionFamiliar)
             {
                 AsignacionFamiliar = 0;
@@ -226,22 +217,11 @@ namespace capa_dominio
                     var aporteObligatorio = RemuneracionBruta * 0.10m;
 
                     var comision = 0m;
-                    Debug.WriteLine("=== DEBUG COMISION SOBRE FLUJO ===");
-                    Debug.WriteLine($"remuneracion_bruta: {RemuneracionBruta}");
-                    Debug.WriteLine($"comision_sobre_flujo_raw: {Contrato.TipoPension.ComisionSobreFlujo}");
-
                     if (Contrato.TipoPension.ComisionSobreFlujo != null)
                     {
                         comision = RemuneracionBruta * (decimal)Contrato.TipoPension.ComisionSobreFlujo;
-                        Debug.WriteLine($"comision_calculada: {comision}");
                     }
-                    else
-                    {
-                        Debug.WriteLine("comision_sobre_flujo_es_null");
-                    }
-
                     DescuentoAFP = Math.Round(aporteObligatorio + comision, 2, MidpointRounding.AwayFromZero);
-                    Debug.WriteLine($"descuento_afp_total: {DescuentoAFP}");
                     break;
 
                 case 6:
@@ -264,16 +244,7 @@ namespace capa_dominio
             }
             decimal porcentaje = parametroEssalud.ParametroValor;
             decimal calculoBruto = RemuneracionBruta * porcentaje;
-
-            Trace.TraceInformation(
-                $"ESSALUD -> RemuneracionBruta: {RemuneracionBruta:F2} | Porcentaje: {porcentaje:P2} | CalculoBruto: {calculoBruto:F2}"
-            );
             AporteEssalud = calculoBruto;
-
-            Trace.TraceInformation(
-                $"ESSALUD -> AporteEssalud (redondeado): {AporteEssalud:F2}"
-            );
-
         }
 
         // =========================

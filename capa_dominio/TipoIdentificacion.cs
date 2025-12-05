@@ -8,19 +8,10 @@ namespace capa_dominio
 {
     public class TipoIdentificacion
     {
-        
-        private int tipoIdentificacionId;
-        private string tipoIdentificacionNombre;
-        private string tipoIdentificacionValor;
-        private char tipoIdentificacionEstado;
-        private DateTime tipoIdentificacionFechaCreacion;
-
-        
-        public int TipoIdentificacionId { get => tipoIdentificacionId; set => tipoIdentificacionId = value; }
-        public string TipoIdentificacionNombre { get => tipoIdentificacionNombre; set => tipoIdentificacionNombre = value; }
-        public string TipoIdentificacionValor { get => tipoIdentificacionValor; set => tipoIdentificacionValor = value; }
-        public char TipoIdentificacionEstado { get => tipoIdentificacionEstado; set => tipoIdentificacionEstado = value; }
-        public DateTime TipoIdentificacionFechaCreacion { get => tipoIdentificacionFechaCreacion; set => tipoIdentificacionFechaCreacion = value; }
-        
+        public int TipoIdentificacionId { get; set; }
+        public string TipoIdentificacionNombre { get; set; }
+        public string TipoIdentificacionValor { get; set; }
+        public char TipoIdentificacionEstado { get; set; }
+        public DateTime TipoIdentificacionFechaCreacion { get; set; }
     }
 }

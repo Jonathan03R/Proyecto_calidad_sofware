@@ -8,26 +8,17 @@ namespace capa_dominio
 {
     public class Parametro
     {
-        private int parametroId;
-        private string parametroCodigo;
-        private string parametroNombre;
-        private decimal parametroValor;
-        private DateTime parametroFechaVigencia;
-        private string parametroEstado;
-
-        public int ParametroId { get => parametroId; set => parametroId = value; }
-        public string ParametroCodigo { get => parametroCodigo; set => parametroCodigo = value; }
-        public string ParametroNombre { get => parametroNombre; set => parametroNombre = value; }
-        public decimal ParametroValor { get => parametroValor; set => parametroValor = value; }
-
-        public DateTime ParametroFechaVigencia { get => parametroFechaVigencia; set => parametroFechaVigencia = value; }
-        public string ParametroEstado { get => parametroEstado; set => parametroEstado = value; }
+        public int ParametroId { get; set; }
+        public string ParametroCodigo { get; set; }
+        public string ParametroNombre { get; set; }
+        public decimal ParametroValor { get; set; }
+        public DateTime ParametroFechaVigencia { get; set; }
+        public string ParametroEstado { get; set; }
 
         public bool EsVigente()
         {
-            return parametroEstado == "Activo" && parametroFechaVigencia <= DateTime.Now;
+            return ParametroEstado == "Activo" && ParametroFechaVigencia <= DateTime.Now;
         }
-
     }
 }
 

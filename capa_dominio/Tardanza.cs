@@ -28,16 +28,5 @@ namespace capa_dominio
         public decimal TardanzaValorDescuento { get => tardanzaValorDescuento; set => tardanzaValorDescuento = value; }
         public string TardanzaObservaciones { get => tardanzaObservaciones; set => tardanzaObservaciones = value; }
 
-
-
-
-        //public decimal CalcularDescuentoTardanza()
-        //{
-        //    tardanzaValorHoraNormal = trabajador.Contrato.ContratoSalario / (30 * Trabajador.HoraTrabajada.HorasTrabajadas);
-        //    TardanzaValorDescuento = Math.Round(tardanzaHoras * tardanzaValorHoraNormal, 2);
-
-        //    return tardanzaValorDescuento;
-        //}
-
     }
 }
