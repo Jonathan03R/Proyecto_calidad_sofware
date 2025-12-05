@@ -8,29 +8,20 @@ namespace capa_dominio
 {
     public class DetalleParametro
     {
-        
-        private int detalleParametroId;
-        private Parametro parametro;          
-        private Trabajador trabajador;       
-        private decimal detalleParametroValor;
-        private DateTime detalleParametroAplicaDesde;
-        private DateTime? detalleParametroAplicaHasta;
-        private string detalleParametroObservaciones;
 
-        public int DetalleParametroId { get => detalleParametroId; set => detalleParametroId = value; }
-        public Parametro Parametro { get => parametro; set => parametro = value; }
-        public Trabajador Trabajador { get => trabajador; set => trabajador = value; }
-        public decimal DetalleParametroValor { get => detalleParametroValor; set => detalleParametroValor = value; }
-        public DateTime DetalleParametroAplicaDesde { get => detalleParametroAplicaDesde; set => detalleParametroAplicaDesde = value; }
-        public DateTime? DetalleParametroAplicaHasta { get => detalleParametroAplicaHasta; set => detalleParametroAplicaHasta = value; }
-        public string DetalleParametroObservaciones { get => detalleParametroObservaciones; set => detalleParametroObservaciones = value; }
+        public int detalleparametroid { get; set; }
+        public Parametro parametro { get; set; }
+        public Trabajador trabajador { get; set; }
+        public decimal detalleparametrovalor { get; set; }
+        public DateTime detalleparametroaplicadesde { get; set; }
+        public DateTime? detalleparametroaplicahasta { get; set; }
+        public string detalleparametroobservaciones { get; set; }
 
-        
-        public bool EstaVigente()
+        public bool estavigente()
         {
-            DateTime hoy = DateTime.Now;
-            return detalleParametroAplicaDesde <= hoy &&
-                   (!detalleParametroAplicaHasta.HasValue || detalleParametroAplicaHasta.Value >= hoy);
+            var hoy = DateTime.Now;
+            return detalleparametroaplicadesde <= hoy &&
+                   (!detalleparametroaplicahasta.HasValue || detalleparametroaplicahasta.Value >= hoy);
         }
 
     }

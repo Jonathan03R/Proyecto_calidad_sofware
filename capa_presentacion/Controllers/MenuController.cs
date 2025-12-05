@@ -46,8 +46,8 @@ namespace capa_presentacion.Controllers
                 {
                     Titulo = "Parámetros",
                     Icono = "~/Content/img/icons/Parametros.svg",
-                    Controlador = "Nomina",
-                    Accion = "Parametros"
+                    Controlador = "Parametros",
+                    Accion = "Index"
                 }     
                 
             };

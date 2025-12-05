@@ -140,8 +140,8 @@
             this.cargarAreas();
             this.cargarCargos();
             this.cargarPensiones();
-            this.cargarTiposSalarios();
-            this.cargarJornadas();
+            //this.cargarTiposSalarios();
+            //this.cargarJornadas();
         },
 
         cargarTodosEdicion: function (item) {
@@ -149,6 +149,7 @@
             this.cargarPensiones('#ec_tipo_pension_id', item.TipoPensionId);
             this.cargarCargos('#ec_cargo_id', item.CargoId);
             this.cargarJornadas('#ec_tipo_jornada_id', item.TipoJornadaId);
+
         }
 
     };

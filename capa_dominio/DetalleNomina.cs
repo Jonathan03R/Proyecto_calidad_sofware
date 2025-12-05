@@ -126,11 +126,8 @@ namespace capa_dominio
                 }
             }
 
-            DescuentoFaltas = Math.Round(totalFaltas * sueldoPorDia, 2, MidpointRounding.AwayFromZero);
-
-            System.Diagnostics.Trace.WriteLine(
-                $"DESCUENTO FALTAS -> Faltas:{totalFaltas} | SueldoDia:{sueldoPorDia:F2} | TotalDescuento:{DescuentoFaltas:F2}"
-            );
+            DescuentoFaltas = totalFaltas * sueldoPorDia;
+            
         }
 
         // =========================
@@ -165,13 +162,9 @@ namespace capa_dominio
 
                 if (pagoDiaExtras > 0)
                     totalExtras += pagoDiaExtras;
-
-                //System.Diagnostics.Trace.WriteLine(
-                //    $"HORAS_EXTRAS -> Fecha:{h.Fecha:yyyy-MM-dd} | HorasExtras:{h.HorasExtras:F2} | PagoDia:{pagoDiaExtras:F2}"
-                //);
             }
 
-            HorasExtras = Math.Round(totalExtras, 2);
+            HorasExtras = totalExtras;
         }
 
 
@@ -275,7 +268,7 @@ namespace capa_dominio
             Trace.TraceInformation(
                 $"ESSALUD -> RemuneracionBruta: {RemuneracionBruta:F2} | Porcentaje: {porcentaje:P2} | CalculoBruto: {calculoBruto:F2}"
             );
-            AporteEssalud = Math.Round(calculoBruto, 2, MidpointRounding.AwayFromZero);
+            AporteEssalud = calculoBruto;
 
             Trace.TraceInformation(
                 $"ESSALUD -> AporteEssalud (redondeado): {AporteEssalud:F2}"
@@ -295,8 +288,8 @@ namespace capa_dominio
                 return;
             }
 
-            decimal remuneracionBrutaAnual = RemuneracionBruta * 12;
-            decimal deduccionAnual = 7 * valorUIT;
+            decimal remuneracionBrutaAnual = RemuneracionBruta * 12m;
+            decimal deduccionAnual = 7m * valorUIT;
             decimal baseImponibleAnual = remuneracionBrutaAnual - deduccionAnual;
 
             if (baseImponibleAnual <= 0)
@@ -305,35 +298,29 @@ namespace capa_dominio
                 return;
             }
 
-            decimal baseImponibleUIT = baseImponibleAnual / valorUIT;
-            decimal impuestoAnual = 0m;
+            decimal baseImponibleEnUIT = baseImponibleAnual / valorUIT;
+            decimal impuestoCalculado = 0m;
 
             foreach (var tramo in tramos.OrderBy(t => t.NumeroTramo))
             {
-                decimal limiteInferior = tramo.LimiteInferiorUIT;
-                decimal limiteSuperior = tramo.LimiteSuperiorUIT ?? baseImponibleUIT;
+                decimal limiteInferiorUIT = tramo.LimiteInferiorUIT;
+                decimal limiteSuperiorUIT = tramo.LimiteSuperiorUIT ?? decimal.MaxValue;
 
-                if (limiteSuperior == 0)
-                {
-                    limiteSuperior = baseImponibleUIT;
-                }
-
-                decimal rangoTramo = Math.Min(baseImponibleUIT, limiteSuperior) - limiteInferior;
-
-                if (rangoTramo > 0)
-                {
-                    decimal montoTramo = rangoTramo * valorUIT;
-                    decimal tasa = tramo.TasaPorcentaje / 100m;
-                    impuestoAnual += montoTramo * tasa;
-                }
-
-                if (baseImponibleUIT <= limiteSuperior)
-                {
+                if (baseImponibleEnUIT <= limiteInferiorUIT)
                     break;
+
+                decimal rangoAplicableUIT = Math.Min(baseImponibleEnUIT, limiteSuperiorUIT) - limiteInferiorUIT;
+
+                if (rangoAplicableUIT > 0)
+                {
+                    decimal montoRangoSoles = rangoAplicableUIT * valorUIT;
+                    decimal tasaDecimal = tramo.TasaPorcentaje / 100m;
+
+                    impuestoCalculado += montoRangoSoles * tasaDecimal;
                 }
             }
 
-            ImpuestoRentaMensual = Math.Round(impuestoAnual / 12, 2, MidpointRounding.AwayFromZero);
+            ImpuestoRentaMensual = impuestoCalculado / 12m;
         }
 
 
@@ -349,13 +336,11 @@ namespace capa_dominio
                               DescuentoAFP +
                               ImpuestoRentaMensual +
                               DescuentoFaltas +
-                              DescuentoAdelantos;
+                              DescuentoAdelantos + DescuentoTardanzas;
 
             NetoPagar = TotalIngresos - TotalDescuentos;
 
-            Trace.TraceInformation(
-                $"TOTAL_INGRESOS: {TotalIngresos} | TOTAL_DESCUENTOS: {TotalDescuentos} | NETO_PAGAR: {NetoPagar}"
-            );
+           
         }
 
     }
