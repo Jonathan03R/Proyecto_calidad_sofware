@@ -27,28 +27,30 @@ namespace capa_dominio
 
             decimal recPrimeras2 = ObtenerMultiplicador("PRIMERAS2");     // 0.25
             decimal recAdicionales = ObtenerMultiplicador("ADICIONALES"); // 0.35
-            decimal recSabado = ObtenerMultiplicador("SABADO");           // 0.50
+            decimal recSabado = ObtenerMultiplicador("SABADO");           // 0.50   // QUITAR si ya no se usa
             decimal recDomingo = ObtenerMultiplicador("DOMINGO");         // 1.00
 
             var dia = Fecha.DayOfWeek;
 
-            // DOMINGO -> lo extra se paga 100% adicional
+            // DOMINGO -> mantiene 100% adicional
             if (dia == DayOfWeek.Sunday)
             {
                 decimal tarifaConRecargo = tarifaHora * (1 + recDomingo);
                 pagoExtras = HorasExtras * tarifaConRecargo;
-                return Math.Round(pagoExtras, 2);
+                return pagoExtras;
             }
 
-            // SÁBADO -> todas las extras con recargo SABADO
+            // SÁBADO -> QUITAR ESTE BLOQUE COMPLETO
+            /*
             if (dia == DayOfWeek.Saturday)
             {
                 decimal tarifaConRecargo = tarifaHora * (1 + recSabado);
                 pagoExtras = HorasExtras * tarifaConRecargo;
-                return Math.Round(pagoExtras, 2);
+                return pagoExtras;
             }
+            */
 
-            // LUNES A VIERNES -> primeras 2 y adicionales
+            // Lunes a sábado -> mismas reglas
             if (HorasExtras > 0)
             {
                 decimal primerasDos = Math.Min(HorasExtras, 2);
@@ -60,9 +62,8 @@ namespace capa_dominio
                 pagoExtras = pagoP2 + pagoAdi;
             }
 
-            return Math.Round(pagoExtras, 2);
+            return pagoExtras;
         }
-
         private decimal ObtenerMultiplicador(string codigo)
         {
             var tipo = TiposHorasExtras.FirstOrDefault(t =>

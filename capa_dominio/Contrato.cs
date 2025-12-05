@@ -65,7 +65,7 @@ namespace capa_dominio
                 throw new InvalidOperationException("El contrato no tiene configuradas las horas semanales.");
             }
 
-            return Math.Round(ContratoHorasSemanales.Value / 6m, 2);
+            return ContratoHorasSemanales.Value / 6m;
         }
 
         public decimal ObtenerSueldoPorDia()
@@ -75,7 +75,7 @@ namespace capa_dominio
                 throw new InvalidOperationException("El salario del contrato no está definido o es inválido.");
             }
 
-            return Math.Round(ContratoSalario / 30m, 2);
+            return ContratoSalario / 30m;
         }
 
         public void CalcularTarifaHora()
@@ -97,10 +97,8 @@ namespace capa_dominio
                 throw new InvalidOperationException("La jornada diaria es inválida.");
             }
 
-            ContratoTarifaHora = Math.Round(
-                ContratoSalario / (30m * jornadaDiaria),
-                2
-            );
+            ContratoTarifaHora = ContratoSalario / (30m * jornadaDiaria);
+          
         }
 
         // ====== Validaciones agrupadas para bajar Cognitive Complexity ======

@@ -879,5 +879,114 @@ namespace capa_dominio.Tests
 
             Console.WriteLine("=== PRUEBA EXITOSA ===\n");
         }
+
+        [TestMethod]
+        public void CalcularDescuentoFaltas_Octubre2025_2Faltas_Descuento166_67()
+        {
+            var contrato = new Contrato
+            {
+                ContratoSalario = 2500,
+                ContratoHorasSemanales = 48
+            };
+
+            var periodo = new Periodo
+            {
+                PeriodoFechaInicio = new DateTime(2025, 10, 1),
+                PeriodoFechaFin = new DateTime(2025, 10, 31)
+            };
+
+            var nomina = new Nomina
+            {
+                Periodo = periodo
+            };
+
+            var detalle = new DetalleNomina
+            {
+                Contrato = contrato,
+                Nomina = nomina,
+                HorasTrabajadas = new List<HoraTrabajada>()
+            };
+
+            // generar todos los días laborales del periodo excepto 2
+            var diasPeriodo = Enumerable
+                .Range(0, (periodo.PeriodoFechaFin - periodo.PeriodoFechaInicio).Days + 1)
+                .Select(offset => periodo.PeriodoFechaInicio.AddDays(offset))
+                .Where(d => d.DayOfWeek != DayOfWeek.Sunday)
+                .ToList();
+
+            // faltas serán 10 y 15 de octubre
+            var faltas = new HashSet<DateTime>
+            {
+                new DateTime(2025, 10, 10),
+                new DateTime(2025, 10, 15)
+            };
+
+            foreach (var dia in diasPeriodo)
+            {
+                if (!faltas.Contains(dia))
+                {
+                    detalle.HorasTrabajadas.Add(new HoraTrabajada
+                    {
+                        Fecha = dia,
+                        HorasNormales = 8
+                    });
+                }
+            }
+
+            detalle.CalcularDescuentoFaltas();
+
+            Assert.AreEqual(166.67m, detalle.DescuentoFaltas);
+        }
+
+        [TestMethod]
+        public void CalcularDescuentoFaltas_Sueldo4000_CuatroFaltas_Octubre()
+        {
+            var contrato = new Contrato
+            {
+                ContratoSalario = 4000,
+                ContratoHorasSemanales = 48 // no importa mucho, solo para no romper reglas
+            };
+
+            var periodo = new Periodo
+            {
+                PeriodoFechaInicio = new DateTime(2025, 10, 1),
+                PeriodoFechaFin = new DateTime(2025, 10, 31)
+            };
+
+            // simulamos asistencia con 4 días faltantes exactos
+            var horas = new List<HoraTrabajada>();
+
+            var nomina = new Nomina { Periodo = periodo };
+
+            var detalle = new DetalleNomina
+            {
+                Contrato = contrato,
+                Nomina = nomina,
+                HorasTrabajadas = horas
+            };
+
+            // agregamos todos los días laborales EXCEPTO 4
+            var dias = Enumerable.Range(0, 31)
+                .Select(i => new DateTime(2025, 10, 1).AddDays(i))
+                .Where(d => d.Month == 10 && d.DayOfWeek != DayOfWeek.Sunday)
+                .ToList();
+
+            // quitamos 4 días para simular 4 faltas
+            var asistidos = dias.Skip(4);
+
+            foreach (var d in asistidos)
+            {
+                detalle.HorasTrabajadas.Add(new HoraTrabajada
+                {
+                    Fecha = d,
+                    HorasNormales = 8
+                });
+            }
+
+            detalle.CalcularDescuentoFaltas();
+
+            Assert.AreEqual(533.34m, detalle.DescuentoFaltas);
+        }
     }
+
 }
