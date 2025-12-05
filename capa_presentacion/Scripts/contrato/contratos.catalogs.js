@@ -5,16 +5,13 @@
     // MÓDULO DE CARGA DE CATÁLOGOS
     // ============================================
 
-    window.ContratoCatalogs = {
+    globalThis.ContratoCatalogs = {
 
-        /**
-         * Carga áreas en un select
-         */
         cargarAreas: function (selector, selectedId) {
             const $select = $(selector || '#nc_area_id');
             $select.empty().append('<option value="">Seleccione área</option>');
 
-            $.getJSON(window.ContratoConfig.URLS.obtenerAreas)
+            $.getJSON(globalThis.ContratoConfig.URLS.obtenerAreas)
                 .done(function (data) {
                     (data || []).forEach(function (area) {
                         $select.append(
@@ -41,7 +38,7 @@
             const $select = $(selector || '#nc_cargo_id');
             $select.empty().append('<option value="">Seleccione cargo</option>');
 
-            $.getJSON(window.ContratoConfig.URLS.obtenerCargos)
+            $.getJSON(globalThis.ContratoConfig.URLS.obtenerCargos)
                 .done(function (data) {
                     (data || []).forEach(function (cargo) {
                         $select.append(
@@ -61,9 +58,6 @@
                 });
         },
 
-        /**
-         * Carga pensiones en un select
-         */
         cargarPensiones: function (selector, selectedId) {
             const $select = $(selector || '#nc_tipo_pension_id');
             $select.empty().append('<option value="">Seleccione</option>');
@@ -92,14 +86,11 @@
                 });
         },
 
-        /**
-         * Carga tipos de salario en un select
-         */
         cargarTiposSalarios: function (selector, selectedId) {
             const $select = $(selector || '#nc_tipo_salario_id');
             $select.empty().append('<option value="">Seleccione</option>');
 
-            $.getJSON(window.ContratoConfig.URLS.obtenerTiposSalarios)
+            $.getJSON(globalThis.ContratoConfig.URLS.obtenerTiposSalarios)
                 .done(function (data) {
                     (data || []).forEach(function (t) {
                         $select.append(
@@ -119,14 +110,11 @@
                 });
         },
 
-        /**
-         * Carga jornadas en un select
-         */
         cargarJornadas: function (selector, selectedId) {
             const $select = $(selector || '#nc_tipo_jornada_id');
             $select.empty().append('<option value="">Seleccione</option>');
 
-            $.getJSON(window.ContratoConfig.URLS.obtenerJornadas)
+            $.getJSON(globalThis.ContratoConfig.URLS.obtenerJornadas)
                 .done(function (data) {
                     (data || []).forEach(function (j) {
                         $select.append(
@@ -137,7 +125,6 @@
                         );
                     });
 
-                    // Para NUEVO contrato → NO seleccionar nada por defecto
                     if (selector === undefined || selector === '#nc_tipo_jornada_id') {
                         if (selectedId != null) {
                             $select.val(String(selectedId));
@@ -149,9 +136,6 @@
                 });
         },
 
-        /**
-         * Carga todos los catálogos para nuevo contrato
-         */
         cargarTodosNuevo: function () {
             this.cargarAreas();
             this.cargarCargos();
@@ -160,15 +144,12 @@
             //this.cargarJornadas();
         },
 
-        /**
-         * Carga todos los catálogos para edición de contrato
-         */
         cargarTodosEdicion: function (item) {
             this.cargarAreas('#ec_area_id', item.AreaId);
             this.cargarPensiones('#ec_tipo_pension_id', item.TipoPensionId);
             this.cargarCargos('#ec_cargo_id', item.CargoId);
-            /*this.cargarTiposSalarios('#ec_tipo_salario_id', item.TipoSalarioId);*/
-            //this.cargarJornadas('#ec_tipo_jornada_id', item.TipoJornadaId);
+            this.cargarJornadas('#ec_tipo_jornada_id', item.TipoJornadaId);
+
         }
 
     };

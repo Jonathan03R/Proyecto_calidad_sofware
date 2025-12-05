@@ -1,54 +1,48 @@
 (function () {
     'use strict';
 
-    // ============================================
-    // MÓDULO DE GESTIÓN DE FORMULARIOS
-    // ============================================
 
-    window.ContratoForm = {
 
-        /**
-         * Abre el formulario de nuevo contrato
-         */
+    globalThis.ContratoForm = {
+
+
         abrirNuevoContrato: function (trabajadorId) {
-            const config = window.ContratoConfig;
+            const config = globalThis.ContratoConfig;
             const item = (config.Cache.sin || []).find(x => Number(x.TrabajadorId) === trabajadorId);
 
             if (!item) return;
 
-            // Llenar datos del trabajador
+           
             $('#nc_trabajador_id').val(trabajadorId);
             $('#nc_nombre').val(item.EmpleadoNombre || '');
             $('#nc_dni').val(item.Documento || '');
 
-            // Limpiar campos del contrato
+            
             this.limpiarFormularioNuevo();
 
-            // Cargar catálogos
-            window.ContratoCatalogs.cargarTodosNuevo();
+            
+            globalThis.ContratoCatalogs.cargarTodosNuevo();
 
-            // Abrir modal
-            window.ContratoModal.open('modal-nuevo-contrato');
+
+            globalThis.ContratoModal.open('modal-nuevo-contrato');
             setTimeout(() => $('#nc_cargo_id').trigger('focus'), 50);
         },
 
-        /**
-         * Abre el formulario de edición de contrato
-         */
+
         abrirEdicionContrato: function (contratoId) {
-            const config = window.ContratoConfig;
+            const config = globalThis.ContratoConfig;
             const item = (config.Cache.activos || []).find(x => Number(x.ContratoId) === contratoId);
 
             if (!item) return;
 
-            // Llenar datos básicos
+            
             $('#ec_contrato_id').val(contratoId);
             $('#ec_trabajador_id').val(item.TrabajadorId || '');
             $('#ec_empleado').val(item.EmpleadoNombre || '');
             $('#ec_motivo').val('');
             $('#ec_mensaje').text('');
 
-            // Llenar campos del contrato
+
             $('#ec_salario').val(item.Salario || '');
             $('#ec_modo_pago').val('Depósito');
             $('#ec_modo_pago_id').val('1');
@@ -59,22 +53,18 @@
             $('#ec_descripcion_funciones').val(item.DescripcionFunciones || '');
             $('#ec_observaciones').val(item.Observaciones || '');
 
-            // Cargar catálogos con valores seleccionados
+   
             window.ContratoCatalogs.cargarTodosEdicion(item);
 
-            // Abrir modal
+          
             window.ContratoModal.open('modal-editar-contrato');
         },
 
-        /**
-         * Limpia el formulario de nuevo contrato
-         */
+      
         limpiarFormularioNuevo: function () {
             $('#nc_cargo_id').val('');
             $('#nc_area_id').val('');
             $('#nc_tipo_pension_id').val('');
-            //$('#nc_tipo_salario_id').val('');
-            //$('#nc_tipo_jornada_id').val('');
             $('#nc_modo_pago').val('Depósito');
             $('#nc_modo_pago_id').val('1');
             $('#nc_fecha_inicio').val('');
@@ -87,9 +77,7 @@
             $('#nc_horas_semanales').val('48');
         },
 
-        /**
-         * Obtiene los datos del formulario de nuevo contrato
-         */
+
         obtenerDatosNuevo: function () {
             return {
                 TrabajadorId: Number($('#nc_trabajador_id').val()),
@@ -100,18 +88,16 @@
                 TipoJornadaId: 1,
                 FechaInicio: $('#nc_fecha_inicio').val(),
                 FechaFin: $('#nc_fecha_fin').val() || null,
-                Salario: $('#nc_remuneracion').val() ? parseFloat($('#nc_remuneracion').val()) : null,
-                HorasSemanales: $('#nc_horas_semanales').val() ? parseInt($('#nc_horas_semanales').val(), 10) : null,
-                TarifaHora: $('#nc_tarifa_hora').val() ? parseFloat($('#nc_tarifa_hora').val()) : null,
+                Salario: $('#nc_remuneracion').val() ? Number.parseFloat($('#nc_remuneracion').val()) : null,
+                HorasSemanales: $('#nc_horas_semanales').val() ? Number.parseInt($('#nc_horas_semanales').val(), 10) : null,
+                TarifaHora: $('#nc_tarifa_hora').val() ? Number.parseFloat($('#nc_tarifa_hora').val()) : null,
                 ModoPagoId: 1,
                 DescripcionFunciones: $('#nc_descripcion_funciones').val() || null,
                 Observaciones: $('#nc_observaciones').val() || null
             };
         },
 
-        /**
-         * Obtiene los datos del formulario de edición
-         */
+
         obtenerDatosEdicion: function () {
             return {
                 ContratoId: Number($('#ec_contrato_id').val()),
@@ -124,22 +110,20 @@
                 TipoJornadaId: 1,
                 FechaInicio: $('#ec_fecha_inicio').val(),
                 FechaFin: $('#ec_fecha_fin').val() || null,
-                HorasSemanales: $('#ec_horas_semanales').val() ? parseInt($('#ec_horas_semanales').val(), 10) : null,
-                Salario: $('#ec_salario').val() ? parseFloat($('#ec_salario').val()) : null,
-                TarifaHora: $('#ec_tarifa_hora').val() ? parseFloat($('#ec_tarifa_hora').val()) : null,
+                HorasSemanales: $('#ec_horas_semanales').val() ? Number.parseInt($('#ec_horas_semanales').val(), 10) : null,
+                Salario: $('#ec_salario').val() ? Number.parseFloat($('#ec_salario').val()) : null,
+                TarifaHora: $('#ec_tarifa_hora').val() ? Number.parseFloat($('#ec_tarifa_hora').val()) : null,
                 ModoPago: 1,
                 DescripcionFunciones: $('#ec_descripcion_funciones').val() || null,
                 Observaciones: $('#ec_observaciones').val() || null
             };
         },
 
-        /**
-         * Recalcula la tarifa por hora en el formulario de nuevo contrato
-         */
+        
         recalcularTarifaHoraNuevo: function () {
-            const salario = parseFloat($('#nc_remuneracion').val());
-            const horas = parseInt($('#nc_horas_semanales').val(), 10);
-            const tarifa = window.ContratoUtils.calcularTarifaHora(salario, horas);
+            const salario = Number.parseFloat($('#nc_remuneracion').val());
+            const horas = Number.parseInt($('#nc_horas_semanales').val(), 10);
+            const tarifa = globalThis.ContratoUtils.calcularTarifaHora(salario, horas);
 
             $('#nc_tarifa_hora').val(tarifa || '');
         }

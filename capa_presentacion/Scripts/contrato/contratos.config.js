@@ -1,14 +1,10 @@
 (function () {
     'use strict';
 
-    // ============================================
-    // MÓDULO DE CONFIGURACIÓN Y CONSTANTES
-    // ============================================
-
     const $page = $('#page-contratos');
 
-    window.ContratoConfig = {
-        // URLs de endpoints
+    globalThis.ContratoConfig = {
+
         URLS: {
             listarActivos: $page.data('url-listar-activos'),
             listarSin: $page.data('url-listar-sin'),
@@ -22,7 +18,7 @@
             resumenContratos: $page.data('url-resumen-contratos')
         },
 
-        // Cache de datos
+
         Cache: {
             activos: [],
             sin: []
