@@ -150,7 +150,7 @@ namespace capa_presentacion.Controllers
             return Json(pensiones, JsonRequestBehavior.AllowGet);
         }
 
-       
+
         [HttpGet]
         public JsonResult ObtenerTiposJornadas()
         {
@@ -162,118 +162,119 @@ namespace capa_presentacion.Controllers
                 })
                 .ToList();
 
-        //    return Json(tipos, JsonRequestBehavior.AllowGet);
-        //}
+            return Json(tipos, JsonRequestBehavior.AllowGet);
+        }
 
         [HttpPost]
-        public JsonResult CrearContrato(ContratoDTO contrato)
-        {
-            try
+            public JsonResult CrearContrato(ContratoDTO contrato)
             {
-                contrato.TipoSalarioId = 1;
-                contrato.TipoJornadaId = 1;
-
-                var nuevoId = servicio.CrearContrato(contrato);
-
-                return Json(new
+                try
                 {
-                    exito = true,
-                    contratoId = nuevoId
-                });
+                    contrato.TipoSalarioId = 1;
+                    contrato.TipoJornadaId = 1;
+
+                    var nuevoId = servicio.CrearContrato(contrato);
+
+                    return Json(new
+                    {
+                        exito = true,
+                        contratoId = nuevoId
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        exito = false,
+                        mensaje = ex.Message
+                    });
+                }
             }
-            catch (Exception ex)
+
+            // ✅ Actualizar Contrato
+            [HttpPost]
+            public JsonResult ActualizarContrato(ContratoDTO contrato, string motivo)
             {
-                return Json(new
+                // ✔ Validaciones de entrada SIN lanzar Exception
+                if (contrato == null)
                 {
-                    exito = false,
-                    mensaje = ex.Message  
-                });
+                    return Json(new
+                    {
+                        exito = false,
+                        mensaje = "El contrato enviado es nulo."
+                    });
+                }
+
+                if (!contrato.ContratoId.HasValue || contrato.ContratoId.Value <= 0)
+                {
+                    return Json(new
+                    {
+                        exito = false,
+                        mensaje = "El contrato a actualizar no es válido."
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(motivo))
+                {
+                    return Json(new
+                    {
+                        exito = false,
+                        mensaje = "Debes indicar el motivo de la actualización."
+                    });
+                }
+
+                try
+                {
+                    contrato.TipoSalarioId = 1;
+                    contrato.TipoJornadaId = 1;
+
+                    var usuario = User?.Identity != null && User.Identity.IsAuthenticated
+                        ? User.Identity.Name
+                        : Environment.UserName;
+
+                    servicio.ActualizarContrato(contrato.ContratoId.Value, usuario, motivo, contrato);
+
+                    return Json(new
+                    {
+                        exito = true,
+                        mensaje = "Contrato actualizado correctamente."
+                    });
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        exito = false,
+                        mensaje = ex.Message
+                    });
+                }
             }
+
+
+            [HttpGet]
+            public JsonResult ResumenContratos()
+            {
+                try
+                {
+                    var resumen = servicio.ObtenerResumen();
+                    return Json(new
+                    {
+                        exito = true,
+                        data = resumen
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new
+                    {
+                        exito = false,
+                        mensaje = ex.Message
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+
+
         }
-
-        // ✅ Actualizar Contrato
-        [HttpPost]
-        public JsonResult ActualizarContrato(ContratoDTO contrato, string motivo)
-        {
-            // ✔ Validaciones de entrada SIN lanzar Exception
-            if (contrato == null)
-            {
-                return Json(new
-                {
-                    exito = false,
-                    mensaje = "El contrato enviado es nulo."
-                });
-            }
-
-            if (!contrato.ContratoId.HasValue || contrato.ContratoId.Value <= 0)
-            {
-                return Json(new
-                {
-                    exito = false,
-                    mensaje = "El contrato a actualizar no es válido."
-                });
-            }
-
-            if (string.IsNullOrWhiteSpace(motivo))
-            {
-                return Json(new
-                {
-                    exito = false,
-                    mensaje = "Debes indicar el motivo de la actualización."
-                });
-            }
-
-            try
-            {
-                contrato.TipoSalarioId = 1;
-                contrato.TipoJornadaId = 1;
-
-                var usuario = User?.Identity != null && User.Identity.IsAuthenticated
-                    ? User.Identity.Name
-                    : Environment.UserName;
-
-                servicio.ActualizarContrato(contrato.ContratoId.Value, usuario, motivo, contrato);
-
-                return Json(new
-                {
-                    exito = true,
-                    mensaje = "Contrato actualizado correctamente."
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new
-                {
-                    exito = false,
-                    mensaje = ex.Message  
-                });
-            }
-        }
-
-
-        [HttpGet]
-        public JsonResult ResumenContratos()
-        {
-            try
-            {
-                var resumen = servicio.ObtenerResumen();
-                return Json(new
-                {
-                    exito = true,
-                    data = resumen
-                }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                return Json(new
-                {
-                    exito = false,
-                    mensaje = ex.Message
-                }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-
-
     }
-}
+
