@@ -65,13 +65,11 @@
     <Compile Include="dto\ResumenKpisNominaDTO.cs" />
     <Compile Include="dto\ResumenNominaDTO.cs" />
     <Compile Include="dto\TrabajadorProcesableDTO.cs" />
-    <Compile Include="EstadoContrato.cs" />
     <Compile Include="Falta.cs" />
     <Compile Include="Hijos.cs" />
     <Compile Include="HoraTrabajada.cs" />
     <Compile Include="ImpuestoRentaAcumulado.cs" />
     <Compile Include="ImpuestoRentaTramo.cs" />
-    <Compile Include="ModoPago.cs" />
     <Compile Include="Nominas.cs" />
     <Compile Include="Parametro.cs" />
     <Compile Include="Periodo.cs" />

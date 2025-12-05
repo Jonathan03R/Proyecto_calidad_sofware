@@ -8,19 +8,10 @@ namespace capa_dominio
 {
     public class TipoSalario
     {
-        
-        private int tipoSalarioId;
-        private string tipoSalarioNombre;
-        private char tipoSalarioEstado;
-        private DateTime tipoSalarioFechaCreacion;
-
-        
-        public int TipoSalarioId { get => tipoSalarioId; set => tipoSalarioId = value; }
-        public string TipoSalarioNombre { get => tipoSalarioNombre; set => tipoSalarioNombre = value; }
-        public char TipoSalarioEstado { get => tipoSalarioEstado; set => tipoSalarioEstado = value; }
-        public DateTime TipoSalarioFechaCreacion { get => tipoSalarioFechaCreacion; set => tipoSalarioFechaCreacion = value; }
-
-
+        public int TipoSalarioId { get; set; }
+        public string TipoSalarioNombre { get; set; }
+        public char TipoSalarioEstado { get; set; }
+        public DateTime TipoSalarioFechaCreacion { get; set; }
     }
 }
 

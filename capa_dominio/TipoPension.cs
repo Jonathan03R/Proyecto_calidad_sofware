@@ -8,16 +8,9 @@ namespace capa_dominio
 {
     public class TipoPension
     {
-        public int tiposPensionId;
-        public string nombre;
-        public string entidad;
-        public decimal? comisionSobreFlujo;
-
-        public decimal? ComisionSobreFlujo { get => comisionSobreFlujo; set => comisionSobreFlujo = value; }
-        public string Entidad { get => entidad; set => entidad = value; }
-        public string Nombre { get => nombre; set => nombre = value; }
-        public int TipoPensionId { get => tiposPensionId; set => tiposPensionId = value; }
-
-
+        public int TipoPensionId { get; set; }
+        public string Nombre { get; set; }
+        public string Entidad { get; set; }
+        public decimal? ComisionSobreFlujo { get; set; }
     }
 }

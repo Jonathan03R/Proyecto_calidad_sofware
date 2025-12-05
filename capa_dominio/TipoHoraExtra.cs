@@ -8,19 +8,10 @@ namespace capa_dominio
 {
     public class TipoHoraExtra
     {
-        
-        private int tipoHoraExtraId;
-        private string tiposHorasExtrasCodigo;
-        private string tiposHorasExtrasNombre;
-        private decimal tiposHorasExtrasMultiplicador;
-        private char tiposHorasExtrasEstado;
-
-        
-        public int TipoHoraExtraId { get => tipoHoraExtraId; set => tipoHoraExtraId = value; }
-        public string TiposHorasExtrasCodigo { get => tiposHorasExtrasCodigo; set => tiposHorasExtrasCodigo = value; }
-        public string TiposHorasExtrasNombre { get => tiposHorasExtrasNombre; set => tiposHorasExtrasNombre = value; }
-        public decimal TiposHorasExtrasMultiplicador { get => tiposHorasExtrasMultiplicador; set => tiposHorasExtrasMultiplicador = value; }
-        public char TiposHorasExtrasEstado { get => tiposHorasExtrasEstado; set => tiposHorasExtrasEstado = value; }
-
+        public int TipoHoraExtraId { get; set; }
+        public string TiposHorasExtrasCodigo { get; set; }
+        public string TiposHorasExtrasNombre { get; set; }
+        public decimal TiposHorasExtrasMultiplicador { get; set; }
+        public char TiposHorasExtrasEstado { get; set; }
     }
 }

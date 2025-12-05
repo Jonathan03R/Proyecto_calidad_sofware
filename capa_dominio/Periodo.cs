@@ -8,29 +8,18 @@ namespace capa_dominio
 {
     public class Periodo
     {
-        private int periodoId;
-        private string periodoNombre;
-        private TipoSalario tipoSalario; 
-        private DateTime periodoFechaInicio;
-        private DateTime periodoFechaFin;
-        private int estadoId;
-        private string estadoNombre;
-
-        
-        public int PeriodoId { get => periodoId; set => periodoId = value; }
-        public string PeriodoNombre { get => periodoNombre; set => periodoNombre = value; }
-        public TipoSalario TipoSalario { get => tipoSalario; set => tipoSalario = value; }
-        public DateTime PeriodoFechaInicio { get => periodoFechaInicio; set => periodoFechaInicio = value; }
-        public DateTime PeriodoFechaFin { get => periodoFechaFin; set => periodoFechaFin = value; }
-        public int EstadoId { get => estadoId; set => estadoId = value; }
-        public string EstadoNombre { get => estadoNombre; set => estadoNombre = value; }
+        public int PeriodoId { get; set; }
+        public string PeriodoNombre { get; set; }
+        public TipoSalario TipoSalario { get; set; }
+        public DateTime PeriodoFechaInicio { get; set; }
+        public DateTime PeriodoFechaFin { get; set; }
+        public int EstadoId { get; set; }
+        public string EstadoNombre { get; set; }
 
         public bool EsProcesado()
         {
-            return estadoId == 3;
+            return EstadoId == 3;
         }
-
-
     }
 }
 

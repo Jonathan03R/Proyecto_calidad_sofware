@@ -150,22 +150,7 @@ namespace capa_presentacion.Controllers
             return Json(pensiones, JsonRequestBehavior.AllowGet);
         }
 
-        // ✅ Obtener tipos de salario
-        //[HttpGet]
-        //public JsonResult ObtenerTiposSalarios()
-        //{
-        //    var tipos = _tipoSalarioService.ObtenerTiposSalarios()
-        //        .Select(t => new
-        //        {
-        //            id = t.TipoSalarioId,
-        //            nombre = t.TipoSalarioNombre
-        //        })
-        //        .ToList();
-
-        //    return Json(tipos, JsonRequestBehavior.AllowGet);
-        //}
-
-        // ✅ Obtener tipos de jornadas
+       
         [HttpGet]
         public JsonResult ObtenerTiposJornadas()
         {
@@ -180,7 +165,6 @@ namespace capa_presentacion.Controllers
             return Json(tipos, JsonRequestBehavior.AllowGet);
         }
 
-        // ✅ CRear Contrato
         [HttpPost]
         public JsonResult CrearContrato(ContratoDTO contrato)
         {
