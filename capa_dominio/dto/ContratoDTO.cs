@@ -6,43 +6,22 @@ namespace capa_dominio.dto
     {
         public int? ContratoId { get; set; }
 
-        private int? trabajadorId;
-        private int? cargoId;
-        private int? areaId;
-        private int? tipoPensionId;
-        private int? tipoSalarioId;
-        private int? tipoJornadaId;
-
-
-        private DateTime fechaInicio;
-        private DateTime? fechaFin;
-
-        private decimal? salario;
-        private decimal? tarifaHora;
-
-        private int? modoPagoId;
-        private string modoPagoNombre;
-        private string documentoUrl;
-        private string descripcionFunciones;
-        private string observaciones;
-
-        public int? TrabajadorId { get => trabajadorId; set => trabajadorId = value; }
-        public int? CargoId { get => cargoId; set => cargoId = value; }
-        public int? AreaId { get => areaId; set => areaId = value; }
-        public int? TipoPensionId { get => tipoPensionId; set => tipoPensionId = value; }
-        public int? TipoSalarioId { get => tipoSalarioId; set => tipoSalarioId = value; }
-
-        public int? TipoJornadaId { get => tipoJornadaId; set => tipoJornadaId = value; }
-        public DateTime FechaInicio { get => fechaInicio; set => fechaInicio = value; }
-        public DateTime? FechaFin { get => fechaFin; set => fechaFin = value; }
-        public decimal? Salario { get => salario; set => salario = value; }
-        public decimal? TarifaHora { get => tarifaHora; set => tarifaHora = value; }
+        public int? TrabajadorId { get; set; }
+        public int? CargoId { get; set; }
+        public int? AreaId { get; set; }
+        public int? TipoPensionId { get; set; }
+        public int? TipoSalarioId { get; set; }
+        public int? TipoJornadaId { get; set; }
+        public DateTime FechaInicio { get; set; }
+        public DateTime? FechaFin { get; set; }
+        public decimal? Salario { get; set; }
+        public decimal? TarifaHora { get; set; }
         public int? HorasSemanales { get; set; }
-        public int? ModoPagoId { get => modoPagoId; set => modoPagoId = value; }
-        public string ModoPagoNombre { get => modoPagoNombre; set => modoPagoNombre = value; }
-        public string DocumentoUrl { get => documentoUrl; set => documentoUrl = value; }
-        public string DescripcionFunciones { get => descripcionFunciones; set => descripcionFunciones = value; }
-        public string Observaciones { get => observaciones; set => observaciones = value; }
+        public int? ModoPagoId { get; set; }
+        public string ModoPagoNombre { get; set; }
+        public string DocumentoUrl { get; set; }
+        public string DescripcionFunciones { get; set; }
+        public string Observaciones { get; set; }
         public string EmpleadoNombre { get; set; }
         public string Documento { get; set; }
         public string CargoNombre { get; set; }

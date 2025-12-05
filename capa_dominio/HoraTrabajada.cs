@@ -27,7 +27,6 @@ namespace capa_dominio
 
             decimal recPrimeras2 = ObtenerMultiplicador("PRIMERAS2");
             decimal recAdicionales = ObtenerMultiplicador("ADICIONALES");
-            decimal recSabado = ObtenerMultiplicador("SABADO");
             decimal recDomingo = ObtenerMultiplicador("DOMINGO");
 
             var dia = Fecha.DayOfWeek;
