@@ -1,10 +1,11 @@
-﻿using capa_dominio;
-using capa_dominio.dto;
-using capa_persistencia.modulo_base;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using capa_dominio;
+using capa_dominio.dto;
+using capa_persistencia.helpers;
+using capa_persistencia.modulo_base;
 
 namespace capa_persistencia.modulo_principal
 {
@@ -79,10 +80,7 @@ namespace capa_persistencia.modulo_principal
             int? periodoId = null,
             string estadoNomina = null)
         {
-            System.Diagnostics.Debug.WriteLine(
-                $"Listando detalles de nóminas procesadas - Trabajador: {trabajadorId}, Nómina: {nominaId}, Periodo: {periodoId}, Estado: {estadoNomina}");
-
-            List<NominasProcesadasDTO> listaDetalles = new List<NominasProcesadasDTO>();
+            var lista = new List<NominasProcesadasDTO>();
 
             try
             {
@@ -94,62 +92,58 @@ namespace capa_persistencia.modulo_principal
                 cmd.Parameters.AddWithValue("@periodo_id", (object)periodoId ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@estado_nomina", (object)estadoNomina ?? DBNull.Value);
 
-                using (SqlDataReader reader = cmd.ExecuteReader())
+                using (SqlDataReader dr = cmd.ExecuteReader())
                 {
-                    while (reader.Read())
+                    while (dr.Read())
                     {
-                        NominasProcesadasDTO detalle = new NominasProcesadasDTO
+                        var dto = new NominasProcesadasDTO
                         {
-
-                            DetalleNominaId = reader.GetInt32(reader.GetOrdinal("detalle_nomina_id")),
-                            NominaId = reader.GetInt32(reader.GetOrdinal("nomina_id")),
-                            TrabajadorId = reader.GetInt32(reader.GetOrdinal("trabajador_id")),
-                            ContratoId = reader.GetInt32(reader.GetOrdinal("contrato_id")),
-                            PeriodoId = reader.GetInt32(reader.GetOrdinal("periodo_id")),
-                            Nombre = reader.GetString(reader.GetOrdinal("persona_nombre")),
-                            Apellidos = reader.GetString(reader.GetOrdinal("persona_apellido")),
-                            NominaEstado = reader.GetString(reader.GetOrdinal("nomina_estado")),
-                            EstadoContratoNombre = reader.GetString(reader.GetOrdinal("estado_contrato_nombre")),
-                            SueldoBasico = reader.GetDecimal(reader.GetOrdinal("sueldo_basico")),
-                            AsignacionFamiliar = reader.GetDecimal(reader.GetOrdinal("asignacion_familiar")),
-                            HorasExtras = reader.GetDecimal(reader.GetOrdinal("horas_extras")),
-                            BonosRegulares = reader.GetDecimal(reader.GetOrdinal("bonos_regulares")),
-                            OtrosIngresos = reader.GetDecimal(reader.GetOrdinal("otros_ingresos")),
-                            RemuneracionBruta = reader.GetDecimal(reader.GetOrdinal("remuneracion_bruta")),
-                            TotalIngresos = reader.GetDecimal(reader.GetOrdinal("total_ingresos")),
-                            SistemaPensionAplicado = reader.IsDBNull(reader.GetOrdinal("sistema_pension_aplicado"))
-                                ? null
-                                : reader.GetString(reader.GetOrdinal("sistema_pension_aplicado")),
-                            AporteEssalud = reader.GetDecimal(reader.GetOrdinal("aporte_essalud")),
-                            AporteOnp = reader.GetDecimal(reader.GetOrdinal("aporte_onp")),
-                            DescuentoAfp = reader.GetDecimal(reader.GetOrdinal("descuento_afp")),
-                            RemuneracionAcumuladaAnual = reader.GetDecimal(reader.GetOrdinal("remuneracion_acumulada_anual")),
-                            BaseImponibleAnual = reader.GetDecimal(reader.GetOrdinal("base_imponible_anual")),
-                            ImpuestoRentaAnual = reader.GetDecimal(reader.GetOrdinal("impuesto_renta_anual")),
-                            ImpuestoRentaMensual = reader.GetDecimal(reader.GetOrdinal("impuesto_renta_mensual")),
-                            UitValor = reader.GetDecimal(reader.GetOrdinal("uit_valor")),
-                            Deduccion7Uit = reader.GetDecimal(reader.GetOrdinal("deduccion_7uit")),
-                            DescuentoTardanzas = reader.GetDecimal(reader.GetOrdinal("descuento_tardanzas")),
-                            DescuentoFaltas = reader.GetDecimal(reader.GetOrdinal("descuento_faltas")),
-                            DescuentoAdelantos = reader.GetDecimal(reader.GetOrdinal("descuento_adelantos")),
-                            OtrosDescuentos = reader.GetDecimal(reader.GetOrdinal("otros_descuentos")),
-                            TotalDescuentos = reader.GetDecimal(reader.GetOrdinal("total_descuentos")),
-                            NetoPagar = reader.GetDecimal(reader.GetOrdinal("neto_pagar"))
+                            DetalleNominaId = dr.GetInt32(dr.GetOrdinal("detalle_nomina_id")),
+                            NominaId = dr.GetInt32(dr.GetOrdinal("nomina_id")),
+                            TrabajadorId = dr.GetInt32(dr.GetOrdinal("trabajador_id")),
+                            ContratoId = dr.GetInt32(dr.GetOrdinal("contrato_id")),
+                            PeriodoId = dr.GetInt32(dr.GetOrdinal("periodo_id")),
+                            Nombre = DataReaderHelper.GetString(dr, "persona_nombre"),
+                            Apellidos = DataReaderHelper.GetString(dr, "persona_apellido"),
+                            NominaEstado = DataReaderHelper.GetString(dr, "nomina_estado"),
+                            EstadoContratoNombre = DataReaderHelper.GetString(dr, "estado_contrato_nombre"),
+                            SueldoBasico = DataReaderHelper.GetDecimal(dr, "sueldo_basico") ?? 0,
+                            AsignacionFamiliar = DataReaderHelper.GetDecimal(dr, "asignacion_familiar") ?? 0,
+                            HorasExtras = DataReaderHelper.GetDecimal(dr, "horas_extras") ?? 0,
+                            BonosRegulares = DataReaderHelper.GetDecimal(dr, "bonos_regulares") ?? 0,
+                            OtrosIngresos = DataReaderHelper.GetDecimal(dr, "otros_ingresos") ?? 0,
+                            RemuneracionBruta = DataReaderHelper.GetDecimal(dr, "remuneracion_bruta") ?? 0,
+                            TotalIngresos = DataReaderHelper.GetDecimal(dr, "total_ingresos") ?? 0,
+                            SistemaPensionAplicado = DataReaderHelper.GetStringNull(dr, "sistema_pension_aplicado"),
+                            AporteEssalud = DataReaderHelper.GetDecimal(dr, "aporte_essalud") ?? 0,
+                            AporteOnp = DataReaderHelper.GetDecimal(dr, "aporte_onp") ?? 0,
+                            DescuentoAfp = DataReaderHelper.GetDecimal(dr, "descuento_afp") ?? 0,
+                            RemuneracionAcumuladaAnual = DataReaderHelper.GetDecimal(dr, "remuneracion_acumulada_anual") ?? 0,
+                            BaseImponibleAnual = DataReaderHelper.GetDecimal(dr, "base_imponible_anual") ?? 0,
+                            ImpuestoRentaAnual = DataReaderHelper.GetDecimal(dr, "impuesto_renta_anual") ?? 0,
+                            ImpuestoRentaMensual = DataReaderHelper.GetDecimal(dr, "impuesto_renta_mensual") ?? 0,
+                            UitValor = DataReaderHelper.GetDecimal(dr, "uit_valor") ?? 0,
+                            Deduccion7Uit = DataReaderHelper.GetDecimal(dr, "deduccion_7uit") ?? 0,
+                            DescuentoTardanzas = DataReaderHelper.GetDecimal(dr, "descuento_tardanzas") ?? 0,
+                            DescuentoFaltas = DataReaderHelper.GetDecimal(dr, "descuento_faltas") ?? 0,
+                            DescuentoAdelantos = DataReaderHelper.GetDecimal(dr, "descuento_adelantos") ?? 0,
+                            OtrosDescuentos = DataReaderHelper.GetDecimal(dr, "otros_descuentos") ?? 0,
+                            TotalDescuentos = DataReaderHelper.GetDecimal(dr, "total_descuentos") ?? 0,
+                            NetoPagar = DataReaderHelper.GetDecimal(dr, "neto_pagar") ?? 0
                         };
 
-                        listaDetalles.Add(detalle);
+                        lista.Add(dto);
                     }
                 }
 
-                System.Diagnostics.Debug.WriteLine($"Se encontraron {listaDetalles.Count} detalles de nóminas procesadas");
-                return listaDetalles;
+                return lista;
             }
-            catch (Exception ex)
+            catch
             {
-                System.Diagnostics.Debug.WriteLine($"Error al listar detalles de nóminas procesadas: {ex.Message}");
                 throw new NominaException("Error al obtener los detalles de las nóminas procesadas");
             }
         }
+
 
         public bool ExisteDetalleParaContrato(int nominaId, int contratoId)
         {

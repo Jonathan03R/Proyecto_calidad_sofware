@@ -310,8 +310,6 @@ namespace capa_dominio
                               DescuentoAdelantos + DescuentoTardanzas;
 
             NetoPagar = TotalIngresos - TotalDescuentos;
-
-           
         }
 
     }

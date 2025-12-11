@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace capa_aplicacion.sevicios
 {
-    internal class ModoPagoService
+    public class ListarPeriodoServicio
     {
     }
 }

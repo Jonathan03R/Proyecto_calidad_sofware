@@ -1,0 +1,16 @@
+﻿C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_dominioTests\DetalleNominaTests.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_dominioTests\HoraTrabajadaTests.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_dominioTests\NominaTests.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_dominioTests\PeriodoTests.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_dominioTests\Properties\AssemblyInfo.cs
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\packages\MSTest.TestAdapter.2.2.10\build\_common\es\Microsoft.TestPlatform.AdapterUtilities.resources.dll
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\packages\MSTest.TestAdapter.2.2.10\build\_common\es\Microsoft.TestPlatform.CoreUtilities.resources.dll
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\packages\MSTest.TestAdapter.2.2.10\build\_common\es\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\packages\MSTest.TestAdapter.2.2.10\build\_common\es\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\packages\MSTest.TestAdapter.2.2.10\build\_common\es\Microsoft.VisualStudio.TestPlatform.ObjectModel.resources.dll
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\packages\MSTest.TestAdapter.2.2.10\build\_common\es\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\packages\MSTest.TestAdapter.2.2.10\build\_common\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\packages\MSTest.TestAdapter.2.2.10\build\_common\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\packages\MSTest.TestAdapter.2.2.10\build\net46\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\packages\MSTest.TestAdapter.2.2.10\build\net46\Microsoft.TestPlatform.AdapterUtilities.dll
+C:\Users\Jonathan\Documents\GitHub\calidad_sof\capa_dominioTests\packages.config

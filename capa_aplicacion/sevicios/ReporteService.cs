@@ -14,14 +14,12 @@ namespace capa_aplicacion.Servicios
     public class ReporteService
     {
         private readonly ReporteNominaRepositorio reporteNomina;
-        private readonly PeriodosRepositorio periodosRepositorio;
         private readonly AccesoSQLServer conexion;
 
         public ReporteService()
         {
             conexion = new AccesoSQLServer();
             reporteNomina = new ReporteNominaRepositorio(conexion);
-            periodosRepositorio = new PeriodosRepositorio(conexion);    
         }
 
         public List<ReporteNominaDTO> ConsultarNominaPorPeriodo(int periodoId, int? cargoId = null)

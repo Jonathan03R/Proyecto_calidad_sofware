@@ -226,6 +226,7 @@
 
             mostrarMensajeResultados(response.data.length);
         } else {
+            console.warn('→ Consulta fallida:', response.mensaje);
             Alertas.error('Error al consultar: ' + response.mensaje);
             resetearVista();
         }

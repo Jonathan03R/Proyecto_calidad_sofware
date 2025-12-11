@@ -54,10 +54,10 @@
             $('#ec_observaciones').val(item.Observaciones || '');
 
             // Cargar catálogos con valores seleccionados
-            globalthis.ContratoCatalogs.cargarTodosEdicion(item);
+            globalThis.ContratoCatalogs.cargarTodosEdicion(item);
 
             // Abrir modal
-            globalthis.ContratoModal.open('modal-editar-contrato');
+            globalThis.ContratoModal.open('modal-editar-contrato');
         },
 
       

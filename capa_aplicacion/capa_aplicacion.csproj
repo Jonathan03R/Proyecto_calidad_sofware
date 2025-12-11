@@ -43,8 +43,8 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="sevicios\AreaService.cs" />
+    <Compile Include="sevicios\calcular\NominaCalculator.cs" />
     <Compile Include="sevicios\JornadaService.cs" />
-    <Compile Include="sevicios\ModoPagoService.cs" />
     <Compile Include="sevicios\PensionService.cs" />
     <Compile Include="sevicios\ServicioContratos.cs" />
     <Compile Include="sevicios\TipoSalarioServicio.cs" />

@@ -138,17 +138,37 @@ namespace capa_presentacion.Controllers
         [HttpGet]
         public JsonResult ObtenerPensiones()
         {
-            var pensiones = _pensionService.ObtenerSistemasPensiones()
-                .Select(p => new
-                {
-                    id = p.TipoPensionId,
-                    nombre = p.Nombre,
-                    entidad = p.Entidad
-                })
-                .ToList();
+            try
+            {
+                var pensiones = _pensionService.ObtenerSistemasPensiones()
+                    .Select(p => new
+                    {
+                        id = p.TipoPensionId,
+                        nombre = p.Nombre,
+                        entidad = p.Entidad
+                    })
+                    .ToList();
 
-            return Json(pensiones, JsonRequestBehavior.AllowGet);
+                return Json(new
+                {
+                    success = true,
+                    data = pensiones
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                // Registrar en log (NLog, Serilog, EventViewer, etc.)
+                System.Diagnostics.Debug.WriteLine("Error en ObtenerPensiones(): " + ex.Message);
+
+                return Json(new
+                {
+                    success = false,
+                    message = "Ocurrió un error al obtener las pensiones.",
+                    detail = ex.Message // Puedes quitar esto en producción
+                }, JsonRequestBehavior.AllowGet);
+            }
         }
+
 
 
         [HttpGet]

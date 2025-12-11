@@ -1,10 +1,11 @@
-﻿using capa_dominio;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using capa_aplicacion.sevicios.calcular;
+using capa_dominio;
 using capa_dominio.dto;
 using capa_persistencia.modulo_base;
 using capa_persistencia.modulo_principal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace capa_aplicacion.servicios
 {
@@ -20,6 +21,8 @@ namespace capa_aplicacion.servicios
         private readonly TiposHorasExtrasRepositorio _tiposHorasExtras;
         private readonly PeriodosRepositorio _periodos;
         private readonly SistemasPensionesRepositorio _sistemasPensionesRepositorio;
+        private readonly NominaCalculator _calculator;
+
 
         public NominasServicios()
         {
@@ -33,13 +36,8 @@ namespace capa_aplicacion.servicios
             _tiposHorasExtras = new TiposHorasExtrasRepositorio(_conexion);
             _periodos = new PeriodosRepositorio(_conexion);
             _sistemasPensionesRepositorio = new SistemasPensionesRepositorio(_conexion);
+            _calculator = new NominaCalculator();
         }
-
-        // ============================================================
-        // PROCESAMIENTO POR TRABAJADOR (unitario)
-        // - este método realiza todo el cálculo y guarda el detalle
-        // - la transacción es por trabajador (no por todo el periodo)
-        // ============================================================
         public ResultadoEmpleadoDTO ProcesarEmpleadoIndividual(
             int nominaId,
             int trabajadorId,
@@ -78,26 +76,16 @@ namespace capa_aplicacion.servicios
 
                 var tiposHorasExtras = _tiposHorasExtras.ObtenerTiposHorasExtrasActivos();
 
-                var detalle = new DetalleNomina
-                {
-                    Nomina = new Nomina { NominaId = nominaId, Periodo = periodo },
-                    Contrato = contrato,
-                    SueldoBasico = contrato.ContratoSalario,
-                    HorasTrabajadas = horasTrabajadas,
-                    TiposHorasExtras = tiposHorasExtras,
-                    BonosRegulares = 0,
-                    OtrosIngresos = 0
-                };
-
-                detalle.CalculoAsignacionFamiliar(hijos != null && hijos.Count > 0);
-                detalle.CalcularPagoTotalHorasExtras();
-                detalle.CalcularDescuentoTardanzas();
-                detalle.CalcularDescuentoFaltas();
-                detalle.CalcularRemuneracionBruta();
-                detalle.CalcularSistemaPensiones();
-                detalle.CalcularAporteEssalud(parametroEssalud);
-                detalle.CalcularImpuestoRentaQuinta(tramos, valorUIT);
-                detalle.CalcularTotales();
+                var detalle = _calculator.Calcular(
+                    contrato,
+                    periodo,
+                    tramos,
+                    parametroEssalud,
+                    valorUIT,
+                    horasTrabajadas,
+                    tiposHorasExtras,
+                    hijos != null && hijos.Count > 0
+                );
 
                 var dto = new DetalleNominaDTO(
                     nominaId,
@@ -147,19 +135,13 @@ namespace capa_aplicacion.servicios
                     ex.Message
                 );
 
-                // guardamos el detalle de error para auditoría
                 _detalleNomina.InsertarDetalleNomina(dtoError);
 
                 return new ResultadoEmpleadoDTO(trabajadorId, false, ex.Message);
             }
         }
 
-        // ============================================================
-        // INICIAR PROCESO PARA EL PERIODO (crea cabecera de nómina
-        // y devuelve la lista de trabajadores pendientes)
-        // ============================================================
-
-
+      
         public (int nominaId, List<int> trabajadoresPendientes) IniciarProcesoYObtenerPendientes(int periodoId)
         {
             if (periodoId <= 0)
@@ -232,11 +214,6 @@ namespace capa_aplicacion.servicios
             return pendientes;
         }
 
-        // ============================================================
-        // PROCESAR UN TRABAJADOR DENTRO DE UNA NOMINA (wrapper)
-        // - el frontend llamará a este endpoint por cada trabajador
-        // - requiere periodoId para obtener fechas y contexto
-        // ============================================================
         public ResultadoEmpleadoDTO ProcesarTrabajadorEnNomina(
             int nominaId,
             int trabajadorId,
@@ -250,23 +227,19 @@ namespace capa_aplicacion.servicios
 
             try
             {
-                // 1. cargar periodo
                 var periodo = _periodos.ObtenerPeriodoPorId(periodoId);
                 if (periodo == null)
                     return new ResultadoEmpleadoDTO(trabajadorId, false, "Periodo no encontrado.");
 
-                // 2. obtener contrato activo
                 var contratos = _contratos.ObtenerContratosPorTrabajador(trabajadorId);
                 var contratoActivo = contratos.FirstOrDefault(c => c.EsActivo());
                 if (contratoActivo == null)
                     return new ResultadoEmpleadoDTO(trabajadorId, false, "sin contrato activo");
 
-                // 3. validar si ya fue procesado
                 bool yaProcesado = _detalleNomina.ExisteDetalleParaContrato(nominaId, contratoActivo.ContratoId);
                 if (yaProcesado)
                     return new ResultadoEmpleadoDTO(trabajadorId, false, "ya procesado");
 
-                // 4. delegar al método real (este maneja su propia transacción)
                 return ProcesarEmpleadoIndividual(
                     nominaId,
                     trabajadorId,
@@ -282,13 +255,6 @@ namespace capa_aplicacion.servicios
             }
         }
 
-
-        // ============================================================
-        // CERRAR NOMINA Y ACTUALIZAR ESTADO DEL PERIODO
-        // - llamar después de procesar todos los trabajadores pendientes
-        // - si huboErrores == true -> marca periodo con estado de incidencias
-        // - si huboErrores == false -> marca periodo como procesado
-        // ============================================================
         public void CerrarNominaYActualizarPeriodo(int nominaId, int periodoId, bool? huboErrores, bool cancelado = false)
         {
             if (nominaId <= 0)
@@ -320,9 +286,6 @@ namespace capa_aplicacion.servicios
 
                 estadoFinal = erroresFinal ? "Con Errores" : "Exitoso";
 
-                // ================================
-                // CÁLCULO DE TOTALES
-                // ================================
                 var detalles = _detalleNomina.ListarDetallesPorNomina(nominaId);
 
                 var nomina = new Nomina
@@ -333,9 +296,6 @@ namespace capa_aplicacion.servicios
 
                 nomina.CalcularTotales();
 
-                // ================================
-                // ACTUALIZAR TOTALES *CORRECTAMENTE*
-                // ================================
                 _nominas.ActualizarTotales(
                     nominaId,
                     nomina.NominaTotalEmpleados,
@@ -345,9 +305,6 @@ namespace capa_aplicacion.servicios
                     estadoFinal    
                 );
 
-                // ================================
-                // ACTUALIZAR ESTADO DEL PERIODO
-                // ================================
                 if (!erroresFinal)
                     _periodos.ProcesarPeriodo(periodoId);
                 else
@@ -368,11 +325,6 @@ namespace capa_aplicacion.servicios
             var pendientes = ObtenerTrabajadoresPendientes(nominaId, periodoId);
             return pendientes != null && pendientes.Count > 0;
         }
-
-        // ============================================================
-        // HELPERS y MÉTODOS DE APOYO
-        // ============================================================
-
 
         private int ObtenerNominaValidaParaPeriodo(int periodoId)
         {
@@ -408,13 +360,6 @@ namespace capa_aplicacion.servicios
 
             return resultado;
         }
-
-        //private int CrearCabeceraNomina(int periodoId)
-        //{
-        //    return _nominas.IniciarProcesoPorPeriodo(periodoId, "Nómina generada automáticamente");
-        //}
-
-        // reutiliza tu proc/consulta ya existente que devuelve contratos por periodo
         public List<ContratoPorPeriodoDTO> ListarContratosPorPeriodo(int periodoId)
         {
             _conexion.AbrirConexion();
@@ -431,7 +376,6 @@ namespace capa_aplicacion.servicios
             }
         }
 
-        // filtra contratos que realmente queremos procesar
         public List<ContratoPorPeriodoDTO> ObtenerContratosParaPeriodo(int periodoId)
         {
             var contratos = ListarContratosPorPeriodo(periodoId);
@@ -439,15 +383,14 @@ namespace capa_aplicacion.servicios
             var contratosFiltrados = contratos
                 .Where(c =>
                     c.TrabajadorId.HasValue &&
-                    !c.Procesado &&         // flag 'procesado' debe venir del proc
-                    c.EstadoContratoId == 1 // 1 = activo (ajusta si tu dominio usa otro id)
+                    !c.Procesado &&
+                    c.EstadoContratoId == 1
                 )
                 .ToList();
 
             return contratosFiltrados;
         }
 
-        // ids de trabajadores a procesar
         public List<int> ObtenerTrabajadorIdsParaPeriodo(int periodoId)
         {
             return ObtenerContratosParaPeriodo(periodoId)
@@ -457,7 +400,6 @@ namespace capa_aplicacion.servicios
                 .ToList();
         }
 
-        // listado simple de resumen (usa tu repo existente)
         public List<ResumenNominaDto> ListarResumenNominas()
         {
             _conexion.AbrirConexion();
@@ -471,7 +413,6 @@ namespace capa_aplicacion.servicios
             }
         }
 
-        // detalles procesados (usa tu repo existente)
         public List<NominasProcesadasDTO> ListarDetallesNominasProcesadas(
             int? trabajadorId = null,
             int? nominaId = null,
@@ -491,8 +432,15 @@ namespace capa_aplicacion.servicios
 
         public ResumenKpisNominaDto ObtenerResumenKpisNomina()
         {
-            // Simplemente delega al repositorio
-            return _nominas.ObtenerResumenKpisNomina();
+            _conexion.AbrirConexion();
+            try
+            {
+                return _nominas.ObtenerResumenKpisNomina();
+            }
+            finally
+            {
+                _conexion.CerrarConexion();
+            }
         }
     }
 }

@@ -62,9 +62,17 @@
             const $select = $(selector || '#nc_tipo_pension_id');
             $select.empty().append('<option value="">Seleccione</option>');
 
-            $.getJSON(globalthis.ContratoConfig.URLS.obtenerPensiones)
-                .done(function (data) {
-                    (data || []).forEach(function (p) {
+            $.getJSON(globalThis.ContratoConfig.URLS.obtenerPensiones)
+                .done(function (resp) {
+
+                    if (!resp.success) {
+                        console.error(resp.message, resp.detail);
+                        return;
+                    }
+
+                    const lista = resp.data || [];
+
+                    lista.forEach(function (p) {
                         const texto = p.entidad
                             ? `${p.nombre} (${p.entidad})`
                             : p.nombre;
@@ -81,9 +89,7 @@
                         $select.val(String(selectedId));
                     }
                 })
-                .fail(function () {
-                    console.error('Error al cargar pensiones');
-                });
+;
         },
 
         cargarTiposSalarios: function (selector, selectedId) {

@@ -11,13 +11,12 @@ namespace capa_aplicacion.sevicios
 {
     public class TrabajadorService
     {
-        private readonly AccesoSQLServer conexion;
         private readonly TrabajadoresRepositorio trabajadorDAO;
         
 
         public TrabajadorService()
         {
-            conexion = new AccesoSQLServer();
+            var conexion = new AccesoSQLServer();
             trabajadorDAO = new TrabajadoresRepositorio(conexion);
         }
 

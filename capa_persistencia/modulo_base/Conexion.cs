@@ -19,20 +19,20 @@ namespace capa_persistencia.modulo_base
         private readonly string contrasena = "Grupo02_2025";
 
         //// ConnectionString completo
-        private string ConnectionString =>
-            $"Server={servidor};" +
-            $"Database={baseDatos};" +
-            $"User ID={usuario};" +
-            $"Password={contrasena};" +
-            "Encrypt=True;" +
-            "TrustServerCertificate=True;" +
-            "Connection Timeout=30;";
+        //private string ConnectionString =>
+        //    $"Server={servidor};" +
+        //    $"Database={baseDatos};" +
+        //    $"User ID={usuario};" +
+        //    $"Password={contrasena};" +
+        //    "Encrypt=True;" +
+        //    "TrustServerCertificate=True;" +
+        //    "Connection Timeout=30;";
 
-        //private string ConnectionString =
-        //    "server=DESKTOP-D9BFG02;" +
-        //    "database=nomina_calidad_backup;" +
-        //    "trusted_connection=true;" +
-        //    "trustservercertificate=true;";
+        private string ConnectionString =
+            "server=RUBI;" +
+            "database=base_datos_grupo02;" +
+            "trusted_connection=true;" +
+            "trustservercertificate=true;";
 
         public void AbrirConexion()
         {
