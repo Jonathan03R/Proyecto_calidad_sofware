@@ -1,10 +1,11 @@
-﻿using capa_dominio;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using capa_aplicacion.sevicios.calcular;
+using capa_dominio;
 using capa_dominio.dto;
 using capa_persistencia.modulo_base;
 using capa_persistencia.modulo_principal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace capa_aplicacion.servicios
 {
@@ -20,6 +21,8 @@ namespace capa_aplicacion.servicios
         private readonly TiposHorasExtrasRepositorio _tiposHorasExtras;
         private readonly PeriodosRepositorio _periodos;
         private readonly SistemasPensionesRepositorio _sistemasPensionesRepositorio;
+        private readonly NominaCalculator _calculator;
+
 
         public NominasServicios()
         {
@@ -33,6 +36,7 @@ namespace capa_aplicacion.servicios
             _tiposHorasExtras = new TiposHorasExtrasRepositorio(_conexion);
             _periodos = new PeriodosRepositorio(_conexion);
             _sistemasPensionesRepositorio = new SistemasPensionesRepositorio(_conexion);
+            _calculator = new NominaCalculator();
         }
         public ResultadoEmpleadoDTO ProcesarEmpleadoIndividual(
             int nominaId,
@@ -72,26 +76,16 @@ namespace capa_aplicacion.servicios
 
                 var tiposHorasExtras = _tiposHorasExtras.ObtenerTiposHorasExtrasActivos();
 
-                var detalle = new DetalleNomina
-                {
-                    Nomina = new Nomina { NominaId = nominaId, Periodo = periodo },
-                    Contrato = contrato,
-                    SueldoBasico = contrato.ContratoSalario,
-                    HorasTrabajadas = horasTrabajadas,
-                    TiposHorasExtras = tiposHorasExtras,
-                    BonosRegulares = 0,
-                    OtrosIngresos = 0
-                };
-
-                detalle.CalculoAsignacionFamiliar(hijos != null && hijos.Count > 0);
-                detalle.CalcularPagoTotalHorasExtras();
-                detalle.CalcularDescuentoTardanzas();
-                detalle.CalcularDescuentoFaltas();
-                detalle.CalcularRemuneracionBruta();
-                detalle.CalcularSistemaPensiones();
-                detalle.CalcularAporteEssalud(parametroEssalud);
-                detalle.CalcularImpuestoRentaQuinta(tramos, valorUIT);
-                detalle.CalcularTotales();
+                var detalle = _calculator.Calcular(
+                    contrato,
+                    periodo,
+                    tramos,
+                    parametroEssalud,
+                    valorUIT,
+                    horasTrabajadas,
+                    tiposHorasExtras,
+                    hijos != null && hijos.Count > 0
+                );
 
                 var dto = new DetalleNominaDTO(
                     nominaId,
@@ -141,7 +135,6 @@ namespace capa_aplicacion.servicios
                     ex.Message
                 );
 
-                // guardamos el detalle de error para auditoría
                 _detalleNomina.InsertarDetalleNomina(dtoError);
 
                 return new ResultadoEmpleadoDTO(trabajadorId, false, ex.Message);

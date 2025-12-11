@@ -19,7 +19,6 @@ namespace capa_aplicacion.Servicios
             contratosRepo = new ContratoRepositorio(accesoSQLServer);
         }
 
-        // CREAR CONTRATO
 
         public int CrearContrato(ContratoDTO contrato)
         {
@@ -29,11 +28,9 @@ namespace capa_aplicacion.Servicios
                 if (contrato == null)
                     throw new ArgumentNullException(nameof(contrato), "el contrato no puede ser nulo.");
 
-                // validar trabajador obligatorio
                 if (!contrato.TrabajadorId.HasValue || contrato.TrabajadorId.Value <= 0)
                     throw new InvalidOperationException("debe seleccionar un trabajador.");
 
-                // validar si el trabajador ya tiene contrato activo
                 var activos = contratosRepo.ListarConContratoActivo();
 
                 bool trabajadorTieneContratoActivo = activos
@@ -42,12 +39,10 @@ namespace capa_aplicacion.Servicios
                 if (trabajadorTieneContratoActivo)
                     throw new InvalidOperationException("el trabajador ya tiene un contrato activo.");
 
-                // horas semanales
                 var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
                     ? contrato.HorasSemanales.Value
                     : 48;
 
-                // construir entidad real sin valores falsos
                 var entidad = new Contrato
                 {
                     Trabajador = new Trabajador { TrabajadorId = contrato.TrabajadorId.Value },
@@ -63,14 +58,11 @@ namespace capa_aplicacion.Servicios
                     ContratoTarifaHora = contrato.TarifaHora ?? 0
                 };
 
-                // validar reglas de dominio
                 entidad.ValidarParaCreacion();
 
-                // copiar valores calculados hacia el dto
                 contrato.HorasSemanales = entidad.ContratoHorasSemanales;
                 contrato.TarifaHora = entidad.ContratoTarifaHora;
 
-                // persistir en bd
                 var id = contratosRepo.CrearContratoEmpleado(contrato);
 
                 accesoSQLServer.TerminarTransaccion();
@@ -83,56 +75,38 @@ namespace capa_aplicacion.Servicios
             }
         }
 
-
-
-        // ACTUALIZAR CONTRATO
         public void ActualizarContrato(int contratoId, string usuario, string motivo, ContratoDTO contrato)
         {
-            accesoSQLServer.AbrirConexion();
+            accesoSQLServer.IniciarTransaccion();
+
             try
             {
                 if (contratoId <= 0)
-                    throw new ArgumentException("El ID del contrato no es válido.");
+                    throw new ArgumentException("el id del contrato no es válido.");
 
                 if (string.IsNullOrWhiteSpace(usuario))
-                    throw new ArgumentException("Debe indicar el usuario que realiza la actualización.");
+                    throw new ArgumentException("el usuario es obligatorio.");
 
                 if (string.IsNullOrWhiteSpace(motivo))
-                    throw new ArgumentException("Debe indicar el motivo de la actualización.");
+                    throw new ArgumentException("el motivo es obligatorio.");
 
                 var horas = (contrato.HorasSemanales.HasValue && contrato.HorasSemanales.Value > 0)
                     ? contrato.HorasSemanales.Value
                     : 48;
 
-
                 var entidad = new Contrato
                 {
-                    Trabajador = new Trabajador
-                    {
-                        TrabajadorId = contrato.TrabajadorId ?? 0
-                    },
-                    Cargo = new Cargo
-                    {
-                        CargoId = contrato.CargoId ?? 0
-                    },
-                    Area = new Area
-                    {
-                        AreaId = contrato.AreaId ?? 0
-                    },
-                    TipoPension = new TipoPension
-                    {
-                        TipoPensionId = contrato.TipoPensionId ?? 0
-                    },
-                    TipoSalario = new TipoSalario
-                    {
-                        TipoSalarioId = contrato.TipoSalarioId ?? 0
-                    },
+                    Trabajador = new Trabajador { TrabajadorId = contrato.TrabajadorId ?? 0 },
+                    Cargo = new Cargo { CargoId = contrato.CargoId ?? 0 },
+                    Area = new Area { AreaId = contrato.AreaId ?? 0 },
+                    TipoPension = new TipoPension { TipoPensionId = contrato.TipoPensionId ?? 0 },
+                    TipoSalario = new TipoSalario { TipoSalarioId = contrato.TipoSalarioId ?? 0 },
 
                     ContratoFechaInicio = contrato.FechaInicio,
                     ContratoFechaFin = contrato.FechaFin,
                     ContratoSalario = contrato.Salario ?? 0,
                     ContratoHorasSemanales = horas,
-                    ContratoTarifaHora = contrato.TarifaHora ?? 0 
+                    ContratoTarifaHora = contrato.TarifaHora ?? 0
                 };
 
                 entidad.ValidarParaCreacion();
@@ -141,12 +115,16 @@ namespace capa_aplicacion.Servicios
                 contrato.TarifaHora = entidad.ContratoTarifaHora;
 
                 contratosRepo.ActualizarContrato(contratoId, usuario, motivo, contrato);
+
+                accesoSQLServer.TerminarTransaccion();
             }
-            finally
+            catch
             {
-                accesoSQLServer.CerrarConexion();
+                accesoSQLServer.CancelarTransaccion();
+                throw;
             }
         }
+
 
 
 

@@ -220,9 +220,6 @@ namespace capa_presentacion.Controllers
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[PDF ERROR] {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"[PDF ERROR] Stack: {ex.StackTrace}");
-
                 return Json(new
                 {
                     consultaExitosa = false,

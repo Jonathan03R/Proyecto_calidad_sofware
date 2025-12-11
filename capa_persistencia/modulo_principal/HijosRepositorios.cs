@@ -16,6 +16,7 @@ namespace capa_persistencia.modulo_principal
         {
             _accesoSQL = accesoSQL ?? throw new ArgumentNullException(nameof(accesoSQL));
         }
+       
 
         public List<Hijo> ObtenerHijosPorTrabajador(int trabajadorId)
         {

@@ -101,8 +101,6 @@ namespace capa_dominio
           
         }
 
-        // ====== Validaciones agrupadas para bajar Cognitive Complexity ======
-
         public void ValidarParaCreacion()
         {
             ValidarEntidadesRequeridas();
@@ -138,7 +136,8 @@ namespace capa_dominio
         {
             if (ContratoFechaInicio == DateTime.MinValue)
                 throw new InvalidOperationException("Debe especificar una fecha de inicio válida.");
-
+            if (ContratoFechaInicio < DateTime.Today)
+                throw new InvalidOperationException("La fecha minima no cumple con el criterio minimo de vigencia establecida.");
             if (ContratoFechaFin.HasValue)
             {
                 if (ContratoFechaFin.Value < ContratoFechaInicio)
@@ -154,9 +153,9 @@ namespace capa_dominio
 
         private void ValidarSalarioYHoras()
         {
-            if (ContratoSalario <= 0)
+            if (ContratoSalario < 1130)
             {
-                throw new InvalidOperationException("El salario debe ser mayor a 0.");
+                throw new InvalidOperationException("El salario debe ser mayor a 1130 .");
             }
 
             if (!ContratoHorasSemanales.HasValue || ContratoHorasSemanales.Value <= 0)

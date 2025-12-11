@@ -22,14 +22,11 @@
 
         fmtFecha: function (v) {
             if (!v) return '';
-            const d = new Date(v);
-            return Number.isNaN(d)
-                ? String(v)
-                : d.toLocaleDateString('es-PE', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                });
+            const partes = String(v).split('-');
+            if (partes.length !== 3) return v;
+
+            const [yyyy, mm, dd] = partes;
+            return `${dd}/${mm}/${yyyy}`;
         },
 
 
